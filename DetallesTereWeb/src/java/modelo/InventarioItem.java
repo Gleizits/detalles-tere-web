@@ -26,6 +26,14 @@ public class InventarioItem implements Serializable {
     private BigDecimal precioVenta;
     private BigDecimal precioCompra; // solo admin (se anula para empleado)
 
+    // Fase 1 — CRUD: identidad de la fila en su tabla y estado lógico
+    private int idProducto;      // 0 si no es producto
+    private int idMaterial;      // 0 si no es material
+    private int idArreglo;       // 0 si no es arreglo (FK ID_DETALLE)
+    private int idCategoria;     // 0 = sin categoría
+    private int idMaterialVinc;  // solo producto: material enlazado (FK), 0 = ninguno
+    private boolean estado;      // true = activo, false = baja lógica
+
     public InventarioItem() {
     }
 
@@ -120,5 +128,53 @@ public class InventarioItem implements Serializable {
     /** true si el stock actual está en o por debajo del mínimo. */
     public boolean isStockBajo() {
         return stockAct <= stockMin;
+    }
+
+    public int getIdProducto() {
+        return idProducto;
+    }
+
+    public void setIdProducto(int idProducto) {
+        this.idProducto = idProducto;
+    }
+
+    public int getIdMaterial() {
+        return idMaterial;
+    }
+
+    public void setIdMaterial(int idMaterial) {
+        this.idMaterial = idMaterial;
+    }
+
+    public int getIdArreglo() {
+        return idArreglo;
+    }
+
+    public void setIdArreglo(int idArreglo) {
+        this.idArreglo = idArreglo;
+    }
+
+    public int getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(int idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
+    public int getIdMaterialVinc() {
+        return idMaterialVinc;
+    }
+
+    public void setIdMaterialVinc(int idMaterialVinc) {
+        this.idMaterialVinc = idMaterialVinc;
+    }
+
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
     }
 }
