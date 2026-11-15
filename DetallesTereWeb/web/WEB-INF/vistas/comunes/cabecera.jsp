@@ -44,6 +44,16 @@
                    class="nav-app-link ${ruta.startsWith('/inventario') ? 'activo' : ''}">
                     <i class="bi bi-box-seam"></i> Inventario
                 </a>
+                <c:if test="${usuario.admin}">
+                     <a href="${ctx}/ingresos"
+                        class="nav-app-link ${ruta.startsWith('/ingresos') ? 'activo' : ''}">
+                        <i class="bi bi-truck"></i> Ingresos
+                     </a>
+                     <a href="${ctx}/terminos"
+                        class="nav-app-link ${ruta.startsWith('/terminos') ? 'activo' : ''}">
+                        <i class="bi bi-tags"></i> Términos
+                     </a>
+                </c:if>
             </div>
 
             <!-- Usuario + salir -->

@@ -14,7 +14,7 @@ import modelo.InventarioItem;
 import util.ConexionDB;
 
 /**
- * Acceso a datos de INVENTARIO (solo lectura por ahora).
+ * Acceso a datos de inventario, incluyendo su CRUD y movimientos de stock.
  * Une producto/material/arreglo para mostrar nombre, categoría y precios.
  * La búsqueda coincide por nombre o por término (TERMINOS/DETALLE_TERMINO).
  */
@@ -72,6 +72,23 @@ public class InventarioDAO {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error al listar inventario", e);
+        }
+        return lista;
+    }
+
+    /** Lista solo artículos activos para operaciones que aumentan stock. */
+    public List<InventarioItem> listarActivos() {
+        List<InventarioItem> lista = new ArrayList<>();
+        String sql = BASE_SELECT + "WHERE COALESCE(p.ESTADO, m.ESTADO, a.ESTADO) = 1 "
+                + "ORDER BY NOMBRE";
+        try (Connection cn = ConexionDB.obtener();
+                PreparedStatement ps = cn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                lista.add(mapItem(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al listar inventario activo", e);
         }
         return lista;
     }

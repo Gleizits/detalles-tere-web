@@ -42,6 +42,20 @@
         <!-- Reportes: solo administrador -->
         <c:if test="${usuario.admin}">
             <div class="col-12 col-md-6 col-xl-4">
+                <a class="app-card seccion-tarjeta" href="${ctx}/ingresos">
+                    <div class="ico"><i class="bi bi-truck"></i></div>
+                    <h3>Ingresos</h3>
+                    <p>Registrar proveedores y entradas de mercadería al inventario.</p>
+                </a>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <a class="app-card seccion-tarjeta" href="${ctx}/terminos">
+                    <div class="ico"><i class="bi bi-tags"></i></div>
+                    <h3>Términos</h3>
+                    <p>Administrar palabras y sinónimos para encontrar artículos.</p>
+                </a>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
                 <a class="app-card seccion-tarjeta" href="${ctx}/panel">
                     <div class="ico"><i class="bi bi-graph-up"></i></div>
                     <h3>Reportes</h3>
