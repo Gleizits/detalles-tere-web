@@ -1,6 +1,6 @@
 -- ============================================================
 -- DetallesTereDB — Datos iniciales (seed)
--- Contraseña del admin inicial: Admin123!
+-- Contraseña del admin inicial: 191224 (misma que Tomcat).
 -- Hash BCrypt (cost 10). Cambiar tras primer login.
 -- ============================================================
 
@@ -16,7 +16,7 @@ BEGIN
         'Admin',
         'DetallesTere',
         'admin@detallestere.local',
-        '$2a$10$200gHywb.q0u0E3eaTtYYOIVjgY7eknRhhRod.NnVgnu9YtgFVAmy',
+        '$2a$10$9BWWoqEZYccCVkiROZ7LNuVKGZBX5.iGbd36bwHug6w.90qZjxo2m',
         'admin',
         1
     );
