@@ -1,0 +1,9 @@
+{
+  "name": "detallestere-herramientas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Herramientas locales del proyecto (no global)",
+  "dependencies": {
+    "@playwright/cli": "latest"
+  }
+}

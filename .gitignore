@@ -1,0 +1,13 @@
+# Artefactos de compilación (Ant/NetBeans)
+DetallesTereWeb/build/
+DetallesTereWeb/dist/
+
+# Dependencias npm de pruebas (instaladas localmente en herramientas/)
+herramientas/node_modules/
+
+# Artefactos de sesiones de navegador Playwright
+.playwright-cli/
+
+# Sistema
+Thumbs.db
+.DS_Store
