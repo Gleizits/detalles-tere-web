@@ -22,6 +22,8 @@ import util.ConexionDB;
  */
 public class VentaDAO {
 
+    private final CreditoClienteDAO creditoDAO = new CreditoClienteDAO();
+
     // ------------------------------------------------------------------
     // Venta directa (cobro del carrito)
     // ------------------------------------------------------------------
@@ -55,6 +57,39 @@ public class VentaDAO {
         } catch (IllegalStateException e) {
             rollback(cn);
             throw e;   // stock insuficiente: el mensaje ya es claro
+        } finally {
+            cerrar(cn);
+        }
+    }
+
+    /**
+     * Confirma una venta usando todo el saldo a favor vigente del cliente.
+     * El total debe coincidir exactamente; no admite pagos mixtos ni parciales.
+     */
+    public int confirmarVentaConCredito(List<DetalleVenta> carrito, int idCaja,
+                                        int idUsuario, int idCliente) {
+        BigDecimal total = sumar(carrito);
+        Connection cn = null;
+        try {
+            cn = ConexionDB.obtener();
+            cn.setAutoCommit(false);
+
+            int idVenta = insertarVenta(cn, idCaja, total, "CREDITO", "VENDIDO");
+            for (DetalleVenta l : carrito) {
+                insertarDetalle(cn, l, idCaja, idVenta, "VENDIDO", false);
+                descontarStock(cn, l.getIdInventario(), l.getCantidad());
+                insertarMovimiento(cn, idUsuario, l.getIdInventario(), l.getCantidad());
+            }
+            creditoDAO.aplicar(cn, idCliente, total, idVenta);
+
+            cn.commit();
+            return idVenta;
+        } catch (SQLException e) {
+            rollback(cn);
+            throw new RuntimeException("No se pudo registrar el canje", e);
+        } catch (IllegalStateException e) {
+            rollback(cn);
+            throw e;
         } finally {
             cerrar(cn);
         }

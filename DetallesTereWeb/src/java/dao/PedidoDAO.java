@@ -26,6 +26,7 @@ import util.ConexionDB;
 public class PedidoDAO {
 
     private final ClienteDAO clienteDAO = new ClienteDAO();
+    private final CreditoClienteDAO creditoDAO = new CreditoClienteDAO();
 
     private static final String SQL_LISTAR =
             "SELECT pd.ID_PEDIDO, pd.ID_CLIENTE, pd.NOMBRE_PAGA, pd.NOMBRE_RECOGE, pd.CELULAR, "
@@ -258,6 +259,93 @@ public class PedidoDAO {
         ejecutarEstado(
             "UPDATE dbo.PEDIDOS SET ESTADO = 'RECOGIDO' "
           + "WHERE ID_PEDIDO = ? AND ADELANTO >= TOTAL AND ESTADO = 'COMPLETO'", idPedido);
+    }
+
+    /**
+     * Cancela un pedido antes de producción, devuelve las unidades apartadas
+     * al inventario y convierte el adelanto en saldo a favor, sin reembolso.
+     */
+    public void cancelar(int idPedido, int idUsuario) throws SQLException {
+        Connection cn = null;
+        try {
+            cn = ConexionDB.obtener();
+            cn.setAutoCommit(false);
+
+            Pedido pedido = leerParaCancelar(cn, idPedido);
+            if (pedido == null) {
+                throw new SQLException("El pedido no existe.");
+            }
+            if (!"PENDIENTE".equals(pedido.getEstadoProduccion())
+                    || "CANCELADO".equals(pedido.getEstado())
+                    || "RECOGIDO".equals(pedido.getEstado())) {
+                throw new IllegalStateException(
+                        "Solo se puede cancelar un pedido antes de iniciar producción.");
+            }
+
+            for (DetalleVenta linea : lineas(cn, idPedido)) {
+                devolverStock(cn, linea.getIdInventario(), linea.getCantidad());
+                insertarMovimiento(cn, idUsuario, linea.getIdInventario(),
+                        linea.getCantidad(), "ENTRADA");
+            }
+
+            try (PreparedStatement ps = cn.prepareStatement(
+                    "UPDATE dbo.PEDIDOS SET ESTADO = 'CANCELADO', "
+                  + "ESTADO_PRODUCCION = 'CANCELADO' "
+                  + "WHERE ID_PEDIDO = ? AND ESTADO_PRODUCCION = 'PENDIENTE'")) {
+                ps.setInt(1, idPedido);
+                if (ps.executeUpdate() == 0) {
+                    throw new IllegalStateException(
+                            "El pedido cambió de estado y ya no puede cancelarse.");
+                }
+            }
+
+            creditoDAO.crearDesdeCancelacion(cn, pedido.getIdCliente(),
+                    pedido.getAdelanto(), idUsuario);
+            cn.commit();
+        } catch (SQLException | RuntimeException e) {
+            if (cn != null) {
+                try { cn.rollback(); } catch (SQLException ignorada) { }
+            }
+            throw e;
+        } finally {
+            if (cn != null) {
+                try { cn.setAutoCommit(true); cn.close(); } catch (SQLException ignorada) { }
+            }
+        }
+    }
+
+    private Pedido leerParaCancelar(Connection cn, int idPedido) throws SQLException {
+        String sql = "SELECT ID_PEDIDO, ID_CLIENTE, ADELANTO, ESTADO, "
+                + "ESTADO_PRODUCCION FROM dbo.PEDIDOS WITH (UPDLOCK, ROWLOCK) "
+                + "WHERE ID_PEDIDO = ?";
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, idPedido);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                Pedido p = new Pedido();
+                p.setIdPedido(rs.getInt("ID_PEDIDO"));
+                p.setIdCliente(rs.getInt("ID_CLIENTE"));
+                p.setAdelanto(rs.getBigDecimal("ADELANTO"));
+                p.setEstado(rs.getString("ESTADO"));
+                p.setEstadoProduccion(rs.getString("ESTADO_PRODUCCION"));
+                return p;
+            }
+        }
+    }
+
+    private void devolverStock(Connection cn, int idInventario, int cantidad)
+            throws SQLException {
+        try (PreparedStatement ps = cn.prepareStatement(
+                "UPDATE dbo.INVENTARIO SET STOCK_ACT = STOCK_ACT + ? "
+              + "WHERE ID_INVENTARIO = ?")) {
+            ps.setInt(1, cantidad);
+            ps.setInt(2, idInventario);
+            if (ps.executeUpdate() == 0) {
+                throw new SQLException("No se encontró el artículo reservado.");
+            }
+        }
     }
 
     private void ejecutarEstado(String sql, int idPedido) throws SQLException {

@@ -194,7 +194,26 @@
                                         <i class="bi bi-phone me-1"></i>Yape
                                     </label>
                                 </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipoPago"
+                                           id="pagoCredito" value="CREDITO" onchange="actualizarPago()">
+                                    <label class="form-check-label fs-5" for="pagoCredito">
+                                        <i class="bi bi-wallet2 me-1"></i>Saldo a favor
+                                    </label>
+                                </div>
                             </div>
+                        </div>
+
+                        <div class="mb-3" id="zonaCredito" style="display:none">
+                            <label class="form-label fw-bold" for="celularCredito">
+                                Celular del cliente con saldo a favor
+                            </label>
+                            <input type="tel" class="form-control" name="celularCredito"
+                                   id="celularCredito" maxlength="12" inputmode="tel"
+                                   placeholder="Ej: 999888777">
+                            <small class="text-muted">
+                                El total debe coincidir exactamente con todo su saldo vigente.
+                            </small>
                         </div>
 
                         <div class="mb-3" id="zonaEfectivo">
@@ -289,14 +308,17 @@
 
     function actualizarPago() {
         var yape = document.getElementById('pagoYape').checked;
+        var credito = document.getElementById('pagoCredito').checked;
         var zona = document.getElementById('zonaEfectivo');
+        var zonaCredito = document.getElementById('zonaCredito');
         var monto = document.getElementById('montoRecibido');
-        if (yape) {
+        if (yape || credito) {
             zona.style.display = 'none';
             monto.value = '';
         } else {
             zona.style.display = '';
         }
+        zonaCredito.style.display = credito ? '' : 'none';
         calcularVuelto();
     }
 

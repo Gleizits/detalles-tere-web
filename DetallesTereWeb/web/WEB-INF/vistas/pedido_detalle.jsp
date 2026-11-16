@@ -223,13 +223,15 @@
                     </form>
                 </c:if>
 
-                <c:if test="${pedido.estadoProduccion == 'PENDIENTE' && pedido.faltante > 0}">
-                    <div class="flex-fill">
-                        <a class="btn btn-outline-danger w-100" href="${ctx}/pedidos?id=${pedido.idPedido}"
-                           style="pointer-events:none;opacity:.5" aria-disabled="true">
-                            <i class="bi bi-x-circle me-1"></i>Cancelar (próximamente)
-                        </a>
-                    </div>
+                <c:if test="${pedido.estadoProduccion == 'PENDIENTE'}">
+                    <form method="post" action="${ctx}/pedidos" class="flex-fill">
+                        <input type="hidden" name="accion" value="cancelar">
+                        <input type="hidden" name="idPedido" value="${pedido.idPedido}">
+                        <button type="submit" class="btn btn-outline-danger w-100"
+                                onclick="return confirm('¿Cancelar el pedido? El stock volverá al inventario y el adelanto quedará como saldo a favor, sin devolución en efectivo.');">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar pedido
+                        </button>
+                    </form>
                 </c:if>
             </div>
         </div>
