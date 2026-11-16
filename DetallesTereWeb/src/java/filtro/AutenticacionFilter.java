@@ -7,7 +7,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -16,8 +15,8 @@ import modelo.Usuario;
 /**
  * Filtro de autenticación. Protege todas las rutas salvo /login, /error
  * y los recursos estáticos (assets). Redirige al login si no hay sesión.
+ * Declarado en web.xml (sin @WebFilter) para fijar su lugar en la cadena.
  */
-@WebFilter("/*")
 public class AutenticacionFilter implements Filter {
 
     @Override
