@@ -56,10 +56,17 @@
                 </a>
             </div>
             <div class="col-12 col-md-6 col-xl-4">
-                <a class="app-card seccion-tarjeta" href="${ctx}/panel">
+                <a class="app-card seccion-tarjeta" href="${ctx}/reportes">
                     <div class="ico"><i class="bi bi-graph-up"></i></div>
                     <h3>Reportes</h3>
                     <p>Resumen de ingresos al inventario, ventas y cajas del día.</p>
+                </a>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <a class="app-card seccion-tarjeta" href="${ctx}/usuarios">
+                    <div class="ico"><i class="bi bi-people"></i></div>
+                    <h3>Usuarios</h3>
+                    <p>Administrar accesos, roles y usuarios activos.</p>
                 </a>
             </div>
         </c:if>

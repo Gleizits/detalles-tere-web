@@ -14,7 +14,9 @@ public class Usuario implements Serializable {
     private String username;
     private String nombre;
     private String apellido;
+    private String correo;
     private String rol;
+    private boolean estado;
 
     public Usuario() {
     }
@@ -25,6 +27,7 @@ public class Usuario implements Serializable {
         this.nombre = nombre;
         this.apellido = apellido;
         this.rol = rol;
+        this.estado = true;
     }
 
     public int getId() {
@@ -59,12 +62,28 @@ public class Usuario implements Serializable {
         this.apellido = apellido;
     }
 
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
     public String getRol() {
         return rol;
     }
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
     }
 
     /** Solo el administrador accede a costos, proveedor y reportes. */
