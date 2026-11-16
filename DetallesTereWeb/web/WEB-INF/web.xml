@@ -7,11 +7,58 @@
 
     <display-name>DetallesTere</display-name>
 
+    <!--
+        Los filtros se declaran AQUÍ y no con @WebFilter para garantizar el
+        orden de ejecución (la especificación solo garantiza el orden de los
+        mapeos declarados en el descriptor):
+          1. CabecerasSeguridad: cabeceras anti-clickjacking/sniffing en toda respuesta
+          2. Csrf: valida el token de los POST
+          3. Autenticacion: redirige al login a los no autenticados
+          4. RequiereAdministrador: 403 a empleados en módulos de administración
+    -->
+    <filter>
+        <filter-name>CabecerasSeguridadFilter</filter-name>
+        <filter-class>filtro.CabecerasSeguridadFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>CsrfFilter</filter-name>
+        <filter-class>filtro.CsrfFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>AutenticacionFilter</filter-name>
+        <filter-class>filtro.AutenticacionFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>RequiereAdministradorFilter</filter-name>
+        <filter-class>filtro.RequiereAdministradorFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CabecerasSeguridadFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CsrfFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AutenticacionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>RequiereAdministradorFilter</filter-name>
+        <url-pattern>/ingresos</url-pattern>
+        <url-pattern>/terminos</url-pattern>
+        <url-pattern>/reportes</url-pattern>
+        <url-pattern>/usuarios</url-pattern>
+    </filter-mapping>
+
     <!-- Sesión: expira a los 30 minutos de inactividad (seguridad) -->
     <session-config>
         <session-timeout>30</session-timeout>
         <cookie-config>
             <http-only>true</http-only>
+            <!-- En producción con HTTPS habilitar <secure>true</secure> -->
         </cookie-config>
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
@@ -20,6 +67,10 @@
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
+    <error-page>
+        <error-code>403</error-code>
+        <location>/error.jsp</location>
+    </error-page>
     <error-page>
         <error-code>404</error-code>
         <location>/error.jsp</location>
