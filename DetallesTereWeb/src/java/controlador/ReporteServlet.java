@@ -10,7 +10,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import modelo.ReporteResumen;
+import modelo.Usuario;
 import util.ReportePdf;
 
 /** Presenta y exporta los reportes diario y mensual para administradores. */
@@ -22,6 +24,12 @@ public class ReporteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        // Defensa en profundidad: además del filtro de admin (web.xml)
+        if (!esAdministrador(req)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Esta sección requiere permisos de administrador.");
+            return;
+        }
         try {
             Periodo periodo = periodo(req);
             ReporteResumen reporte = reporteDAO.generar(periodo.desde, periodo.hasta);
@@ -45,6 +53,12 @@ public class ReporteServlet extends HttpServlet {
             getServletContext().log("Error al generar reporte", e);
             throw new ServletException("No se pudo generar el reporte", e);
         }
+    }
+
+    private boolean esAdministrador(HttpServletRequest req) {
+        HttpSession sesion = req.getSession(false);
+        return sesion != null && sesion.getAttribute("usuario") instanceof Usuario
+                && ((Usuario) sesion.getAttribute("usuario")).isAdmin();
     }
 
     private Periodo periodo(HttpServletRequest req) {
