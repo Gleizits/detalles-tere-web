@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import dao.CajaDAO;
+import dao.ClienteDAO;
 import dao.InventarioDAO;
 import dao.VentaDAO;
 import modelo.Caja;
+import modelo.Cliente;
 import modelo.DetalleVenta;
 import modelo.InventarioItem;
 import modelo.Usuario;
@@ -31,6 +33,7 @@ public class VentaServlet extends HttpServlet {
     private final VentaDAO ventaDAO = new VentaDAO();
     private final InventarioDAO inventarioDAO = new InventarioDAO();
     private final CajaDAO cajaDAO = new CajaDAO();
+    private final ClienteDAO clienteDAO = new ClienteDAO();
 
     private static final String K_CARRITO = "carrito";
     private static final String K_COTIZACION = "cotizacionId";
@@ -240,14 +243,41 @@ public class VentaServlet extends HttpServlet {
         }
 
         String tipoPago = valor(req, "tipoPago");
-        if (!"YAPE".equals(tipoPago) && !"EFECTIVO".equals(tipoPago)) {
-            ok(sesion, "Elige un método de pago (Yape o Efectivo).", true);
+        if (!"YAPE".equals(tipoPago) && !"EFECTIVO".equals(tipoPago)
+                && !"CREDITO".equals(tipoPago)) {
+            ok(sesion, "Elige un método de pago.", true);
             return;
         }
 
         BigDecimal total = BigDecimal.ZERO;
         for (DetalleVenta l : carrito) {
             total = total.add(l.getSubtotal());
+        }
+
+        if ("CREDITO".equals(tipoPago)) {
+            String celular = valor(req, "celularCredito");
+            Cliente cliente = clienteDAO.buscarPorWsp(celular);
+            if (cliente == null) {
+                ok(sesion, "No encontramos un cliente con ese celular.", true);
+                return;
+            }
+            Integer cotizacionId = (Integer) sesion.getAttribute(K_COTIZACION);
+            if (cotizacionId != null) {
+                ok(sesion, "El canje de crédito no se puede aplicar a una cotización cargada.",
+                        true);
+                return;
+            }
+            try {
+                ventaDAO.confirmarVentaConCredito(carrito, caja.getIdCaja(),
+                        u.getId(), cliente.getIdCliente());
+            } catch (RuntimeException e) {
+                ok(sesion, mensajeDe(e), true);
+                return;
+            }
+            sesion.removeAttribute(K_CARRITO);
+            ok(sesion, "Canje registrado. Se utilizó todo el saldo vigente del cliente.",
+                    false);
+            return;
         }
 
         BigDecimal montoRecibido;
@@ -309,6 +339,21 @@ public class VentaServlet extends HttpServlet {
     private String valor(HttpServletRequest req, String p) {
         String v = req.getParameter(p);
         return v == null ? "" : v.trim();
+    }
+
+    private String mensajeDe(RuntimeException e) {
+        Throwable t = e;
+        while (t.getCause() != null) {
+            t = t.getCause();
+        }
+        String mensaje = t.getMessage();
+        if (mensaje != null && mensaje.contains("saldo a favor vigente")) {
+            return mensaje;
+        }
+        if (mensaje != null && mensaje.toLowerCase().contains("stock")) {
+            return "No hay stock suficiente para completar el canje.";
+        }
+        return "No se pudo completar el canje. Revisa el saldo y vuelve a intentarlo.";
     }
 
     private int entero(HttpServletRequest req, String p, int defecto) {

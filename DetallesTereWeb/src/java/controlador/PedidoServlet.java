@@ -172,6 +172,14 @@ public class PedidoServlet extends HttpServlet {
                     destino = req.getContextPath() + "/pedidos?id=" + idHecho;
                     break;
                 }
+                case "cancelar": {
+                    int idCancelar = entero(req, "idPedido", -1);
+                    pedidoDAO.cancelar(idCancelar, u.getId());
+                    ok(sesion, "Pedido cancelado. El stock volvió al inventario y el adelanto "
+                            + "quedó como saldo a favor; no se devuelve en efectivo.", false);
+                    destino = req.getContextPath() + "/pedidos?id=" + idCancelar;
+                    break;
+                }
                 case "recoger": {
                     int idRec = entero(req, "idPedido", -1);
                     pedidoDAO.recoger(idRec);
@@ -396,6 +404,9 @@ public class PedidoServlet extends HttpServlet {
         }
         if (m != null && m.contains("pedido (revísalo")) {
             return "No se pudo actualizar el pedido. Puede que ya no esté en ese estado.";
+        }
+        if (m != null && m.contains("Solo se puede cancelar")) {
+            return m;
         }
         return "Ocurrió un error. Revisa los datos e inténtalo de nuevo.";
     }
