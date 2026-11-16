@@ -7,14 +7,17 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import modelo.Usuario;
 
-/** Restringe a administradores los módulos con costos y configuración. */
-@WebFilter(urlPatterns = {"/ingresos", "/terminos", "/reportes", "/usuarios"})
+/**
+ * Restringe a administradores los módulos con costos y configuración.
+ * Declarado en web.xml (sin @WebFilter) para ejecutarse DESPUÉS del filtro
+ * de autenticación: así un usuario sin sesión es redirigido al login y uno
+ * autenticado sin rol admin recibe 403.
+ */
 public class RequiereAdministradorFilter implements Filter {
 
     @Override
