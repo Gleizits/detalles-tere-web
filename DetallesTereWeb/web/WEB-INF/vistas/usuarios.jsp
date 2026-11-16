@@ -48,6 +48,7 @@
         <div class="app-card p-4">
             <h2 class="h4 mb-3">${editando ? 'Editar usuario' : 'Nuevo usuario'}</h2>
             <form method="post" action="${ctx}/usuarios" autocomplete="off">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
                 <input type="hidden" name="accion" value="${editando ? 'editar' : 'crear'}">
                 <c:if test="${editando}"><input type="hidden" name="id" value="${usuarioEditar.id}"></c:if>
                 <div class="mb-3">
