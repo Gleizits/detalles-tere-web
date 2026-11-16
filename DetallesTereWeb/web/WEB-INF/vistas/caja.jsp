@@ -85,6 +85,7 @@
                 </div>
 
                 <form action="${ctx}/caja" method="post" autocomplete="off">
+                    <input type="hidden" name="csrfToken" value="${csrfToken}">
                     <input type="hidden" name="accion" value="cerrar">
                     <input type="hidden" name="idCaja" value="${caja.idCaja}">
                     <div class="row g-3 align-items-end">
@@ -111,6 +112,7 @@
                 <div class="app-card p-4 mb-4">
                     <p class="text-muted mb-3">No tienes una caja abierta. Abre una para empezar a registrar ventas.</p>
                     <form action="${ctx}/caja" method="post" autocomplete="off">
+                        <input type="hidden" name="csrfToken" value="${csrfToken}">
                         <input type="hidden" name="accion" value="abrir">
                         <div class="row g-3 align-items-end">
                             <div class="col-12 col-md-5">
