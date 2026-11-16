@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
 import modelo.Usuario;
 
 /** Restringe a administradores los módulos con costos y configuración. */
-@WebFilter(urlPatterns = {"/ingresos", "/terminos"})
+@WebFilter(urlPatterns = {"/ingresos", "/terminos", "/reportes", "/usuarios"})
 public class RequiereAdministradorFilter implements Filter {
 
     @Override

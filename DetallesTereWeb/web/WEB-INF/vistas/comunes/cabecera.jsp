@@ -53,6 +53,14 @@
                         class="nav-app-link ${ruta.startsWith('/terminos') ? 'activo' : ''}">
                         <i class="bi bi-tags"></i> Términos
                      </a>
+                     <a href="${ctx}/reportes"
+                        class="nav-app-link ${ruta.startsWith('/reportes') ? 'activo' : ''}">
+                        <i class="bi bi-graph-up-arrow"></i> Reportes
+                     </a>
+                     <a href="${ctx}/usuarios"
+                        class="nav-app-link ${ruta.startsWith('/usuarios') ? 'activo' : ''}">
+                        <i class="bi bi-people"></i> Usuarios
+                     </a>
                 </c:if>
             </div>
 
