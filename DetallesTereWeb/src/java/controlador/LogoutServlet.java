@@ -15,12 +15,18 @@ import javax.servlet.http.HttpSession;
 public class LogoutServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         HttpSession sesion = req.getSession(false);
         if (sesion != null) {
             sesion.invalidate();
         }
         resp.sendRedirect(req.getContextPath() + "/login");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
     }
 }
