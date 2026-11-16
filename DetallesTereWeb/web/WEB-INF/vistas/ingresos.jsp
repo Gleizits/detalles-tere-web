@@ -24,6 +24,7 @@
         <div class="app-card p-4">
             <h2 class="h4 mb-3">Registrar entrada de mercadería</h2>
             <form method="post" action="${ctx}/ingresos">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
                 <input type="hidden" name="accion" value="registrar">
                 <div class="row g-3 mb-4">
                     <div class="col-12 col-md-7">
@@ -91,6 +92,7 @@
         <div class="app-card p-4 mb-4">
             <h2 class="h4 mb-3">Nuevo proveedor</h2>
             <form method="post" action="${ctx}/ingresos">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
                 <input type="hidden" name="accion" value="crearProveedor">
                 <div class="mb-3">
                     <label class="form-label" for="nombreProveedor">Nombre *</label>
