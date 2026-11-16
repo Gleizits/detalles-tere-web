@@ -19,6 +19,12 @@ public class UsuarioServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        // Defensa en profundidad: además del filtro de admin (web.xml)
+        if (!esAdministrador(req)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Esta sección requiere permisos de administrador.");
+            return;
+        }
         cargarVista(req);
         String idEditar = req.getParameter("editar");
         if (idEditar != null) {
@@ -41,6 +47,11 @@ public class UsuarioServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        if (!esAdministrador(req)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Esta sección requiere permisos de administrador.");
+            return;
+        }
         req.setCharacterEncoding("UTF-8");
         try {
             String accion = req.getParameter("accion");
@@ -66,6 +77,12 @@ public class UsuarioServlet extends HttpServlet {
             req.setAttribute("error", "No pudimos guardar el usuario. Intenta de nuevo.");
             req.getRequestDispatcher("/WEB-INF/vistas/usuarios.jsp").forward(req, resp);
         }
+    }
+
+    private boolean esAdministrador(HttpServletRequest req) {
+        HttpSession sesion = req.getSession(false);
+        return sesion != null && sesion.getAttribute("usuario") instanceof Usuario
+                && ((Usuario) sesion.getAttribute("usuario")).isAdmin();
     }
 
     private Usuario leerUsuario(HttpServletRequest req, boolean edicion) {
