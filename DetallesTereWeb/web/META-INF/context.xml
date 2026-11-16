@@ -2,11 +2,11 @@
 <!--
   Contexto de la aplicación DetallesTereWeb.
   Variante DESARROLLO local: NetBeans -> XAMPP Tomcat 8.5 (C:\xampp\tomcat)
-  con SQL Server 2019 Developer Edition en localhost:1433 (TCP/IP activado,
-  modo de autenticación Mixto, login sa con contraseña 191224).
+  con SQL Server 2019 Developer Edition en localhost:1433.
 
-  Para desplegar en un contenedor usa setup/context-contenedor.xml
-  (URL jdbc:sqlserver://DetallesTereDB:1433).
+  Define DB_URL, DB_USER y DB_PASSWORD como propiedades del proceso de
+  Tomcat antes de desplegar. DB_URL debe usar un certificado confiable;
+  nunca guardes conexión ni credenciales en este archivo.
 -->
 <Context path="/DetallesTereWeb">
 
@@ -16,9 +16,9 @@
               auth="Container"
               type="javax.sql.DataSource"
               driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-              url="jdbc:sqlserver://localhost:1433;databaseName=DetallesTereDB;encrypt=true;trustServerCertificate=true"
-              username="sa"
-              password="191224"
+              url="${DB_URL}"
+              username="${DB_USER}"
+              password="${DB_PASSWORD}"
               maxTotal="20"
               maxIdle="5"
               minIdle="2"
