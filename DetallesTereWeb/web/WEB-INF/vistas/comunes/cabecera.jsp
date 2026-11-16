@@ -70,9 +70,12 @@
                     <i class="bi bi-person-circle me-1"></i>
                     <c:out value="${usuario.nombreCompleto}"/>
                 </span>
-                <a class="salir text-decoration-none" href="${ctx}/logout">
-                    <i class="bi bi-box-arrow-right me-1"></i>Salir
-                </a>
+                <form method="post" action="${ctx}/logout" class="m-0">
+                    <input type="hidden" name="csrfToken" value="${csrfToken}">
+                    <button type="submit" class="salir border-0 bg-transparent p-0">
+                        <i class="bi bi-box-arrow-right me-1"></i>Salir
+                    </button>
+                </form>
             </div>
 
         </div>
