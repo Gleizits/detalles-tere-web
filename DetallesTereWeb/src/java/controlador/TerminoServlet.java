@@ -18,6 +18,12 @@ public class TerminoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        // Defensa en profundidad: además del filtro de admin (web.xml)
+        if (!esAdministrador(req)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Esta sección requiere permisos de administrador.");
+            return;
+        }
         cargarVista(req);
         req.getRequestDispatcher("/WEB-INF/vistas/terminos.jsp").forward(req, resp);
     }
@@ -25,6 +31,11 @@ public class TerminoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        if (!esAdministrador(req)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN,
+                    "Esta sección requiere permisos de administrador.");
+            return;
+        }
         req.setCharacterEncoding("UTF-8");
         try {
             String accion = req.getParameter("accion");
@@ -51,6 +62,12 @@ public class TerminoServlet extends HttpServlet {
             req.setAttribute("error", "No pudimos guardar el cambio. Intenta de nuevo.");
             req.getRequestDispatcher("/WEB-INF/vistas/terminos.jsp").forward(req, resp);
         }
+    }
+
+    private boolean esAdministrador(HttpServletRequest req) {
+        javax.servlet.http.HttpSession sesion = req.getSession(false);
+        return sesion != null && sesion.getAttribute("usuario") instanceof Usuario
+                && ((Usuario) sesion.getAttribute("usuario")).isAdmin();
     }
 
     private void crear(HttpServletRequest req) {

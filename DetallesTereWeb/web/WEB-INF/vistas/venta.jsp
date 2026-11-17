@@ -89,6 +89,7 @@
                                             </td>
                                             <td>
                                                 <form class="catalogo-form" method="post" action="${ctx}/venta">
+                                                    <input type="hidden" name="csrfToken" value="${csrfToken}">
                                                     <input type="hidden" name="accion" value="agregar">
                                                     <input type="hidden" name="idInventario" value="${it.idInventario}">
                                                     <input type="number" class="form-control cant-input"
@@ -153,6 +154,7 @@
                                         <td class="text-end">
                                             <c:if test="${empty cotizacionId}">
                                                 <form method="post" action="${ctx}/venta">
+                                                    <input type="hidden" name="csrfToken" value="${csrfToken}">
                                                     <input type="hidden" name="accion" value="eliminar">
                                                     <input type="hidden" name="indice" value="${st.index}">
                                                     <button type="submit" class="btn btn-sm btn-outline-danger"
@@ -175,6 +177,7 @@
 
                     <!-- ====== PAGO ====== -->
                     <form method="post" action="${ctx}/venta" class="pago-zona mt-3">
+                        <input type="hidden" name="csrfToken" value="${csrfToken}">
                         <input type="hidden" name="accion" value="cobrar">
 
                         <div class="mb-3">
@@ -237,6 +240,7 @@
                     <c:choose>
                         <c:when test="${not empty cotizacionId}">
                             <form method="post" action="${ctx}/venta" class="mt-2">
+                                <input type="hidden" name="csrfToken" value="${csrfToken}">
                                 <input type="hidden" name="accion" value="cancelar_carga">
                                 <button type="submit" class="btn btn-outline-secondary w-100">
                                     <i class="bi bi-x-circle me-1"></i>Cancelar carga de cotización
@@ -246,12 +250,14 @@
                         <c:otherwise>
                             <div class="d-flex gap-2 mt-2 flex-wrap">
                                 <form method="post" action="${ctx}/venta" class="flex-fill">
+                                    <input type="hidden" name="csrfToken" value="${csrfToken}">
                                     <input type="hidden" name="accion" value="cotizar">
                                     <button type="submit" class="btn btn-outline-secondary w-100">
                                         <i class="bi bi-file-earmark-text me-1"></i>Guardar cotización (24 h)
                                     </button>
                                 </form>
                                 <form method="post" action="${ctx}/venta" class="flex-fill">
+                                    <input type="hidden" name="csrfToken" value="${csrfToken}">
                                     <input type="hidden" name="accion" value="vaciar">
                                     <button type="submit" class="btn btn-outline-danger w-100">
                                         <i class="bi bi-trash me-1"></i>Vaciar
@@ -292,6 +298,7 @@
                         <div class="d-flex align-items-center gap-3">
                             <strong class="fs-5">S/ <fmt:formatNumber value="${co.total}" minFractionDigits="2"/></strong>
                             <form method="post" action="${ctx}/venta">
+                                <input type="hidden" name="csrfToken" value="${csrfToken}">
                                 <input type="hidden" name="accion" value="cargar_cotizacion">
                                 <input type="hidden" name="idVenta" value="${co.idVenta}">
                                 <button type="submit" class="btn btn-app btn-app-primary btn-sm">Cargar</button>

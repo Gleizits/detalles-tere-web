@@ -27,6 +27,7 @@
 
     <div class="app-card p-4">
         <form method="post" action="${ctx}/inventario" autocomplete="off" id="formArticulo">
+            <input type="hidden" name="csrfToken" value="${csrfToken}">
             <input type="hidden" name="accion" value="${esEdicion ? 'editar' : 'crear'}">
             <c:if test="${esEdicion}">
                 <input type="hidden" name="idInventario" value="${item.idInventario}">

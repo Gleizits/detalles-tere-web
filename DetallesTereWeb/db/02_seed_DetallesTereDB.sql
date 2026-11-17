@@ -1,7 +1,8 @@
 -- ============================================================
 -- DetallesTereDB — Datos iniciales (seed)
--- Contraseña del admin inicial: 191224 (misma que Tomcat).
--- Hash BCrypt (cost 10). Cambiar tras primer login.
+-- Contraseña del admin inicial: definida por el administrador del
+-- sistema (no se documenta en claro). Hash BCrypt (cost 10).
+-- Cambiar tras el primer login.
 -- ============================================================
 
 USE DetallesTereDB;

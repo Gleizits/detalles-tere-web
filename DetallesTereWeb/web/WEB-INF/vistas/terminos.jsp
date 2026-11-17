@@ -23,6 +23,7 @@
         <div class="app-card p-4">
             <h2 class="h4 mb-3">Agregar término</h2>
             <form method="post" action="${ctx}/terminos" class="mb-4">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
                 <input type="hidden" name="accion" value="crear">
                 <label class="form-label" for="palabra">Palabra o sinónimo *</label>
                 <div class="input-group">
@@ -34,6 +35,7 @@
 
             <h2 class="h4 mb-3">Asociar artículo</h2>
             <form method="post" action="${ctx}/terminos">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
                 <input type="hidden" name="accion" value="asociar">
                 <div class="mb-3">
                     <label class="form-label" for="idTermino">Término *</label>

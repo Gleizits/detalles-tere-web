@@ -160,6 +160,7 @@
                     </c:when>
                     <c:otherwise>
                         <form method="post" action="${ctx}/pedidos" class="row g-3 align-items-end">
+                            <input type="hidden" name="csrfToken" value="${csrfToken}">
                             <input type="hidden" name="accion" value="abono">
                             <input type="hidden" name="idPedido" value="${pedido.idPedido}">
                             <div class="col-12 col-md-4">
@@ -202,6 +203,7 @@
             <div class="d-flex gap-2 flex-wrap">
                 <c:if test="${pedido.estadoProduccion == 'PENDIENTE'}">
                     <form method="post" action="${ctx}/pedidos" class="flex-fill">
+                        <input type="hidden" name="csrfToken" value="${csrfToken}">
                         <input type="hidden" name="accion" value="hecho">
                         <input type="hidden" name="idPedido" value="${pedido.idPedido}">
                         <button type="submit" class="btn btn-app btn-app-primary w-100"
@@ -213,6 +215,7 @@
 
                 <c:if test="${pedido.estado == 'COMPLETO'}">
                     <form method="post" action="${ctx}/pedidos" class="flex-fill">
+                        <input type="hidden" name="csrfToken" value="${csrfToken}">
                         <input type="hidden" name="accion" value="recoger">
                         <input type="hidden" name="idPedido" value="${pedido.idPedido}">
                         <button type="submit" class="btn btn-app w-100"
@@ -225,6 +228,7 @@
 
                 <c:if test="${pedido.estadoProduccion == 'PENDIENTE'}">
                     <form method="post" action="${ctx}/pedidos" class="flex-fill">
+                        <input type="hidden" name="csrfToken" value="${csrfToken}">
                         <input type="hidden" name="accion" value="cancelar">
                         <input type="hidden" name="idPedido" value="${pedido.idPedido}">
                         <button type="submit" class="btn btn-outline-danger w-100"

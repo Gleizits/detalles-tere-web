@@ -81,6 +81,7 @@
                                         </td>
                                         <td>
                                             <form class="catalogo-form" method="post" action="${ctx}/pedidos">
+                                                <input type="hidden" name="csrfToken" value="${csrfToken}">
                                                 <input type="hidden" name="accion" value="agregar">
                                                 <input type="hidden" name="idInventario" value="${it.idInventario}">
                                                 <input type="number" class="form-control cant-input"
@@ -108,6 +109,7 @@
                 <h2 class="titulo-seccion mb-0" style="font-size:1.25rem">Carrito de la reserva</h2>
                 <c:if test="${not empty carrito}">
                     <form method="post" action="${ctx}/pedidos">
+                        <input type="hidden" name="csrfToken" value="${csrfToken}">
                         <input type="hidden" name="accion" value="vaciar">
                         <button type="submit" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-trash me-1"></i>Vaciar
@@ -139,6 +141,7 @@
                                         <td class="num">S/ <fmt:formatNumber value="${l.subtotal}" minFractionDigits="2"/></td>
                                         <td class="text-end">
                                             <form method="post" action="${ctx}/pedidos">
+                                                <input type="hidden" name="csrfToken" value="${csrfToken}">
                                                 <input type="hidden" name="accion" value="eliminar">
                                                 <input type="hidden" name="indice" value="${st.index}">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger"
@@ -170,6 +173,7 @@
             </h2>
 
             <form method="post" action="${ctx}/pedidos" autocomplete="off">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
                 <input type="hidden" name="accion" value="crear">
 
                 <div class="row g-3 mb-4">

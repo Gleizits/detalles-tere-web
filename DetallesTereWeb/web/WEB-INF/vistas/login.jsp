@@ -27,12 +27,14 @@
             </c:if>
 
             <form action="${pageContext.request.contextPath}/login" method="post" autocomplete="off">
-                <input type="hidden" name="destino" value="${param.destino}">
+                <input type="hidden" name="csrfToken" value="${csrfToken}">
+                <input type="hidden" name="destino"
+                       value="<c:out value='${param.destino}'/>">
 
                 <div class="mb-3">
                     <label for="username" class="form-label">Usuario</label>
                     <input type="text" class="form-control" id="username" name="username"
-                           value="${username}" autocomplete="username" required autofocus>
+                           value="<c:out value='${username}'/>" autocomplete="username" required autofocus>
                 </div>
 
                 <div class="mb-4">

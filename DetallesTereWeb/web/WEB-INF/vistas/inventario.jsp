@@ -119,14 +119,14 @@
                                 <td class="text-end text-nowrap">
                                     <a class="btn btn-sm btn-outline-secondary"
                                        href="${ctx}/inventario?editar=${it.idInventario}"
-                                       title="Editar ${it.nombre}">
+                                       title="Editar <c:out value='${it.nombre}'/>">
                                         <i class="bi bi-pencil-square me-1"></i>Editar
                                     </a>
                                     <button type="button" class="btn btn-sm btn-outline-primary"
                                             data-bs-toggle="modal" data-bs-target="#modalAjuste"
                                             data-id="${it.idInventario}"
                                             data-nombre="<c:out value='${it.nombre}'/>"
-                                            title="Ajustar el stock de ${it.nombre}">
+                                            title="Ajustar el stock de <c:out value='${it.nombre}'/>">
                                         <i class="bi bi-arrow-left-right me-1"></i>Ajustar
                                     </button>
                                 </td>
@@ -143,6 +143,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form method="post" action="${ctx}/inventario" id="formAjuste">
+                    <input type="hidden" name="csrfToken" value="${csrfToken}">
                     <input type="hidden" name="accion" value="ajustar">
                     <input type="hidden" name="idInventario" id="ajusteId" value="">
 
