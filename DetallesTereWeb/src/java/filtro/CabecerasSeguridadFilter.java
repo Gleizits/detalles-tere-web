@@ -61,7 +61,10 @@ public class CabecerasSeguridadFilter implements Filter {
 
         // Los datos del negocio no deben quedar en la caché del navegador.
         String ruta = req.getRequestURI().substring(req.getContextPath().length());
-        if (!ruta.startsWith("/assets/")) {
+        if (ruta.startsWith("/assets/")) {
+            // Recursos estáticos: siempre revalidar para no servir CSS/JS viejos.
+            resp.setHeader("Cache-Control", "no-cache");
+        } else {
             resp.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
             resp.setHeader("Pragma", "no-cache");
         }
