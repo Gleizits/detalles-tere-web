@@ -85,7 +85,7 @@ select:focus-visible,
   padding: 1.1rem .9rem;
   background: var(--c-primario);
   color: #fff;
-  overflow-y: auto;
+  overflow: visible;          /* el scroll lo lleva la lista, no toda la barra */
   z-index: 1040;
   transition: width .18s ease, transform .2s ease;
 }
@@ -141,6 +141,18 @@ body.menu-reducido .colapsar-der { display: inline; }
   flex-direction: column;
   gap: .2rem;
   margin-top: .9rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;           /* solo la lista scrollea en ventanas bajas */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .45) transparent;
+  padding-right: 2px;
+}
+.sidebar-nav::-webkit-scrollbar { width: 6px; }
+.sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .4);
+  border-radius: 3px;
 }
 .sidebar-separador {
   height: 1px;
@@ -154,6 +166,7 @@ body.menu-reducido .colapsar-der { display: inline; }
   flex-direction: column;
   min-height: 100vh;
   margin-left: 0;
+  width: 100%;                /* el ancho se ajusta al margen en escritorio */
   transition: margin-left .18s ease;
 }
 
@@ -263,9 +276,9 @@ body.menu-abierto .app-overlay { opacity: 1; pointer-events: auto; }
   .app-overlay { display: none; }
   .marca-top { display: none; }
   .sidebar-colapsar { display: flex; }
-  .app-cuerpo { margin-left: 256px; }
+  .app-cuerpo { margin-left: 256px; width: calc(100% - 256px); }
 
-  body.menu-reducido .app-cuerpo { margin-left: 84px; }
+  body.menu-reducido .app-cuerpo { margin-left: 84px; width: calc(100% - 84px); }
   body.menu-reducido .app-sidebar { width: 84px; padding-inline: .55rem; }
   body.menu-reducido .sidebar-marca { padding-bottom: .6rem; }
   body.menu-reducido .marca-completa,
