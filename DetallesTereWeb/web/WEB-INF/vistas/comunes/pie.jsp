@@ -4,7 +4,8 @@
     <script>
         (function () {
             var barra = document.getElementById('appSidebar');
-            var boton = document.getElementById('sidebarToggle');
+            var botonMovil = document.getElementById('sidebarToggle');   // solo celular
+            var botonColapsar = document.getElementById('sidebarCollapse'); // solo escritorio
             var fondo = document.getElementById('sidebarOverlay');
             var anchoMovil = window.matchMedia('(max-width: 991.98px)');
 
@@ -12,20 +13,33 @@
             function reducido() { return document.body.classList.contains('menu-reducido'); }
             function abierto() { return document.body.classList.contains('menu-abierto'); }
 
+            function guardar() {
+                try {
+                    localStorage.setItem('menuLateral', reducido() ? 'reducido' : 'completo');
+                } catch (e) { /* sin almacenamiento disponible */ }
+            }
+
             function sincronizar() {
-                var visible = esMovil() ? abierto() : !reducido();
-                boton.setAttribute('aria-expanded', String(visible));
+                if (botonMovil) {
+                    botonMovil.setAttribute('aria-expanded', String(esMovil() && abierto()));
+                }
+                if (botonColapsar) {
+                    var visible = !reducido();
+                    botonColapsar.setAttribute('aria-expanded', String(visible));
+                    botonColapsar.setAttribute('aria-label',
+                        visible ? 'Contraer el menú lateral' : 'Expandir el menú lateral');
+                }
                 fondo.setAttribute('aria-hidden', String(!(esMovil() && abierto())));
             }
 
-            function alternar() {
-                if (esMovil()) {
-                    document.body.classList.toggle('menu-abierto');
-                } else {
-                    document.body.classList.toggle('menu-reducido');
-                    try { localStorage.setItem('menuLateral', reducido() ? 'reducido' : 'completo'); }
-                    catch (e) { /* sin almacenamiento disponible */ }
-                }
+            function abrirCerrarMovil() {
+                document.body.classList.toggle('menu-abierto');
+                sincronizar();
+            }
+
+            function contraerExpandir() {
+                document.body.classList.toggle('menu-reducido');
+                guardar();
                 sincronizar();
             }
 
@@ -38,12 +52,13 @@
 
             // Estado guardado del menú plegado en escritorio
             try {
-                if (localStorage.getItem('menuLateral') === 'reducido' && !esMovil()) {
+                if (localStorage.getItem('menuLateral') === 'reducido') {
                     document.body.classList.add('menu-reducido');
                 }
             } catch (e) { /* sin almacenamiento disponible */ }
 
-            boton.addEventListener('click', alternar);
+            if (botonMovil) { botonMovil.addEventListener('click', abrirCerrarMovil); }
+            if (botonColapsar) { botonColapsar.addEventListener('click', contraerExpandir); }
             fondo.addEventListener('click', cerrarMovil);
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') { cerrarMovil(); }
