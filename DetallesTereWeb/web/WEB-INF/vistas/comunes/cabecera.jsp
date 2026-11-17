@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="${ctx}/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="${ctx}/assets/css/bootstrap-icons.min.css">
     <!-- ?v= fuerza al navegador a descargar el CSS tras cada cambio -->
-    <link rel="stylesheet" href="${ctx}/assets/css/app.css?v=2026-11-17b">
+    <link rel="stylesheet" href="${ctx}/assets/css/app.css?v=2026-11-17c">
 </head>
 <body>
 
