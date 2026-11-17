@@ -32,16 +32,26 @@
     <title>${titulo} · DetallesTere</title>
     <link rel="stylesheet" href="${ctx}/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="${ctx}/assets/css/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="${ctx}/assets/css/app.css">
+    <!-- ?v= fuerza al navegador a descargar el CSS tras cada cambio -->
+    <link rel="stylesheet" href="${ctx}/assets/css/app.css?v=2026-11-17b">
 </head>
 <body>
 
     <!-- Menú lateral con las secciones (en celular se abre como cajón) -->
     <aside class="app-sidebar" id="appSidebar" aria-label="Menú de secciones">
-        <a class="marca marca-lateral" href="${ctx}/panel">
-            <span class="marca-completa">Detalles<span class="marca-punto">Tere</span></span>
-            <span class="marca-corta" aria-hidden="true">DT</span>
-        </a>
+        <div class="sidebar-marca">
+            <a class="marca marca-lateral" href="${ctx}/panel">
+                <span class="marca-completa">Detalles<span class="marca-punto">Tere</span></span>
+                <span class="marca-corta" aria-hidden="true">DT</span>
+            </a>
+        </div>
+
+        <button type="button" class="sidebar-colapsar" id="sidebarCollapse"
+                aria-controls="appSidebar" aria-expanded="true"
+                aria-label="Contraer el menú lateral">
+            <i class="bi bi-chevron-left colapsar-izq" aria-hidden="true"></i>
+            <i class="bi bi-chevron-right colapsar-der" aria-hidden="true"></i>
+        </button>
 
         <nav class="sidebar-nav">
             <a href="${ctx}/panel" title="Inicio"
@@ -109,12 +119,12 @@
 
     <div class="app-cuerpo">
 
-        <!-- Barra superior: botón de menú + usuario -->
+        <!-- Barra superior: botón de menú (solo celular) + usuario -->
         <header class="app-topbar">
             <div class="d-flex align-items-center gap-2">
-                <button type="button" class="nav-menu-btn" id="sidebarToggle"
+                <button type="button" class="nav-menu-btn d-lg-none" id="sidebarToggle"
                         aria-controls="appSidebar" aria-expanded="false"
-                        aria-label="Mostrar u ocultar el menú lateral">
+                        aria-label="Abrir el menú de secciones">
                     <i class="bi bi-list" aria-hidden="true"></i>
                 </button>
                 <a class="marca marca-top" href="${ctx}/panel">
