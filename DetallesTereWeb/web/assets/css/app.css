@@ -98,11 +98,49 @@ select:focus-visible,
 .marca-lateral .marca-punto { color: var(--c-acento); }
 .marca-corta { display: none; font-size: 1.4rem; }
 
+/* Cabecera del menú: la marca sobre una línea divisoria */
+.sidebar-marca {
+  display: flex;
+  justify-content: center;
+  padding: .35rem 0 .85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .28);
+}
+
+/* Botón de contraer/expandir montado en el borde derecho del menú */
+.sidebar-colapsar {
+  position: absolute;
+  top: 16px;
+  right: -13px;
+  width: 27px;
+  height: 27px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--c-borde);
+  border-radius: 50%;
+  background: var(--c-surface);
+  color: var(--c-suave);
+  font-size: .8rem;
+  line-height: 1;
+  box-shadow: var(--sombra);
+  cursor: pointer;
+  z-index: 2;
+  transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+.sidebar-colapsar:hover {
+  background: var(--c-primario);
+  border-color: var(--c-primario);
+  color: #fff;
+}
+.colapsar-der { display: none; }
+body.menu-reducido .colapsar-izq { display: none; }
+body.menu-reducido .colapsar-der { display: inline; }
+
 .sidebar-nav {
   display: flex;
   flex-direction: column;
   gap: .2rem;
-  margin-top: 1.1rem;
+  margin-top: .9rem;
 }
 .sidebar-separador {
   height: 1px;
@@ -224,10 +262,12 @@ body.menu-abierto .app-overlay { opacity: 1; pointer-events: auto; }
   .app-sidebar { transform: none; }
   .app-overlay { display: none; }
   .marca-top { display: none; }
+  .sidebar-colapsar { display: flex; }
   .app-cuerpo { margin-left: 256px; }
 
   body.menu-reducido .app-cuerpo { margin-left: 84px; }
   body.menu-reducido .app-sidebar { width: 84px; padding-inline: .55rem; }
+  body.menu-reducido .sidebar-marca { padding-bottom: .6rem; }
   body.menu-reducido .marca-completa,
   body.menu-reducido .sidebar-texto { display: none; }
   body.menu-reducido .marca-corta { display: inline-flex; }
