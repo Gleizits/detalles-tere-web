@@ -21,9 +21,8 @@ import javax.servlet.http.HttpServletResponse;
  *    externos.
  *  - Permissions-Policy               → desactiva cámara, micrófono y
  *    geolocalización en este sitio.
- *  - Content-Security-Policy          → solo permite recursos propios; los
- *    estilos y scripts en línea de los JSP se autorizan explícitamente porque
- *    la interfaz los usa, pero queda bloqueado cualquier origen externo.
+ *  - Content-Security-Policy          → solo permite recursos propios
+ *    (script-src 'self': los scripts viven en assets/js, nunca en línea).
  *
  * Es el PRIMER filtro de la cadena (ver web.xml) para que las cabeceras
  * también queden en las respuestas de error y de redirección.
@@ -32,7 +31,7 @@ public class CabecerasSeguridadFilter implements Filter {
 
     private static final String CSP = String.join("; ",
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline'",
+            "script-src 'self'",
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data:",
             "font-src 'self' data:",
