@@ -21,6 +21,14 @@ public class UsuarioDAO {
             + "FROM dbo.USUARIO WHERE USERNAME = ? AND ESTADO = 1";
 
     /**
+     * Hash ficticio para igualar el tiempo de respuesta cuando el usuario
+     * no existe (evita descubrir usuarios válidos por el tiempo que tarda
+     * BCrypt). Se calcula una sola vez al cargar la clase.
+     */
+    private static final String HASH_DUMMY =
+            BCrypt.hashpw("tiempo-de-respuesta-dummy", BCrypt.gensalt(10));
+
+    /**
      * Valida credenciales. Devuelve el Usuario o null si no coinciden.
      */
     public Usuario login(String username, String password) {
@@ -42,6 +50,10 @@ public class UsuarioDAO {
                                 rs.getString("APELLIDO"),
                                 rs.getString("ROL"));
                     }
+                } else {
+                    // Usuario inexistente: se compara contra un hash válido
+                    // para que el tiempo de respuesta sea el mismo (H5).
+                    org.mindrot.jbcrypt.BCrypt.checkpw(password, HASH_DUMMY);
                 }
             }
         } catch (SQLException e) {

@@ -46,7 +46,7 @@
                 <form action="${ctx}/venta" method="get" class="mb-3" role="search">
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="search" class="form-control" name="q" value="${q}"
+                        <input type="search" class="form-control" name="q" value="<c:out value='${q}'/>"
                                placeholder="Buscar producto o término…" aria-label="Buscar productos">
                         <button class="btn btn-app btn-app-primary" type="submit">Buscar</button>
                     </div>
@@ -176,7 +176,8 @@
                     </div>
 
                     <!-- ====== PAGO ====== -->
-                    <form method="post" action="${ctx}/venta" class="pago-zona mt-3">
+                    <form method="post" action="${ctx}/venta" class="pago-zona mt-3"
+                          data-total="<fmt:formatNumber value='${totalCarrito}' minFractionDigits='2' groupingUsed='false'/>">
                         <input type="hidden" name="csrfToken" value="${csrfToken}">
                         <input type="hidden" name="accion" value="cobrar">
 
@@ -185,21 +186,21 @@
                             <div class="d-flex gap-4 mt-1">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipoPago"
-                                           id="pagoEfectivo" value="EFECTIVO" checked onchange="actualizarPago()">
+                                           id="pagoEfectivo" value="EFECTIVO" checked>
                                     <label class="form-check-label fs-5" for="pagoEfectivo">
                                         <i class="bi bi-cash me-1"></i>Efectivo
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipoPago"
-                                           id="pagoYape" value="YAPE" onchange="actualizarPago()">
+                                           id="pagoYape" value="YAPE">
                                     <label class="form-check-label fs-5" for="pagoYape">
                                         <i class="bi bi-phone me-1"></i>Yape
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="tipoPago"
-                                           id="pagoCredito" value="CREDITO" onchange="actualizarPago()">
+                                           id="pagoCredito" value="CREDITO">
                                     <label class="form-check-label fs-5" for="pagoCredito">
                                         <i class="bi bi-wallet2 me-1"></i>Saldo a favor
                                     </label>
@@ -223,7 +224,7 @@
                             <label class="form-label fw-bold" for="montoRecibido">Monto recibido (S/)</label>
                             <input type="number" step="0.01" min="0" inputmode="decimal"
                                    class="form-control" name="montoRecibido" id="montoRecibido"
-                                   placeholder="Ej: 50" oninput="calcularVuelto()">
+                                   placeholder="Ej: 50">
                             <div class="vuelto-linea mt-2">
                                 <span>Vuelto</span>
                                 <span id="vuelto">S/ 0.00</span>
@@ -310,37 +311,7 @@
         </c:choose>
     </div>
 
-<script>
-    var TOTAL = parseFloat('<fmt:formatNumber value="${totalCarrito}" minFractionDigits="2" groupingUsed="false"/>');
-
-    function actualizarPago() {
-        var yape = document.getElementById('pagoYape').checked;
-        var credito = document.getElementById('pagoCredito').checked;
-        var zona = document.getElementById('zonaEfectivo');
-        var zonaCredito = document.getElementById('zonaCredito');
-        var monto = document.getElementById('montoRecibido');
-        if (yape || credito) {
-            zona.style.display = 'none';
-            monto.value = '';
-        } else {
-            zona.style.display = '';
-        }
-        zonaCredito.style.display = credito ? '' : 'none';
-        calcularVuelto();
-    }
-
-    function calcularVuelto() {
-        var monto = parseFloat(document.getElementById('montoRecibido').value || '0');
-        if (isNaN(monto)) monto = 0;
-        var v = monto - TOTAL;
-        document.getElementById('vuelto').textContent = 'S/ ' + (v > 0 ? v.toFixed(2) : '0.00');
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        if (document.getElementById('montoRecibido')) {
-            actualizarPago();
-        }
-    });
-</script>
+<%-- JS en archivo externo: la CSP no permite scripts en línea --%>
+<script src="${ctx}/assets/js/venta.js"></script>
 
 <jsp:include page="/WEB-INF/vistas/comunes/pie.jsp"/>

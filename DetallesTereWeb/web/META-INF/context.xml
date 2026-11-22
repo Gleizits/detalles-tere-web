@@ -26,4 +26,8 @@
               validationQuery="SELECT 1"
               testOnBorrow="true"/>
 
+    <!-- Atributo SameSite=Lax para cookies de sesión (H3) -->
+    <CookieProcessor className="org.apache.tomcat.util.http.Rfc6265CookieProcessor"
+                     sameSiteCookies="lax" />
+
 </Context>

@@ -207,7 +207,7 @@
                         <input type="hidden" name="accion" value="hecho">
                         <input type="hidden" name="idPedido" value="${pedido.idPedido}">
                         <button type="submit" class="btn btn-app btn-app-primary w-100"
-                                onclick="return confirm('¿Marcar como HECHO? A partir de este punto no se puede cancelar: se cobrará el total.');">
+                                data-confirm="¿Marcar como HECHO? A partir de este punto no se puede cancelar: se cobrará el total.">
                             <i class="bi bi-check2-circle me-1"></i>Marcar HECHO
                         </button>
                     </form>
@@ -220,7 +220,7 @@
                         <input type="hidden" name="idPedido" value="${pedido.idPedido}">
                         <button type="submit" class="btn btn-app w-100"
                                 style="background:var(--c-exito);border-color:var(--c-exito);color:#fff"
-                                onclick="return confirm('¿Entregar el pedido al cliente?');">
+                                data-confirm="¿Entregar el pedido al cliente?">
                             <i class="bi bi-box-seam me-1"></i>Entregar (recogido)
                         </button>
                     </form>
@@ -232,7 +232,7 @@
                         <input type="hidden" name="accion" value="cancelar">
                         <input type="hidden" name="idPedido" value="${pedido.idPedido}">
                         <button type="submit" class="btn btn-outline-danger w-100"
-                                onclick="return confirm('¿Cancelar el pedido? El stock volverá al inventario y el adelanto quedará como saldo a favor, sin devolución en efectivo.');">
+                                data-confirm="¿Cancelar el pedido? El stock volverá al inventario y el adelanto quedará como saldo a favor, sin devolución en efectivo.">
                             <i class="bi bi-x-circle me-1"></i>Cancelar pedido
                         </button>
                     </form>
@@ -240,5 +240,8 @@
             </div>
         </div>
     </c:if>
+
+<%-- JS en archivo externo: la CSP no permite scripts en línea --%>
+<script src="${ctx}/assets/js/confirmaciones.js"></script>
 
 <jsp:include page="/WEB-INF/vistas/comunes/pie.jsp"/>

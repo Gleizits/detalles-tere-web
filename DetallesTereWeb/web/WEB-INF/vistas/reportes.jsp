@@ -126,15 +126,7 @@
     </div>
 </c:if>
 
-<script>
-    (function () {
-        var tipo = document.getElementById('tipo');
-        var periodo = document.getElementById('periodo');
-        tipo.addEventListener('change', function () {
-            periodo.type = tipo.value === 'mes' ? 'month' : 'date';
-            periodo.value = '';
-        });
-    })();
-</script>
+<%-- JS en archivo externo: la CSP no permite scripts en línea --%>
+<script src="${ctx}/assets/js/reportes.js"></script>
 
 <jsp:include page="/WEB-INF/vistas/comunes/pie.jsp"/>

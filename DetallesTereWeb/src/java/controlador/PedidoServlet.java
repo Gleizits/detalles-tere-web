@@ -74,7 +74,9 @@ public class PedidoServlet extends HttpServlet {
     private void mostrarLista(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         String q = req.getParameter("q");
-        List<Pedido> pedidos = pedidoDAO.listar(q);
+        Usuario u = (Usuario) req.getSession().getAttribute("usuario");
+        Integer idUsuario = (u != null && "admin".equalsIgnoreCase(u.getRol())) ? null : (u != null ? u.getId() : null);
+        List<Pedido> pedidos = pedidoDAO.listar(q, idUsuario);
         req.setAttribute("titulo", "Pedidos reservados");
         req.setAttribute("pedidos", pedidos);
         req.setAttribute("q", q == null ? "" : q);
@@ -161,12 +163,14 @@ public class PedidoServlet extends HttpServlet {
                     return;   // crear ya redirige
                 case "abono": {
                     int idAbono = entero(req, "idPedido", -1);
+                    validarPropiedadPedido(u, idAbono);
                     abono(sesion, u, req);
                     destino = req.getContextPath() + "/pedidos?id=" + idAbono;
                     break;
                 }
                 case "hecho": {
                     int idHecho = entero(req, "idPedido", -1);
+                    validarPropiedadPedido(u, idHecho);
                     pedidoDAO.marcarHecho(idHecho);
                     ok(sesion, "Pedido marcado como HECHO. Ya no se puede cancelar; se cobrará el total.", false);
                     destino = req.getContextPath() + "/pedidos?id=" + idHecho;
@@ -174,6 +178,7 @@ public class PedidoServlet extends HttpServlet {
                 }
                 case "cancelar": {
                     int idCancelar = entero(req, "idPedido", -1);
+                    validarPropiedadPedido(u, idCancelar);
                     pedidoDAO.cancelar(idCancelar, u.getId());
                     ok(sesion, "Pedido cancelado. El stock volvió al inventario y el adelanto "
                             + "quedó como saldo a favor; no se devuelve en efectivo.", false);
@@ -182,6 +187,7 @@ public class PedidoServlet extends HttpServlet {
                 }
                 case "recoger": {
                     int idRec = entero(req, "idPedido", -1);
+                    validarPropiedadPedido(u, idRec);
                     pedidoDAO.recoger(idRec);
                     ok(sesion, "Pedido entregado (RECOGIDO).", false);
                     destino = req.getContextPath() + "/pedidos?id=" + idRec;
@@ -367,8 +373,17 @@ public class PedidoServlet extends HttpServlet {
         try {
             pedidoDAO.abono(idPedido, monto, caja.getIdCaja(), metodo, u.getId());
             ok(sesion, "Abono de S/ " + monto.setScale(2) + " registrado para el pedido #" + idPedido + ".", false);
-        } catch (java.sql.SQLException e) {
+        } catch (IllegalStateException | java.sql.SQLException e) {
             ok(sesion, mensajeDe(e), true);
+        }
+    }
+
+    private void validarPropiedadPedido(Usuario u, int idPedido) {
+        if (u != null && !"admin".equalsIgnoreCase(u.getRol())) {
+            Pedido p = pedidoDAO.buscarPorId(idPedido);
+            if (p == null || p.getIdUsuario() != u.getId()) {
+                throw new IllegalStateException("No tienes permiso para modificar este pedido");
+            }
         }
     }
 

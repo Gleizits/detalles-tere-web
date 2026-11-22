@@ -99,7 +99,7 @@
                         </div>
                         <div class="col-12 col-md-5">
                             <button type="submit" class="btn btn-app btn-app-primary w-100"
-                                    onclick="return confirm('¿Cerrar la caja? Esta acción no se puede deshacer.');">
+                                    data-confirm="¿Cerrar la caja? Esta acción no se puede deshacer.">
                                 <i class="bi bi-lock me-1"></i> Cerrar caja
                             </button>
                         </div>
@@ -198,5 +198,8 @@
             </table>
         </div>
     </c:if>
+
+<%-- JS en archivo externo: la CSP no permite scripts en línea --%>
+<script src="${ctx}/assets/js/confirmaciones.js"></script>
 
 <jsp:include page="/WEB-INF/vistas/comunes/pie.jsp"/>

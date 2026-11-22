@@ -2,11 +2,18 @@
 DetallesTereWeb/build/
 DetallesTereWeb/dist/
 
-# Dependencias npm de pruebas (instaladas localmente en herramientas/)
+# Dependencias npm de pruebas (instaladas localmente)
+node_modules/
 herramientas/node_modules/
 
-# Artefactos de sesiones de navegador Playwright
+# Agentes y skills locales
+.agents/
+
+# Artefactos de sesiones de navegador Playwright y capturas temporales
 .playwright-cli/
+herramientas/herramientas/
+*.yml
+*.bkp
 
 # Sistema
 Thumbs.db

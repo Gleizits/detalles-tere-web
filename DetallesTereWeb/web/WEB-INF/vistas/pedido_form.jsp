@@ -38,7 +38,7 @@
                 <input type="hidden" name="nuevo" value="1">
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="search" class="form-control" name="q" value="${q}"
+                    <input type="search" class="form-control" name="q" value="<c:out value='${q}'/>"
                            placeholder="Buscar producto o término…" aria-label="Buscar productos">
                     <button class="btn btn-app btn-app-primary" type="submit">Buscar</button>
                 </div>
@@ -172,7 +172,8 @@
                 <i class="bi bi-person-vcard me-2"></i>Datos del cliente y pago
             </h2>
 
-            <form method="post" action="${ctx}/pedidos" autocomplete="off">
+            <form method="post" action="${ctx}/pedidos" autocomplete="off"
+                  data-total="<fmt:formatNumber value='${totalCarrito}' minFractionDigits='2' groupingUsed='false'/>">
                 <input type="hidden" name="csrfToken" value="${csrfToken}">
                 <input type="hidden" name="accion" value="crear">
 
@@ -211,14 +212,14 @@
                             <div class="d-flex flex-column gap-2 mt-1">
                                 <div class="form-check fs-5">
                                     <input class="form-check-input" type="radio" name="tipoReserva"
-                                           id="tipoAdelanto" value="adelanto" checked onchange="actualizarTipo()">
+                                           id="tipoAdelanto" value="adelanto" checked>
                                     <label class="form-check-label" for="tipoAdelanto">
                                         A cuenta / adelanto (mínimo 50%)
                                     </label>
                                 </div>
                                 <div class="form-check fs-5">
                                     <input class="form-check-input" type="radio" name="tipoReserva"
-                                           id="tipoCompleto" value="completo" onchange="actualizarTipo()">
+                                           id="tipoCompleto" value="completo">
                                     <label class="form-check-label" for="tipoCompleto">
                                         Pago completo
                                     </label>
@@ -271,32 +272,7 @@
         </div>
     </c:if>
 
-<script>
-    var TOTAL = parseFloat('<fmt:formatNumber value="${totalCarrito}" minFractionDigits="2" groupingUsed="false"/>');
-    if (isNaN(TOTAL)) TOTAL = 0;
-    var MINIMO = TOTAL * 0.5;
-
-    function actualizarTipo() {
-        var completo = document.getElementById('tipoCompleto').checked;
-        document.getElementById('zonaAdelanto').style.display = completo ? 'none' : '';
-        document.getElementById('zonaCompleto').style.display = completo ? '' : 'none';
-        if (completo) {
-            document.getElementById('monto').removeAttribute('required');
-        } else {
-            document.getElementById('monto').setAttribute('required', 'required');
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        var monto = document.getElementById('monto');
-        if (monto) {
-            monto.value = MINIMO.toFixed(2);
-            document.getElementById('minNota').textContent =
-                'Mínimo S/ ' + MINIMO.toFixed(2) + ' (50% del total).';
-            document.getElementById('totalCompleto').textContent = TOTAL.toFixed(2);
-            actualizarTipo();
-        }
-    });
-</script>
+<%-- JS en archivo externo: la CSP no permite scripts en línea --%>
+<script src="${ctx}/assets/js/pedido-form.js"></script>
 
 <jsp:include page="/WEB-INF/vistas/comunes/pie.jsp"/>

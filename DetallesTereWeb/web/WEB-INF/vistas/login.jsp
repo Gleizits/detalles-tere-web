@@ -6,16 +6,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Iniciar sesión · DetallesTere</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/logo.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=2026-11-17c">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=2026-11-22d">
 </head>
 <body>
     <div class="login-envoltorio">
         <div class="app-card login-tarjeta">
 
             <div class="text-center mb-4">
-                <span class="marca">Detalles<span class="marca-punto">Tere</span></span>
+                <img src="${pageContext.request.contextPath}/assets/img/logo.png" alt="Logo Detalles Tere" class="login-logo mb-3">
+                <div>
+                    <span class="marca">Detalles<span class="marca-punto">Tere</span></span>
+                </div>
                 <p class="text-muted mt-2 mb-0">Sistema de ventas e inventario</p>
             </div>
 

@@ -30,28 +30,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${titulo} · DetallesTere</title>
+    <link rel="icon" type="image/png" href="${ctx}/assets/img/logo.png">
     <link rel="stylesheet" href="${ctx}/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="${ctx}/assets/css/bootstrap-icons.min.css">
     <!-- ?v= fuerza al navegador a descargar el CSS tras cada cambio -->
-    <link rel="stylesheet" href="${ctx}/assets/css/app.css?v=2026-11-17c">
+    <link rel="stylesheet" href="${ctx}/assets/css/app.css?v=2026-11-22d">
 </head>
 <body>
 
-    <!-- Menú lateral con las secciones (en celular se abre como cajón) -->
+    <!-- Menú lateral: cajón superpuesto que se abre con la hamburguesa
+         (en celular Y en escritorio). Está cerrado por defecto. -->
     <aside class="app-sidebar" id="appSidebar" aria-label="Menú de secciones">
         <div class="sidebar-marca">
             <a class="marca marca-lateral" href="${ctx}/panel">
+                <img src="${ctx}/assets/img/logo.png" alt="Logo" class="marca-logo">
                 <span class="marca-completa">Detalles<span class="marca-punto">Tere</span></span>
-                <span class="marca-corta" aria-hidden="true">DT</span>
             </a>
+            <button type="button" class="sidebar-cerrar" id="sidebarClose"
+                    aria-label="Cerrar el menú de secciones">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
         </div>
-
-        <button type="button" class="sidebar-colapsar" id="sidebarCollapse"
-                aria-controls="appSidebar" aria-expanded="true"
-                aria-label="Contraer el menú lateral">
-            <i class="bi bi-chevron-left colapsar-izq" aria-hidden="true"></i>
-            <i class="bi bi-chevron-right colapsar-der" aria-hidden="true"></i>
-        </button>
 
         <nav class="sidebar-nav">
             <a href="${ctx}/panel" title="Inicio"
@@ -114,21 +113,22 @@
         </nav>
     </aside>
 
-    <!-- Fondo al abrir el menú en celular -->
+    <!-- Fondo al abrir el menú (celular y escritorio) -->
     <div class="app-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
     <div class="app-cuerpo">
 
-        <!-- Barra superior: botón de menú (solo celular) + usuario -->
+        <!-- Barra superior: botón de menú (abre el cajón) + usuario -->
         <header class="app-topbar">
             <div class="d-flex align-items-center gap-2">
-                <button type="button" class="nav-menu-btn d-lg-none" id="sidebarToggle"
+                <button type="button" class="nav-menu-btn" id="sidebarToggle"
                         aria-controls="appSidebar" aria-expanded="false"
                         aria-label="Abrir el menú de secciones">
                     <i class="bi bi-list" aria-hidden="true"></i>
                 </button>
                 <a class="marca marca-top" href="${ctx}/panel">
-                    Detalles<span class="marca-punto">Tere</span>
+                    <img src="${ctx}/assets/img/logo.png" alt="Logo" class="marca-logo">
+                    <span>Detalles<span class="marca-punto">Tere</span></span>
                 </a>
             </div>
 

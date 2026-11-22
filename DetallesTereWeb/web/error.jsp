@@ -6,8 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Error · DetallesTere</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/img/logo.png">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=2026-11-17c">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=2026-11-22d">
 </head>
 <body>
     <div class="login-envoltorio">
