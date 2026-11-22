@@ -32,7 +32,7 @@
         </div>
 
         <div class="col-12 col-md-6 col-xl-4">
-            <a class="app-card seccion-tarjeta" href="${ctx}/panel">
+            <a class="app-card seccion-tarjeta" href="${ctx}/pedidos">
                 <div class="ico"><i class="bi bi-calendar-check"></i></div>
                 <h3>Pedidos</h3>
                 <p>Gestionar pedidos reservados, adelantos y recogidas.</p>
