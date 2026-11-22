@@ -28,7 +28,7 @@
     <form action="${ctx}/inventario" method="get" class="mb-4" role="search">
         <div class="input-group">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="search" class="form-control" name="q" value="${q}"
+            <input type="search" class="form-control" name="q" value="<c:out value='${q}'/>"
                    placeholder="Buscar por nombre o término…" aria-label="Buscar en inventario"
                    autofocus>
             <button class="btn btn-app btn-app-primary" type="submit">Buscar</button>
@@ -206,29 +206,7 @@
         </div>
     </div>
 
-    <script>
-        (function () {
-            var modal = document.getElementById('modalAjuste');
-            if (!modal) return;
-
-            modal.addEventListener('show.bs.modal', function (ev) {
-                var btn = ev.relatedTarget;
-                if (!btn) return;
-                document.getElementById('ajusteId').value = btn.getAttribute('data-id') || '';
-                document.getElementById('ajusteNombre').textContent = btn.getAttribute('data-nombre') || '';
-                document.getElementById('ajusteCantidad').value = '1';
-                document.getElementById('ajusteMotivo').value = '';
-                document.getElementById('ajusteSumar').checked = true;
-                document.getElementById('ajusteDelta').value = '1';
-            });
-
-            document.getElementById('formAjuste').addEventListener('submit', function () {
-                var signo = document.querySelector('input[name="signo"]:checked');
-                var cant = parseInt(document.getElementById('ajusteCantidad').value, 10) || 0;
-                var s = signo ? parseInt(signo.value, 10) : 1;
-                document.getElementById('ajusteDelta').value = String(s * cant);
-            });
-        })();
-    </script>
+<%-- JS en archivo externo: la CSP no permite scripts en línea --%>
+<script src="${ctx}/assets/js/inventario.js"></script>
 
 <jsp:include page="/WEB-INF/vistas/comunes/pie.jsp"/>
