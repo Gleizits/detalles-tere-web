@@ -24,7 +24,7 @@
     <form action="${ctx}/pedidos" method="get" class="mb-4" role="search">
         <div class="input-group">
             <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="search" class="form-control" name="q" value="${q}"
+            <input type="search" class="form-control" name="q" value="<c:out value='${q}'/>"
                    placeholder="Buscar por nombre, celular o quién recoge…" aria-label="Buscar pedidos">
             <button class="btn btn-app btn-app-primary" type="submit">Buscar</button>
         </div>
