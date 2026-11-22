@@ -36,6 +36,7 @@ public class PedidoDAO {
           + "FROM dbo.PEDIDOS pd LEFT JOIN dbo.CLIENTE cl ON pd.ID_CLIENTE = cl.ID_CLIENTE "
           + "WHERE (? IS NULL OR pd.NOMBRE_PAGA LIKE ? OR pd.CELULAR LIKE ? "
           + "       OR ISNULL(pd.NOMBRE_RECOGE, '') LIKE ?) "
+          + "AND (? IS NULL OR pd.ID_USUARIO = ?) "
           + "ORDER BY pd.FECHA_CREACION DESC";
 
     private static final String SQL_BUSCAR =
@@ -201,17 +202,27 @@ public class PedidoDAO {
             cn = ConexionDB.obtener();
             cn.setAutoCommit(false);
 
-            // Leer total actual
+            // Leer total y adelanto actual (para validar el tope del abono)
             BigDecimal total = null;
+            BigDecimal adelanto = null;
             try (PreparedStatement ps = cn.prepareStatement(
-                    "SELECT TOTAL FROM dbo.PEDIDOS WHERE ID_PEDIDO = ?")) {
+                    "SELECT TOTAL, ADELANTO FROM dbo.PEDIDOS WHERE ID_PEDIDO = ?")) {
                 ps.setInt(1, idPedido);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) total = rs.getBigDecimal(1);
+                    if (rs.next()) {
+                        total = rs.getBigDecimal(1);
+                        adelanto = rs.getBigDecimal(2);
+                    }
                 }
             }
             if (total == null) {
                 throw new SQLException("El pedido no existe");
+            }
+            // Tope: el abono nunca puede superar lo que falta por pagar (H4)
+            BigDecimal saldo = total.subtract(adelanto == null ? BigDecimal.ZERO : adelanto);
+            if (monto.compareTo(saldo) > 0) {
+                throw new IllegalStateException(
+                        "El abono supera el saldo pendiente del pedido");
             }
 
             // Sumar abono y, si llega al total, marcar COMPLETO
@@ -225,7 +236,12 @@ public class PedidoDAO {
                 ps.setBigDecimal(2, monto);
                 ps.setBigDecimal(3, monto);
                 ps.setInt(4, idPedido);
-                ps.executeUpdate();
+                if (ps.executeUpdate() == 0) {
+                    // Estado que no admite pagos (cancelado/recogido): no se
+                    // registra el pago en VENTA.
+                    throw new IllegalStateException(
+                            "El pedido ya no admite abonos (cancelado o entregado)");
+                }
             }
 
             insertarPago(cn, idCaja, idPedido, monto, metodo);
@@ -362,16 +378,38 @@ public class PedidoDAO {
     // Lecturas
     // ------------------------------------------------------------------
 
-    /** Lista pedidos; q filtra por nombre, celular o quién recoge. */
+    /** Lista pedidos; q filtra por nombre, celular o quién recoge (todos). */
     public List<Pedido> listar(String q) {
+        return listar(q, null);
+    }
+
+    /**
+     * Lista pedidos; q filtra por nombre, celular o quién recoge.
+     * idUsuario = null (admin) lista todos; un empleado solo ve los suyos (H4).
+     */
+    public List<Pedido> listar(String q, Integer idUsuario) {
         List<Pedido> lista = new ArrayList<>();
         String filtro = (q == null || q.trim().isEmpty()) ? null : "%" + q.trim() + "%";
         try (Connection cn = ConexionDB.obtener();
              PreparedStatement ps = cn.prepareStatement(SQL_LISTAR)) {
-            ps.setString(1, filtro);
-            ps.setString(2, filtro);
-            ps.setString(3, filtro);
-            ps.setString(4, filtro);
+            if (filtro == null) {
+                ps.setNull(1, java.sql.Types.VARCHAR);
+                ps.setNull(2, java.sql.Types.VARCHAR);
+                ps.setNull(3, java.sql.Types.VARCHAR);
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(1, filtro);
+                ps.setString(2, filtro);
+                ps.setString(3, filtro);
+                ps.setString(4, filtro);
+            }
+            if (idUsuario == null) {
+                ps.setNull(5, java.sql.Types.INTEGER);
+                ps.setNull(6, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(5, idUsuario);
+                ps.setInt(6, idUsuario);
+            }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     lista.add(mapear(rs));
