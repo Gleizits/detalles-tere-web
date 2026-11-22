@@ -50,22 +50,19 @@
                             <div class="form-check fs-5">
                                 <input class="form-check-input" type="radio" name="clase"
                                        id="claseProducto" value="PRODUCTO"
-                                       <c:if test="${empty claseActual || claseActual == 'PRODUCTO'}">checked</c:if>
-                                       onchange="alternarClase()">
+                                       <c:if test="${empty claseActual || claseActual == 'PRODUCTO'}">checked</c:if>>
                                 <label class="form-check-label" for="claseProducto">Producto</label>
                             </div>
                             <div class="form-check fs-5">
                                 <input class="form-check-input" type="radio" name="clase"
                                        id="claseMaterial" value="MATERIAL"
-                                       <c:if test="${claseActual == 'MATERIAL'}">checked</c:if>
-                                       onchange="alternarClase()">
+                                       <c:if test="${claseActual == 'MATERIAL'}">checked</c:if>>
                                 <label class="form-check-label" for="claseMaterial">Material</label>
                             </div>
                             <div class="form-check fs-5">
                                 <input class="form-check-input" type="radio" name="clase"
                                        id="claseArreglo" value="ARREGLO"
-                                       <c:if test="${claseActual == 'ARREGLO'}">checked</c:if>
-                                       onchange="alternarClase()">
+                                       <c:if test="${claseActual == 'ARREGLO'}">checked</c:if>>
                                 <label class="form-check-label" for="claseArreglo">Arreglo</label>
                             </div>
                         </div>
@@ -235,57 +232,7 @@
         </form>
     </div>
 
-<script>
-    function alternarClase() {
-        var sel = document.querySelector('input[name="clase"]:checked');
-        if (!sel) return;
-        var clase = sel.value;
-        document.getElementById('zonaTipo').style.display =
-            (clase === 'ARREGLO') ? 'none' : '';
-        document.getElementById('zonaMaterial').style.display =
-            (clase === 'PRODUCTO') ? '' : 'none';
-        var nombre = document.getElementById('nombre');
-        if (nombre) nombre.maxLength = (clase === 'ARREGLO') ? 100 : 50;
-    }
-
-    // Precio sugerido: costo × 1.50 (solo si el precio de venta está vacío
-    // o fue puesto por la sugerencia, para no pisar lo que escribió la usuaria).
-    function calcularSugerencia() {
-        var pc = document.getElementById('precioCompra');
-        var pv = document.getElementById('precioVenta');
-        var nota = document.getElementById('sugerencia');
-        if (!pc || !pv || !nota) return;
-        var costo = parseFloat(pc.value.replace(',', '.'));
-        if (isNaN(costo) || costo <= 0) {
-            nota.textContent = 'Escribe el precio de compra y te calculo el precio de venta (costo × 1.50).';
-            return;
-        }
-        var sug = (costo * 1.5).toFixed(2);
-        nota.innerHTML = 'Precio sugerido: <strong>S/ ' + sug + '</strong> — ' +
-            '<a href="#" id="usarSugerido">usar este precio</a>';
-        document.getElementById('usarSugerido').addEventListener('click', function (e) {
-            e.preventDefault();
-            pv.value = sug;
-            pv.dataset.sugerido = '1';
-        });
-        if (pv.value.trim() === '' || pv.dataset.sugerido === '1') {
-            pv.value = sug;
-            pv.dataset.sugerido = '1';
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        alternarClase();
-        var pc = document.getElementById('precioCompra');
-        if (pc) {
-            pc.addEventListener('input', calcularSugerencia);
-            calcularSugerencia();
-        }
-        var pv = document.getElementById('precioVenta');
-        if (pv) {
-            pv.addEventListener('input', function () { pv.dataset.sugerido = '0'; });
-        }
-    });
-</script>
+<%-- JS en archivo externo: la CSP no permite scripts en línea --%>
+<script src="${ctx}/assets/js/inventario-form.js"></script>
 
 <jsp:include page="/WEB-INF/vistas/comunes/pie.jsp"/>
