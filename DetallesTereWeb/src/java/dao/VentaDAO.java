@@ -168,7 +168,8 @@ public class VentaDAO {
         return lista;
     }
 
-    /** Líneas de una venta o cotización (con nombre e inventario actual). */
+    /** Líneas de una venta o cotización (con nombre e inventario actual).
+     *  Solo acepta cotizaciones: cualquier otra venta queda fuera (H8). */
     public List<DetalleVenta> obtenerLineas(int idVenta) {
         String sql =
             "SELECT d.ID_DETALLE_VENTA, d.ID_INVENTARIO, d.CANTIDAD, d.COSTO_UNITARIO, "
@@ -176,6 +177,7 @@ public class VentaDAO {
           + "COALESCE(p.NOMBRE, m.NOMBRE, a.NOMBRE) AS NOMBRE "
           + "FROM dbo.DETALLE_VENTA d "
           + "JOIN dbo.INVENTARIO i ON d.ID_INVENTARIO = i.ID_INVENTARIO "
+          + "JOIN dbo.VENTA v ON v.ID_VENTA = d.ID_VENTA AND v.ESTADO = 'COTIZACION' "
           + "LEFT JOIN dbo.PRODUCTO p ON i.ID_PRODUCTO = p.ID_PRODUCTO "
           + "LEFT JOIN dbo.MATERIAL m ON i.ID_MATERIAL = m.ID_MATERIAL "
           + "LEFT JOIN dbo.ARREGLO a ON i.ID_DETALLE = a.ID_DETALLE "
