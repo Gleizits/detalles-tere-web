@@ -16,7 +16,7 @@ BEGIN
         'Admin',
         'DetallesTere',
         'admin@detallestere.local',
-        '$2a$10$200gHywb.q0u0E3eaTtYYOIVjgY7eknRhhRod.NnVgnu9YtgFVAmy',
+        '$2b$10$oKYeKvECiPs0qWM1Ap1A9eboNLPeDxlFQcvxRE.J.VJp/J/vUAdy2',
         'admin',
         1
     );

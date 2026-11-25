@@ -25,7 +25,7 @@ FROM sys.all_objects a CROSS JOIN sys.all_objects b;
 
 DECLARE @faltan INT;
 DECLARE @base DATETIME2 = '2026-11-25T09:00:00';
-DECLARE @hash VARCHAR(255) = '$2a$10$200gHywb.q0u0E3eaTtYYOIVjgY7eknRhhRod.NnVgnu9YtgFVAmy';
+DECLARE @hash VARCHAR(255) = '$2b$10$oKYeKvECiPs0qWM1Ap1A9eboNLPeDxlFQcvxRE.J.VJp/J/vUAdy2';
 DECLARE @nU INT, @nCat INT, @nP INT, @nM INT, @nA INT, @nInv INT;
 DECLARE @nTerm INT, @nProv INT, @nCli INT, @nCaja INT, @nPed INT;
 DECLARE @nIng INT, @nAju INT, @nVen INT;
