@@ -58,6 +58,21 @@ export const config = {
     minutes: int('SESSION_MINUTES', 30),
     cookieSecure: bool('COOKIE_SECURE'),
   },
+  contacto: {
+    destino: text('CONTACT_EMAIL', 'contacto@detallestere.local'),
+    remitente: text('CONTACT_EMAIL_FROM', 'DetallesTereTS <onboarding@resend.dev>'),
+    resendKey: text('RESEND_API_KEY'),
+    whatsapp: text('WHATSAPP_NUMBER'),
+    mapa: text(
+      'MAPS_EMBED_SRC',
+      'https://www.google.com/maps?q=Ica%2C%20Peru&output=embed',
+    ),
+    redes: {
+      facebook: text('FACEBOOK_URL'),
+      instagram: text('INSTAGRAM_URL'),
+      tiktok: text('TIKTOK_URL'),
+    },
+  },
   baseUrl,
   timezone: text('APP_TIMEZONE', 'America/Lima'),
   production: bool('APP_PRODUCTION'),

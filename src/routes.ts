@@ -1,6 +1,8 @@
 import type { Express } from 'express';
 import { asyncRoute } from './http';
 import { requireAdmin, requireAuth } from './middleware';
+import * as landing from './controllers/landingController';
+import * as manual from './controllers/manualController';
 import { mostrarLogin, procesarLogin, procesarLogout } from './controllers/authController';
 import * as caja from './controllers/cajaController';
 import * as ingreso from './controllers/ingresoController';
@@ -13,6 +15,12 @@ import * as usuario from './controllers/usuarioController';
 import * as venta from './controllers/ventaController';
 
 export function registerRoutes(app: Express): void {
+  app.get('/', asyncRoute(landing.index));
+  app.post('/contacto', asyncRoute(landing.contacto));
+
+  app.get('/manual-usuario', requireAuth, asyncRoute(manual.usuario));
+  app.get('/manual-programador', requireAuth, requireAdmin, asyncRoute(manual.programador));
+
   app.get('/login', asyncRoute(mostrarLogin));
   app.post('/login', asyncRoute(procesarLogin));
   app.get('/logout', asyncRoute(procesarLogout));

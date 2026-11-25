@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= e(titulo) %> · DetallesTereTS</title>
+    <link rel="icon" type="image/png" href="<%= url('/assets/img/logo.png') %>">
+    <link rel="stylesheet" href="<%= url('/assets/css/bootstrap.min.css') %>">
+    <link rel="stylesheet" href="<%= url('/assets/css/bootstrap-icons.min.css') %>">
+    <link rel="stylesheet" href="<%= url('/assets/css/landing.css') %>">
+</head>
+<body>
+<header class="lp-topbar">
+    <div class="lp-contenedor lp-topbar-inner">
+        <a class="lp-marca" href="<%= url('/') %>">
+            <img src="<%= url('/assets/img/logo.png') %>" alt="DetallesTere" class="lp-marca-logo">
+            <span>Detalles<span>Tere</span><small>TS</small></span>
+        </a>
+        <a class="lp-ingresar" href="<%= url('/login') %>">
+            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Ingresar
+        </a>
+    </div>
+</header>
+
+<main class="lp-contenedor lp-resultado">
+    <span class="lp-resultado-icono" aria-hidden="true">
+        <i class="bi <%= enviado ? 'bi-check2-circle' : 'bi-envelope-arrow-up' %>"></i>
+    </span>
+    <h1><%= enviado ? 'Mensaje recibido' : 'Listo para enviar' %></h1>
+    <p><%= e(nota) %></p>
+    <% if (!enviado) { %>
+        <a class="lp-boton lp-boton-principal" href="<%= e(mailto) %>">
+            Abrir mi correo <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+        </a>
+    <% } %>
+    <p class="lp-resultado-detalle">Gracias, <%= e(nombre) %>. Te responderemos a <%= e(correo) %>.</p>
+    <a class="lp-volver" href="<%= url('/') %>">Volver al inicio</a>
+</main>
+</body>
+</html>

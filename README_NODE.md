@@ -1,4 +1,4 @@
-# DetallesTereTS — versión Node.js / TypeScript (rama `DetallesTereTS`)
+# DetallesTereTS — versión Node.js / TypeScript (rama `DB`)
 
 Migración de la versión PHP a **TypeScript + Express**, pensada para desplegarse en **Vercel** sin cambiar la base de datos ni la interfaz:
 
@@ -7,6 +7,7 @@ Migración de la versión PHP a **TypeScript + Express**, pensada para desplegar
 - Misma autenticación BCrypt (compatible con los hashes `$2a$` del seed).
 - Sesión firmada en cookie (sin archivos ni estado en disco, apta para serverless).
 - CSRF, cabeceras de seguridad y permisos de administrador conservados.
+- Portada pública responsive, manuales dentro del sistema y maqueta HTML/CSS.
 
 ## Estructura
 
@@ -22,7 +23,11 @@ src/session.ts        Sesión firmada, CSRF y mensajes flash
 src/view.ts           Renderizado con plantilla común
 public/assets/        CSS, JS, fuentes e imágenes (Vercel los sirve por CDN)
 DetallesTerePHP/      Versión PHP original, conservada como referencia
-db/ (en DetallesTerePHP/db/) Esquema y seed originales
+DetallesTerePHP/db/   Esquema, seed, 500 registros y 6 vistas para Power BI
+maqueta/              Maqueta estática HTML + CSS de las pantallas principales
+tests/smoke.spec.ts   Pruebas de humo automáticas (sin BD)
+Requerimientos/       LRPD, SMOKING y guía de Power BI
+HOSTING.md            Restauración del .bak y publicación en Vercel/Azure SQL
 ```
 
 ## Desarrollo local
@@ -41,37 +46,40 @@ db/ (en DetallesTerePHP/db/) Esquema y seed originales
    npm run dev
    ```
 
-4. Abre `http://localhost:3000/login`. Usuario del seed: `admin` / `Admin123!`.
+4. Abre `http://localhost:3000/`. Usuario del seed: `admin` / `Admin123!`.
 
-Verificación de tipos:
+Verificación:
 
 ```powershell
-npm run typecheck
+npm run typecheck   # o npm run build
+npx playwright install chromium   # solo la primera vez
+npm run smoke       # portada, CSRF, login, assets y responsive sin BD
 ```
 
 ## Despliegue en Vercel
 
-1. Crea el proyecto apuntando a este repositorio y selecciona la rama `DetallesTereTS`.
+1. Crea el proyecto apuntando a este repositorio y selecciona la rama `DB`.
 2. Vercel detecta el framework **Express** y usa `api/index.ts` como función.
-3. Configura estas variables de entorno en el panel de Vercel:
+3. Configura las variables de entorno del panel de Vercel. Las mínimas son:
 
    | Variable | Valor recomendado |
    |---|---|
-   | `DB_SERVER` | Host público de tu SQL Server |
+   | `DB_SERVER` | Host público de SQL Server / Azure SQL |
    | `DB_PORT` | `1433` |
    | `DB_NAME` | `DetallesTereDB` |
    | `DB_USER` | Usuario SQL con permisos de lectura/escritura |
    | `DB_PASSWORD` | Contraseña segura (no versionar) |
-   | `DB_TRUST_CERT` | `true` si el certificado es autofirmado |
-   | `DB_ENCRYPT` | `true` si tu servidor exige cifrado |
+   | `DB_TRUST_CERT` | `false` en Azure SQL; `true` si certificado autofirmado |
+   | `DB_ENCRYPT` | `true` en Azure SQL |
    | `SESSION_SECRET` | Cadena larga y aleatoria (obligatoria) |
    | `APP_PRODUCTION` | `true` |
    | `COOKIE_SECURE` | `true` |
    | `SESSION_MINUTES` | `30` |
    | `APP_TIMEZONE` | `America/Lima` |
 
-4. La base de datos **no** se crea en Vercel: debe estar accesible desde Internet con el firewall abierto a las IPs de salida de Vercel (o usar una IP estática / túnel / proxy).
-5. Si la base es nueva, ejecuta primero los scripts `DetallesTerePHP/db/01_schema_DetallesTereDB.sql` y `02_seed_DetallesTereDB.sql`.
+4. Para correo, WhatsApp, mapa y redes, completa **solo datos reales** según `.env.example`. Las variables vacías no muestran enlaces inventados.
+5. La base de datos **no** se crea en Vercel. La guía completa `.bak → .bacpac → Azure SQL` está en [`HOSTING.md`](HOSTING.md).
+6. Si la base es nueva, ejecuta `01_schema_DetallesTereDB.sql` y `02_seed_DetallesTereDB.sql`; después `03_seed_500_registros.sql` y `04_consultas_powerbi.sql`.
 
 ### Notas serverless
 
@@ -80,6 +88,18 @@ npm run typecheck
 - El límite de intentos de login es por instancia de función, igual que era por proceso en PHP.
 - `mssql` mantiene un pool por instancia; en planes con escalado automático cada instancia tiene el suyo.
 
-## Base de datos
+## PC4 — dónde está cada entrega
 
-Los scripts originales siguen en `DetallesTerePHP/db/`. No se han modificado: la migración es de aplicación, no de esquema.
+| Requisito | Ubicación |
+|---|---|
+| Portada “carita facherita” responsive, WhatsApp, ingredientes, logo, docente/curso/ciclo, carrusel, cards 3x2, visitas, mapas, correo y redes | `src/views/landing.ejs`, `public/assets/css/landing.css`, `public/assets/js/landing.js`, `src/controllers/landingController.ts` |
+| LRPD en carpeta | `Requerimientos/LRPD/` |
+| 500 registros por tabla de proceso | `DetallesTerePHP/db/03_seed_500_registros.sql` |
+| SMOKING | `tests/smoke.spec.ts`, `Requerimientos/SMOKING.md`, `npm run smoke` |
+| PPT concisa | `Presentacion_DetallesTere.pptx` |
+| 6 consultas con ≥ 5 tablas para Power BI | `DetallesTerePHP/db/04_consultas_powerbi.sql`, `Requerimientos/powerbi/README.md` |
+| Maqueta HTML/CSS acorde a la BD | `maqueta/` |
+| Manuales dentro del sistema | `/manual-usuario` y `/manual-programador` |
+| Hosting | Vercel + Azure SQL; procedimiento y evidencia pendiente en `HOSTING.md` |
+
+**Power BI no se inicia en esta entrega.** Solo quedan preparadas las seis vistas SQL y su mapa a visuales.

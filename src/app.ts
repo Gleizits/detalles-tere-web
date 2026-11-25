@@ -1,11 +1,11 @@
 import path from 'node:path';
 import cookieParser from 'cookie-parser';
-import express, { type ErrorRequestHandler, type Request, type Response } from 'express';
+import express, { type ErrorRequestHandler } from 'express';
 import { PROJECT_ROOT } from './config';
 import { BusinessError, HttpError } from './http';
 import { sessionMiddleware, verifyCsrf } from './session';
 import { registerRoutes } from './routes';
-import { redirect, renderStandalone } from './view';
+import { renderStandalone } from './view';
 
 const app = express();
 
@@ -17,9 +17,10 @@ app.use((req, res, next) => {
     "default-src 'self'",
     "script-src 'self'",
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
+    "img-src 'self' data: https:",
     "font-src 'self' data:",
     "connect-src 'self'",
+    "frame-src https://www.google.com https://www.google.com.pe https://www.openstreetmap.org",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -64,13 +65,12 @@ app.use(
   }),
 );
 
-app.get('/', (req: Request, res: Response) => {
-  redirect(req, res, req.sessionState.user ? '/panel' : '/login');
-});
-
 registerRoutes(app);
 
 const RUTAS_CONOCIDAS = [
+  '/contacto',
+  '/manual-usuario',
+  '/manual-programador',
   '/login',
   '/logout',
   '/panel',

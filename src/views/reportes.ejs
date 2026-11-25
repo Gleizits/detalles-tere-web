@@ -110,7 +110,7 @@
                                     <td class="nombre-item"><%= e(linea.articulo ?? '') %></td>
                                     <td class="num"><%= Number(linea.cantidad ?? 0) %></td>
                                     <td class="num">S/ <%= e(num(linea.subtotal ?? 0)) %></td>
-                                    <td class="num">S/ <%= e(num(linea.costeVigente ?? 0)) %></td>
+                                    <td class="num">S/ <%= e(num(linea.costoVigente ?? 0)) %></td>
                                     <td class="num">S/ <%= e(num(linea.margen ?? 0)) %></td>
                                 </tr>
                             <% } %>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= e(titulo) %> · DetallesTere</title>
+    <title><%= e(titulo) %> · DetallesTereTS</title>
     <link rel="icon" type="image/png" href="<%= url('/assets/img/logo.png') %>">
     <link rel="stylesheet" href="<%= url('/assets/css/bootstrap.min.css') %>">
     <link rel="stylesheet" href="<%= url('/assets/css/bootstrap-icons.min.css') %>">
@@ -30,10 +30,12 @@
             ['/venta', 'Venta', 'bi-cart-check', false],
             ['/pedidos', 'Pedidos', 'bi-calendar2-check', false],
             ['/inventario', 'Inventario', 'bi-box-seam', false],
+            ['/manual-usuario', 'Manual usuario', 'bi-book', false],
             ['/ingresos', 'Ingresos', 'bi-truck', true],
             ['/terminos', 'Términos', 'bi-tags', true],
             ['/reportes', 'Reportes', 'bi-graph-up-arrow', true],
             ['/usuarios', 'Usuarios', 'bi-people', true],
+            ['/manual-programador', 'Manual programador', 'bi-code-slash', true],
         ]; %>
         <% let seccionAnterior = null; %>
         <% for (const [ruta, texto, icono, esAdmin] of enlaces) { %>

@@ -16,6 +16,10 @@ herramientas/node_modules/
 
 # Artefactos de sesiones de navegador Playwright y capturas temporales
 .playwright-cli/
+test-results/
+playwright-report/
+blob-report/
+Requerimientos/playwright-browsers/
 herramientas/herramientas/
 *.yml
 *.bkp

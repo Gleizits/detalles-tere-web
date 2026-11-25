@@ -1,22 +1,23 @@
 # ------------------------------------------------------------
-# Render Blueprint — DetallesTere (rama tpw)
+# Render Blueprint — DetallesTereTS (rama DB)
 #
-# Render no ofrece runtime PHP: el servicio se construye con el
-# Dockerfile de DetallesTerePHP/. La base de datos NO se crea aquí:
-# es el mismo SQL Server 2019 Developer con DetallesTereDB.
+# Vercel es el destino principal. Este blueprint es una alternativa
+# para desplegar la misma app Node/TypeScript en Render.
+# La base de datos NO se crea aquí: es SQL Server DetallesTereDB
+# (por ejemplo, Azure SQL Database; ver HOSTING.md).
 #
-# Crea el servicio desde este archivo y rellena DB_PASSWORD en el
-# panel de Render (sync: false = nunca se versiona).
+# Los valores con sync: false se rellenan en el panel de Render y
+# nunca se versionan.
 # ------------------------------------------------------------
 services:
   - type: web
     name: detailstere-web
-    runtime: docker
-    branch: tpw
+    runtime: node
+    branch: DB
     plan: free
-    dockerfilePath: ./DetallesTerePHP/Dockerfile
-    dockerContext: ./DetallesTerePHP
-    healthCheckPath: /login
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
     envVars:
       - key: DB_SERVER
         sync: false
@@ -25,18 +26,38 @@ services:
       - key: DB_NAME
         value: DetallesTereDB
       - key: DB_USER
-        value: sa
+        sync: false
       - key: DB_PASSWORD
         sync: false
       - key: DB_TRUST_CERT
+        value: "false"
+      - key: DB_ENCRYPT
         value: "true"
       - key: DB_TIMEOUT
         value: "10"
+      - key: SESSION_SECRET
+        sync: false
+      - key: SESSION_MINUTES
+        value: "30"
       - key: APP_TIMEZONE
         value: America/Lima
       - key: APP_PRODUCTION
         value: "true"
       - key: COOKIE_SECURE
         value: "true"
-      - key: SESSION_MINUTES
-        value: "30"
+      - key: CONTACT_EMAIL
+        sync: false
+      - key: CONTACT_EMAIL_FROM
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: WHATSAPP_NUMBER
+        sync: false
+      - key: MAPS_EMBED_SRC
+        sync: false
+      - key: FACEBOOK_URL
+        sync: false
+      - key: INSTAGRAM_URL
+        sync: false
+      - key: TIKTOK_URL
+        sync: false

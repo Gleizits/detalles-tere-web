@@ -7,7 +7,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "start": "tsx src/server.ts"
+    "start": "tsx src/server.ts",
+    "smoke": "playwright test tests/smoke.spec.ts"
   },
   "dependencies": {
     "@playwright/test": "^1.65.1",

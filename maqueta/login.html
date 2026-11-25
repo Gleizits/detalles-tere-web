@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingreso · DetallesTereTS (maqueta)</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <main class="mq-login">
+    <h1>DetallesTereTS</h1>
+    <p>Sistema de ventas e inventario</p>
+    <form class="mq-form" action="#" method="post">
+      <input type="hidden" name="csrfToken" value="token-de-ejemplo">
+      <div class="mq-campo">
+        <label for="USERNAME">Usuario</label>
+        <input id="USERNAME" name="USERNAME" type="text" autocomplete="username" value="admin" required>
+        <small>Columna: USUARIO.USERNAME</small>
+      </div>
+      <div class="mq-campo">
+        <label for="CONTRASENA">Contraseña</label>
+        <input id="CONTRASENA" name="CONTRASENA" type="password" autocomplete="current-password" required>
+        <small>Columna: USUARIO.CONTRASENA (hash BCrypt)</small>
+      </div>
+      <div class="mq-acciones">
+        <button class="mq-boton" type="submit">Ingresar</button>
+        <a class="mq-boton secundario" href="index.html">Volver</a>
+      </div>
+    </form>
+    <p class="mq-nota" style="margin-top:1.5rem">Roles: <code>admin</code> ve ingresos, términos, reportes y usuarios; <code>empleado</code> no.</p>
+  </main>
+</body>
+</html>
