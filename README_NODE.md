@@ -1,4 +1,4 @@
-# DetallesTere — versión Node.js / TypeScript (rama `DB`)
+# DetallesTereTS — versión Node.js / TypeScript (rama `DetallesTereTS`)
 
 Migración de la versión PHP a **TypeScript + Express**, pensada para desplegarse en **Vercel** sin cambiar la base de datos ni la interfaz:
 
@@ -51,7 +51,7 @@ npm run typecheck
 
 ## Despliegue en Vercel
 
-1. Crea el proyecto apuntando a este repositorio y selecciona la rama `DB`.
+1. Crea el proyecto apuntando a este repositorio y selecciona la rama `DetallesTereTS`.
 2. Vercel detecta el framework **Express** y usa `api/index.ts` como función.
 3. Configura estas variables de entorno en el panel de Vercel:
 
