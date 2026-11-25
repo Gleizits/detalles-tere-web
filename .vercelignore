@@ -1,0 +1,12 @@
+DetallesTerePHP
+Diagramas DB
+Diagramas UML
+Requerimientos
+herramientas
+.playwright-cli
+node_modules
+*.pptx
+*.pdf
+*.zip
+*.docx
+*.tex

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= e(titulo) %> · DetallesTere</title>
+    <link rel="icon" type="image/png" href="<%= url('/assets/img/logo.png') %>">
+    <link rel="stylesheet" href="<%= url('/assets/css/bootstrap.min.css') %>">
+    <link rel="stylesheet" href="<%= url('/assets/css/app.css?v=2026-11-24a') %>">
+</head>
+<body>
+    <div class="login-envoltorio">
+        <div class="app-card login-tarjeta text-center">
+            <img src="<%= url('/assets/img/logo.png') %>" alt="Logo Detalles Tere" class="login-logo mb-3">
+            <h1 class="h3"><%= e(status) %></h1>
+            <p class="text-muted"><%= e(mensaje) %></p>
+            <a class="btn btn-app btn-app-primary" href="<%= url('/panel') %>">Volver al inicio</a>
+        </div>
+    </div>
+</body>
+</html>

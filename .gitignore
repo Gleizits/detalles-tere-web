@@ -2,9 +2,14 @@
 DetallesTereWeb/build/
 DetallesTereWeb/dist/
 
-# Dependencias npm de pruebas (instaladas localmente)
+# Dependencias npm
 node_modules/
 herramientas/node_modules/
+
+# Credenciales locales (nunca versionar)
+.env
+.env.local
+.env.*.local
 
 # Agentes y skills locales
 .agents/
