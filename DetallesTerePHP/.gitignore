@@ -1,0 +1,20 @@
+# ------------------------------------------------------------
+# DetallesTerePHP — ignorados por git
+# ------------------------------------------------------------
+
+# Credenciales: nunca se versionan (copia .env.example a .env)
+.env
+
+# Logs de la aplicación
+var/log/*.log
+
+# Sistema
+Thumbs.db
+.DS_Store
+
+# Dependencias (si se usan alguna vez, quedan dentro de ESTE proyecto)
+vendor/
+node_modules/
+
+# DLLs locales de prueba (no commitear)
+bin/

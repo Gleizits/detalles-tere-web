@@ -1,0 +1,178 @@
+<?php /** Lista de inventario: búsqueda, alta, edición y ajuste de stock. */
+$estados = $estados ?? [];
+?>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <h1 class="titulo-seccion mb-0">
+        <i class="bi bi-box-seam me-2" aria-hidden="true"></i>Inventario
+    </h1>
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+        <span class="text-muted"><?= (int) $total ?> artículo(s)</span>
+        <a class="btn btn-app btn-app-primary" href="<?= e(url('/inventario?nuevo=1')) ?>">
+            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nuevo artículo
+        </a>
+    </div>
+</div>
+
+<form action="<?= e(url('/inventario')) ?>" method="get" class="mb-4" role="search">
+    <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+        <input type="search" class="form-control" name="q" value="<?= e($q) ?>"
+               placeholder="Buscar por nombre o término…" aria-label="Buscar en inventario"
+               autofocus>
+        <button class="btn btn-app btn-app-primary" type="submit">Buscar</button>
+        <?php if ($q !== ''): ?>
+            <a class="btn btn-outline-secondary" href="<?= e(url('/inventario')) ?>">Limpiar</a>
+        <?php endif; ?>
+    </div>
+</form>
+
+<?php if ($items === []): ?>
+    <div class="app-card p-5 text-center">
+        <div style="font-size:2.5rem;color:var(--c-suave)"><i class="bi bi-inbox" aria-hidden="true"></i></div>
+        <p class="text-muted mt-2 mb-0">
+            <?php if ($q !== ''): ?>
+                No encontramos nada para “<?= e($q) ?>”.
+            <?php else: ?>
+                Aún no hay artículos en el inventario.
+            <?php endif; ?>
+        </p>
+    </div>
+<?php else: ?>
+    <div class="app-card tabla-envoltorio">
+        <table class="tabla-app">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Clase</th>
+                    <th>Categoría</th>
+                    <th>Almacén</th>
+                    <th>Unidad</th>
+                    <th class="num">Stock</th>
+                    <th class="num">Mín.</th>
+                    <th class="num">P. venta</th>
+                    <?php if ($esAdmin): ?><th class="num">P. costo</th><?php endif; ?>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($items as $it): ?>
+                    <tr<?= ($estados[$it->idInventario] ?? true) ? '' : ' class="text-muted"' ?>>
+                        <td class="nombre-item">
+                            <?= e($it->nombre) ?>
+                            <?php if (($it->tipo ?? '') !== ''): ?>
+                                <span class="text-muted tipo-item"><?= e($it->tipo) ?></span>
+                            <?php endif; ?>
+                            <?php if (!($estados[$it->idInventario] ?? true)): ?>
+                                <span class="badge-estado cerrado ms-1"
+                                      title="Baja lógica: no se vende pero se conserva el historial">BAJA</span>
+                            <?php endif; ?>
+                        </td>
+                        <td><span class="badge-clase"><?= e($it->clase) ?></span></td>
+                        <td><?= e($it->categoria) ?></td>
+                        <td><?= e($it->tipoAlmacen) ?></td>
+                        <td><?= e($it->unidadMedida) ?></td>
+                        <td class="num">
+                            <?php if ($it->esStockBajo()): ?>
+                                <span class="badge-estado bajo"><?= (int) $it->stockAct ?></span>
+                            <?php else: ?>
+                                <?= (int) $it->stockAct ?>
+                            <?php endif; ?>
+                        </td>
+                        <td class="num text-muted"><?= (int) $it->stockMin ?></td>
+                        <td class="num">
+                            <?= $it->precioVenta !== null
+                                ? 'S/ ' . e(num($it->precioVenta)) : '—' ?>
+                        </td>
+                        <?php if ($esAdmin): ?>
+                            <td class="num text-muted">
+                                <?= ($it->precioCompra ?? null) !== null
+                                    ? 'S/ ' . e(num($it->precioCompra)) : '—' ?>
+                            </td>
+                        <?php endif; ?>
+                        <td class="text-end text-nowrap">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               href="<?= e(url('/inventario?editar=' . (int) $it->idInventario)) ?>"
+                               title="Editar <?= e($it->nombre) ?>">
+                                <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Editar
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                    data-bs-toggle="modal" data-bs-target="#modalAjuste"
+                                    data-id="<?= (int) $it->idInventario ?>"
+                                    data-nombre="<?= e($it->nombre) ?>"
+                                    title="Ajustar el stock de <?= e($it->nombre) ?>">
+                                <i class="bi bi-arrow-left-right me-1" aria-hidden="true"></i>Ajustar
+                            </button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+<?php endif; ?>
+
+<!-- Modal: ajuste de stock -->
+<div class="modal fade" id="modalAjuste" tabindex="-1" aria-labelledby="modalAjusteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="<?= e(url('/inventario')) ?>" id="formAjuste">
+                <input type="hidden" name="csrfToken" value="<?= e($csrfToken) ?>">
+                <input type="hidden" name="accion" value="ajustar">
+                <input type="hidden" name="idInventario" id="ajusteId" value="">
+
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="modalAjusteLabel">
+                        <i class="bi bi-arrow-left-right me-2" aria-hidden="true"></i>Ajustar stock
+                    </h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="mb-3">Artículo: <strong id="ajusteNombre"></strong></p>
+
+                    <label class="form-label">¿Qué hacemos? *</label>
+                    <div class="d-flex gap-4 mb-3">
+                        <div class="form-check fs-5">
+                            <input class="form-check-input" type="radio" name="signo"
+                                   id="ajusteSumar" value="1" checked>
+                            <label class="form-check-label" for="ajusteSumar">
+                                <i class="bi bi-plus-circle text-success me-1" aria-hidden="true"></i>Sumar (entró mercadería)
+                            </label>
+                        </div>
+                        <div class="form-check fs-5">
+                            <input class="form-check-input" type="radio" name="signo"
+                                   id="ajusteRestar" value="-1">
+                            <label class="form-check-label" for="ajusteRestar">
+                                <i class="bi bi-dash-circle text-danger me-1" aria-hidden="true"></i>Restar (salió o se dañó)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="ajusteCantidad">Cantidad de unidades *</label>
+                        <input type="number" class="form-control" id="ajusteCantidad"
+                               name="cantidad" min="1" step="1" value="1" required inputmode="numeric">
+                    </div>
+
+                    <div class="mb-1">
+                        <label class="form-label" for="ajusteMotivo">Motivo (opcional)</label>
+                        <input type="text" class="form-control" id="ajusteMotivo"
+                               name="motivo" maxlength="100"
+                               placeholder="Ej: merma, conteo físico, reposición">
+                    </div>
+                    <small class="text-muted">Quedará registrado quién hizo el ajuste y cuándo.</small>
+
+                    <input type="hidden" name="delta" id="ajusteDelta" value="1">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-app btn-app-primary">
+                        <i class="bi bi-check-lg me-1" aria-hidden="true"></i>Guardar ajuste
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="<?= e(url('/assets/js/inventario.js')) ?>"></script>
