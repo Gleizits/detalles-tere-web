@@ -4,7 +4,9 @@ import {
   type InventarioItem,
   type Categoria as CategoriaSelector,
 } from '../dao/inventarioDao';
+import { CategoriaDAO } from '../dao/categoriaDao';
 import { intParam, param } from '../http';
+import { paginar } from '../pagination';
 import { currentUser, flash } from '../session';
 import { redirect, renderPage } from '../view';
 
@@ -91,6 +93,27 @@ function fallar(req: Request, res: Response, mensaje: string): void {
   redirect(req, res, '/inventario');
 }
 
+/** Alta independiente de categoría desde la sección Categorías del inventario. */
+async function crearCategoria(req: Request, res: Response): Promise<void> {
+  const nombre = param(req, 'nombreCategoria').slice(0, 100);
+  const descripcion = param(req, 'descripcionCategoria').slice(0, 256) || null;
+
+  if (nombre.length < 2) {
+    fallar(req, res, 'Escribe un nombre de al menos 2 caracteres para la categoría.');
+    return;
+  }
+
+  const dao = new CategoriaDAO();
+  if (await dao.existeNombre(nombre)) {
+    fallar(req, res, 'Ya existe una categoría con ese nombre.');
+    return;
+  }
+
+  await dao.insertar({ nombre, descripcion });
+  flash(req, 'aviso', `Categoría “${nombre}” creada correctamente.`, false, 'Categoría creada');
+  redirect(req, res, '/inventario');
+}
+
 /** GET /inventario: lista, formulario nuevo o formulario de edición. */
 export async function index(req: Request, res: Response): Promise<void> {
   if (tieneClave(req, 'nuevo')) {
@@ -112,18 +135,27 @@ export async function index(req: Request, res: Response): Promise<void> {
 
   const q = param(req, 'q');
   const lista = await cargarLista(req, q);
+  const pagina = paginar(lista.items, req);
   const admin = esAdmin(req);
 
   // Defensa en profundidad: el empleado no recibe el precio de costo.
   if (!admin) {
-    for (const item of lista.items) item.precioCompra = null;
+    for (const item of pagina.items) item.precioCompra = null;
   }
 
+  const categorias = await new CategoriaDAO().listar();
+  const paginaCategorias = paginar(categorias, req, {
+    claves: { pagina: 'pageCat', tamano: 'pageSizeCat' },
+  });
+
   await renderPage(req, res, 'inventario', 'Inventario', '/inventario', {
-    items: lista.items,
+    items: pagina.items,
     estados: lista.estados,
     q,
-    total: lista.items.length,
+    total: pagina.total,
+    paginacion: pagina,
+    categorias: paginaCategorias.items,
+    paginacionCategorias: paginaCategorias,
     esAdmin: admin,
   });
 }
@@ -139,6 +171,9 @@ export async function procesar(req: Request, res: Response): Promise<void> {
       break;
     case 'ajustar':
       await ajustar(req, res);
+      break;
+    case 'crear-categoria':
+      await crearCategoria(req, res);
       break;
     default:
       redirect(req, res, '/inventario');

@@ -91,7 +91,7 @@
             <div class="app-card p-4 h-100">
                 <div class="d-flex justify-content-between align-items-baseline mb-3">
                     <h2 class="h4 mb-0">Ventas del periodo</h2>
-                    <span class="text-muted"><%= (reporte.ventas ?? []).length %> línea(s)</span>
+                    <span class="text-muted"><%= paginaVentas.total %> línea(s)</span>
                 </div>
                 <div class="tabla-envoltorio">
                     <table class="tabla-app">
@@ -116,6 +116,17 @@
                             <% } %>
                         </tbody>
                     </table>
+                    <%- include('comunes/paginacion', {
+                        paginacion: paginaVentas,
+                        base: '/reportes',
+                        filtros: {
+                            tipo: tipoPeriodo,
+                            periodo: valorPeriodo,
+                            pageIngresos: paginaIngresos.pagina,
+                            pageSizeIngresos: paginaIngresos.porPagina
+                        },
+                        etiqueta: 'ventas'
+                    }) %>
                     <% if ((reporte.ventas ?? []).length === 0) { %>
                         <p class="text-muted mb-0 mt-3">No hubo ventas en este periodo.</p>
                     <% } %>
@@ -126,7 +137,7 @@
             <div class="app-card p-4 h-100">
                 <div class="d-flex justify-content-between align-items-baseline mb-3">
                     <h2 class="h4 mb-0">Entradas registradas</h2>
-                    <span class="text-muted"><%= (reporte.ingresos ?? []).length %> línea(s)</span>
+                    <span class="text-muted"><%= paginaIngresos.total %> línea(s)</span>
                 </div>
                 <div class="tabla-envoltorio">
                     <table class="tabla-app">
@@ -148,6 +159,17 @@
                             <% } %>
                         </tbody>
                     </table>
+                    <%- include('comunes/paginacion', {
+                        paginacion: paginaIngresos,
+                        base: '/reportes',
+                        filtros: {
+                            tipo: tipoPeriodo,
+                            periodo: valorPeriodo,
+                            pageVentas: paginaVentas.pagina,
+                            pageSizeVentas: paginaVentas.porPagina
+                        },
+                        etiqueta: 'entradas'
+                    }) %>
                     <% if ((reporte.ingresos ?? []).length === 0) { %>
                         <p class="text-muted mb-0 mt-3">No hubo entradas en este periodo.</p>
                     <% } %>

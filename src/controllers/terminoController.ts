@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { TerminoDAO } from '../dao/terminoDao';
 import { BusinessError, param } from '../http';
+import { paginar } from '../pagination';
 import { currentUser, flash } from '../session';
 import { redirect, renderPage } from '../view';
 
@@ -31,13 +32,15 @@ async function cargarVista(
   error: string | null = null,
 ): Promise<void> {
   const dao = new TerminoDAO();
-  const [terminos, inventario] = await Promise.all([
+  const [todos, inventario] = await Promise.all([
     dao.listar(),
     dao.listarInventarioActivo(),
   ]);
+  const pagina = paginar(todos, req);
 
   await renderPage(req, res, 'terminos', 'Términos de búsqueda', '/terminos', {
-    terminos,
+    terminos: pagina.items,
+    paginacion: pagina,
     inventario,
     error,
   });

@@ -99,6 +99,8 @@ npm run smoke       # portada, CSRF, login, assets y responsive sin BD
 | PPT concisa | `Presentacion_DetallesTere.pptx` |
 | 6 consultas con ≥ 5 tablas para Power BI | `DetallesTerePHP/db/04_consultas_powerbi.sql`, `Requerimientos/powerbi/README.md` |
 | Maqueta HTML/CSS acorde a la BD | `maqueta/` |
+| Paginación en Inventario, Usuarios, Pedidos, Términos, Ingresos, Caja, Reportes y Venta | `src/pagination.ts`, `src/views/comunes/paginacion.ejs`, `public/assets/css/paginacion.css`, `public/assets/js/paginacion.js` |
+| Crear categoría desde Inventario | `src/views/inventario.ejs`, `src/dao/categoriaDao.ts` |
 | Manuales dentro del sistema, públicos y accesibles desde la barra superior de la portada | `/manual-usuario` y `/manual-programador` |
 | Hosting | Vercel + Azure SQL; procedimiento y evidencia pendiente en `HOSTING.md` |
 

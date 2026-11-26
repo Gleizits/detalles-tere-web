@@ -89,6 +89,12 @@ const q = locals.q ?? '';
                         </tbody>
                     </table>
                 </div>
+                <%- include('comunes/paginacion', {
+                    paginacion,
+                    base: '/venta',
+                    filtros: { q, pageCot: paginacionCotizaciones.pagina, pageSizeCot: paginacionCotizaciones.porPagina },
+                    etiqueta: 'artículos'
+                }) %>
             <% } %>
         </div>
     <% } %>
@@ -280,6 +286,12 @@ const q = locals.q ?? '';
                 </div>
             </div>
         <% } %>
+        <%- include('comunes/paginacion', {
+            paginacion: paginacionCotizaciones,
+            base: '/venta',
+            filtros: { q, page: paginacion.pagina, pageSize: paginacion.porPagina },
+            etiqueta: 'cotizaciones'
+        }) %>
     <% } %>
 </div>
 

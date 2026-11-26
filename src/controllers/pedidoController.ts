@@ -5,6 +5,7 @@ import { InventarioDAO, type InventarioItem } from '../dao/inventarioDao';
 import { PedidoDAO, Pedido, type PedidoData } from '../dao/pedidoDao';
 import { DetalleVenta, type DetalleVentaData } from '../dao/ventaDao';
 import { decimalParam, HttpError, intParam, param } from '../http';
+import { paginar } from '../pagination';
 import { currentUser, flash } from '../session';
 import { redirect, renderPage } from '../view';
 import type { Usuario } from '../models/usuario';
@@ -146,15 +147,21 @@ async function mostrarLista(req: Request, res: Response): Promise<void> {
   const user = usuario(req);
   const idUsuario = user.esAdmin() ? null : user.id;
 
+  const pedidos = await new PedidoDAO().listar(q, idUsuario);
+  const pagina = paginar(pedidos, req);
+
   await renderPage(req, res, 'pedidos', 'Pedidos reservados', '/pedidos', {
-    pedidos: await new PedidoDAO().listar(q, idUsuario),
+    pedidos: pagina.items,
     q,
+    paginacion: pagina,
   });
 }
 
 async function mostrarFormulario(req: Request, res: Response): Promise<void> {
   const q = param(req, 'q');
-  const items = (await new InventarioDAO().listar(q)).map(conEsStockBajo);
+  const todos = (await new InventarioDAO().listar(q)).map(conEsStockBajo);
+  const pagina = paginar(todos, req);
+  const items = pagina.items;
 
   // Un empleado no ve costos de compra.
   if (!esAdmin(req)) {
@@ -166,6 +173,7 @@ async function mostrarFormulario(req: Request, res: Response): Promise<void> {
   await renderPage(req, res, 'pedido_form', 'Nuevo pedido reservado', '/pedidos', {
     items,
     q,
+    paginacion: pagina,
     carrito: lineas,
     totalCarrito: totalCarrito(lineas),
     caja: await new CajaDAO().cajaAbierta(usuario(req).id),

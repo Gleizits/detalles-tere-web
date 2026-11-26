@@ -47,6 +47,7 @@
                 <% } %>
             </tbody>
         </table>
+        <%- include('comunes/paginacion', { paginacion, base: '/usuarios', filtros: {}, etiqueta: 'usuarios' }) %>
     </div>
 
     <% if (editando || nuevo) { %>

@@ -40,6 +40,8 @@ test('el login público y sus assets responden', async ({ page, request }) => {
   for (const asset of [
     '/assets/css/landing.css',
     '/assets/js/landing.js',
+    '/assets/css/paginacion.css',
+    '/assets/js/paginacion.js',
     '/assets/img/logo-upsjb.png',
   ]) {
     const respuesta = await request.get(asset);

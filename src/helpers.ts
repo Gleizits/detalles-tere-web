@@ -28,6 +28,30 @@ export function numJs(value: unknown): string {
   return num(value, 2, false);
 }
 
+/** Construye la URL de una página conservando filtros y tamaño de página. */
+export function paginaHref(
+  ruta: string,
+  pagina: number,
+  filtros: Record<string, unknown> = {},
+  paginacion?: {
+    porPagina: number;
+    claves: { pagina: string; tamano: string };
+  },
+): string {
+  const params = new URLSearchParams();
+  for (const [clave, valor] of Object.entries(filtros)) {
+    if (valor === undefined || valor === null || valor === '') continue;
+    params.set(clave, String(valor));
+  }
+  if (paginacion !== undefined) {
+    params.set(paginacion.claves.tamano, String(paginacion.porPagina));
+    params.set(paginacion.claves.pagina, String(pagina));
+  } else {
+    params.set('page', String(pagina));
+  }
+  return `${url(ruta)}?${params.toString()}`;
+}
+
 function dateParts(value: Date): Record<string, string> {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: config.timezone,
@@ -81,4 +105,13 @@ export function mensajeDe(error: unknown): string {
   return 'Ocurrió un error. Revisa los datos e inténtalo de nuevo.';
 }
 
-export const viewHelpers = { e, url, num, numJs, fecha, saludoPorHorario, mensajeDe };
+export const viewHelpers = {
+  e,
+  url,
+  num,
+  numJs,
+  paginaHref,
+  fecha,
+  saludoPorHorario,
+  mensajeDe,
+};

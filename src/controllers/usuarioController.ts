@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 import { UsuarioDAO } from '../dao/usuarioDao';
 import { BusinessError, intParam, param, rawParam } from '../http';
 import { Usuario } from '../models/usuario';
+import { paginar } from '../pagination';
 import { currentUser, flash, setUser } from '../session';
 import { redirect, renderPage } from '../view';
 
@@ -138,9 +139,11 @@ async function mostrarConError(
   capturado.estado = campos.estado;
 
   const lista = await listarUsuarios();
+  const pagina = paginar(lista.usuarios, req);
   await renderPage(req, res, 'usuarios', 'Usuarios', '/usuarios', {
-    usuarios: lista.usuarios,
+    usuarios: pagina.items,
     campos: lista.campos,
+    paginacion: pagina,
     usuarioEditar: capturado,
     camposEditar: campos,
     nuevo: !editando,
@@ -151,8 +154,9 @@ async function mostrarConError(
 /** GET /usuarios (?nuevo=1 | ?editar=id) */
 export async function index(req: Request, res: Response): Promise<void> {
   const lista = await listarUsuarios();
-  const usuarios = lista.usuarios;
+  const todos = lista.usuarios;
   const campos = lista.campos;
+  const pagina = paginar(todos, req);
 
   let editar: Usuario | null = null;
   let camposEditar: CamposFormulario = { correo: null, estado: true };
@@ -163,7 +167,7 @@ export async function index(req: Request, res: Response): Promise<void> {
     if (id === null || id <= 0) {
       error = 'El usuario solicitado no es válido.';
     } else {
-      const encontrado = usuarios.find((usuario) => usuario.id === id);
+      const encontrado = todos.find((usuario) => usuario.id === id);
       if (encontrado) {
         editar = encontrado;
         camposEditar = campos[id] ?? camposEditar;
@@ -172,8 +176,9 @@ export async function index(req: Request, res: Response): Promise<void> {
   }
 
   await renderPage(req, res, 'usuarios', 'Usuarios', '/usuarios', {
-    usuarios,
+    usuarios: pagina.items,
     campos,
+    paginacion: pagina,
     usuarioEditar: editar,
     camposEditar,
     nuevo: req.query.nuevo !== undefined,

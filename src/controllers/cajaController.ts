@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import { CajaDAO, type CajaData } from '../dao/cajaDao';
 import { decimalParam, HttpError, intParam, param } from '../http';
+import { paginar } from '../pagination';
 import { currentUser } from '../session';
 import { redirect, renderPage } from '../view';
 
@@ -34,14 +35,16 @@ async function estado(
   const abierta = await dao.cajaAbierta(idUsuario);
 
   // El DAO entrega objetos planos; la vista usaba el método esAbierta().
-  const historial = (await dao.historial(idUsuario, 7)).map((caja) => ({
+  const historialCompleto = (await dao.historial(idUsuario, 100)).map((caja) => ({
     ...caja,
     esAbierta: () => caja.fechaCierre === null,
   }));
+  const pagina = paginar(historialCompleto, req);
 
   const datos: Record<string, unknown> = {
     caja: abierta,
-    historial,
+    historial: pagina.items,
+    paginacion: pagina,
   };
 
   if (abierta !== null) {

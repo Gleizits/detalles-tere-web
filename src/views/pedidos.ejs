@@ -91,5 +91,6 @@ const estadoBadge = (estado) => {
                 <% } %>
             </tbody>
         </table>
+        <%- include('comunes/paginacion', { paginacion, base: '/pedidos', filtros: { q }, etiqueta: 'pedidos' }) %>
     </div>
 <% } %>

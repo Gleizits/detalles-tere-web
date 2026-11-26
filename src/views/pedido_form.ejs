@@ -87,6 +87,12 @@
                     </tbody>
                 </table>
             </div>
+            <%- include('comunes/paginacion', {
+                paginacion,
+                base: '/pedidos',
+                filtros: { q, nuevo: 1 },
+                etiqueta: 'artículos'
+            }) %>
         <% } %>
     </div>
 

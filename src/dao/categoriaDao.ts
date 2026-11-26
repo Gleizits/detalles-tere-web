@@ -28,6 +28,16 @@ export class CategoriaDAO {
     return rows.map(map);
   }
 
+  /** Compara sin espacios periféricos; la BD no declara UNIQUE en NOMBRE. */
+  async existeNombre(nombre: string): Promise<boolean> {
+    const rows = await query<Row>(
+      'SELECT 1 AS existe FROM dbo.CATEGORIA WHERE LTRIM(RTRIM(NOMBRE)) = ?',
+      [nombre.trim()],
+      this.client,
+    );
+    return rows.length > 0;
+  }
+
   async insertar(c: Pick<Categoria, 'nombre' | 'descripcion'>): Promise<number> {
     return insertId(
       'INSERT INTO dbo.CATEGORIA (NOMBRE, DESCRIPCION) VALUES (?, ?)',

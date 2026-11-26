@@ -3,6 +3,7 @@ import { config } from '../config';
 import { ReporteDAO, type ReporteResumen } from '../dao/reporteDao';
 import { fecha, num } from '../helpers';
 import { BusinessError, param } from '../http';
+import { paginar, type Paginacion } from '../pagination';
 import { redirect, renderPage } from '../view';
 
 type Celda = string | number;
@@ -208,6 +209,26 @@ export async function index(req: Request, res: Response): Promise<void> {
     }
   }
 
+  const filtros = { tipo, periodo: valor };
+  const clavesVentas = { pagina: 'pageVentas', tamano: 'pageSizeVentas' };
+  const clavesIngresos = { pagina: 'pageIngresos', tamano: 'pageSizeIngresos' };
+
+  let vistaReporte: ReporteResumen | null = reporte;
+  let paginaVentas: Paginacion<unknown> = paginar([], req, { claves: clavesVentas });
+  let paginaIngresos: Paginacion<unknown> = paginar([], req, { claves: clavesIngresos });
+
+  if (reporte !== null) {
+    const ventas = paginar(reporte.ventas, req, { claves: clavesVentas });
+    const ingresos = paginar(reporte.ingresos, req, { claves: clavesIngresos });
+    paginaVentas = ventas;
+    paginaIngresos = ingresos;
+    vistaReporte = {
+      ...reporte,
+      ventas: ventas.items,
+      ingresos: ingresos.items,
+    };
+  }
+
   if (error !== null || reporte === null) {
     await renderPage(req, res, 'reportes', 'Reportes', '/reportes', {
       error: error ?? 'No se pudo generar el reporte. Intenta de nuevo.',
@@ -226,7 +247,10 @@ export async function index(req: Request, res: Response): Promise<void> {
 
   await renderPage(req, res, 'reportes', 'Reportes', '/reportes', {
     error: null,
-    reporte,
+    reporte: vistaReporte,
+    paginaVentas,
+    paginaIngresos,
+    filtros,
     tipoPeriodo: tipo,
     valorPeriodo: valor,
   });

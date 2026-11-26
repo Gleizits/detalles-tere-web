@@ -4,6 +4,7 @@ import { IngresoDAO, type IngresoLinea } from '../dao/ingresoDao';
 import { InventarioDAO } from '../dao/inventarioDao';
 import { ProveedorDAO } from '../dao/proveedorDao';
 import { BusinessError, intParam, param, stringsParam } from '../http';
+import { paginar } from '../pagination';
 import { currentUser, flash } from '../session';
 import { redirect, renderPage } from '../view';
 
@@ -136,16 +137,18 @@ async function cargarVista(
   res: Response,
   error: string | null = null,
 ): Promise<void> {
-  const [proveedores, inventario, ingresos] = await Promise.all([
+  const [proveedores, inventario, recientes] = await Promise.all([
     new ProveedorDAO().listar(),
     new InventarioDAO().listarActivos(),
-    new IngresoDAO().listarRecientes(10),
+    new IngresoDAO().listarRecientes(100),
   ]);
+  const pagina = paginar(recientes, req);
 
   await renderPage(req, res, 'ingresos', 'Ingresos', '/ingresos', {
     proveedores,
     inventario,
-    ingresos,
+    ingresos: pagina.items,
+    paginacion: pagina,
     fechaActual: fechaActual(),
     error,
   });

@@ -5,6 +5,7 @@ import { InventarioDAO } from '../dao/inventarioDao';
 import { DetalleVenta, VentaDAO, type DetalleVentaData } from '../dao/ventaDao';
 import { numJs } from '../helpers';
 import { BusinessError, decimalParam, HttpError, intParam, param } from '../http';
+import { paginar } from '../pagination';
 import { currentUser, flash } from '../session';
 import { redirect, renderPage } from '../view';
 
@@ -122,17 +123,25 @@ export async function index(req: Request, res: Response): Promise<void> {
     };
   });
 
+  const pagina = paginar(items, req);
+  const cotizaciones = await new VentaDAO().listarCotizaciones();
+  const paginaCotizaciones = paginar(cotizaciones, req, {
+    claves: { pagina: 'pageCot', tamano: 'pageSizeCot' },
+  });
+
   const lineas = carrito(req);
   const total = totalCarrito(lineas);
 
   await renderPage(req, res, 'venta', 'Venta', '/venta', {
     caja,
-    items,
+    items: pagina.items,
+    paginacion: pagina,
     q,
     carrito: lineas,
     totalCarrito: total,
     cotizacionId: cotizacionId(req),
-    cotizaciones: await new VentaDAO().listarCotizaciones(),
+    cotizaciones: paginaCotizaciones.items,
+    paginacionCotizaciones: paginaCotizaciones,
   });
 }
 

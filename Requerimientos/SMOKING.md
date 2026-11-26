@@ -37,9 +37,12 @@ Usuario: `admin` / `Admin123!`. Marca ✅ o ❌ y guarda una captura en `Requeri
 | 17 | Reportes | Reporte diario y mensual | Muestra ventas, ingresos, costo y margen |
 | 18 | Reportes | Descargar CSV | Archivo `reporte-detallestere-*.csv` con BOM UTF-8 |
 | 19 | Manuales | Abrir Manual del usuario desde el menú | Carga dentro del sistema |
-| 20 | Manuales | Abrir Manual del programador como empleado | 403; como admin, carga |
+| 20 | Manuales | Abrir ambos manuales desde la barra superior de la portada | Cargan sin iniciar sesión |
 | 21 | Responsive | 360 px, 768 px, 1366 px | Sin desbordamiento horizontal |
 | 22 | Sesión | Logout y expiración | No permite volver a `/panel` sin login |
+| 23 | Paginación | Listados con más de 10 filas (Inventario, Usuarios, Pedidos, Términos, Ingresos, Caja, Reportes y Venta) | Aparecen Anterior/Siguiente, números de página y selector «Por página» |
+| 24 | Paginación | Navegar de página y cambiar a 25/50/100 | Conserva `q` y filtros; el total no cambia |
+| 25 | Inventario | Crear categoría en «Categorías» y repetir el nombre | La nueva aparece en el formulario de artículos; el duplicado muestra error |
 
 ## 3. Criterio de aceptación
 

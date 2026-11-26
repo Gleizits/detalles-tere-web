@@ -177,6 +177,7 @@ const pagosReservas = locals.pagosReservas ?? 0;
                 <% } %>
             </tbody>
         </table>
+        <%- include('comunes/paginacion', { paginacion, base: '/caja', filtros: {}, etiqueta: 'cajas' }) %>
     </div>
 <% } %>
 
