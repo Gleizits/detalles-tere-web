@@ -48,7 +48,7 @@ services:
       - key: CONTACT_EMAIL
         value: "Geissel.Espino@upsjb.edu.pe"
       - key: WHATSAPP_NUMBER
-        sync: false
+        value: "51932677948"
       - key: MAPS_EMBED_SRC
         sync: false
       - key: FACEBOOK_URL

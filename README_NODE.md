@@ -77,7 +77,7 @@ npm run smoke       # portada, CSRF, login, assets y responsive sin BD
    | `SESSION_MINUTES` | `30` |
    | `APP_TIMEZONE` | `America/Lima` |
 
-4. Para correo, WhatsApp, mapa y redes, completa **solo datos reales** según `.env.example`. Las variables vacías no muestran enlaces inventados. El formulario abre el cliente de correo con `mailto:` a `Geissel.Espino@upsjb.edu.pe`: no usa ninguna API externa.
+4. Para correo, WhatsApp, mapa y redes, completa **solo datos reales** según `.env.example`. Las variables vacías no muestran enlaces inventados. El botón de WhatsApp abre el chat con **+51 932 677 948** (`51932677948`) y el formulario abre el cliente de correo con `mailto:` a `Geissel.Espino@upsjb.edu.pe`: no usa ninguna API externa.
 5. La base de datos **no** se crea en Vercel. La guía completa `.bak → .bacpac → Azure SQL` está en [`HOSTING.md`](HOSTING.md).
 6. Si la base es nueva, ejecuta `01_schema_DetallesTereDB.sql` y `02_seed_DetallesTereDB.sql`; después `03_seed_500_registros.sql` y `04_consultas_powerbi.sql`.
 

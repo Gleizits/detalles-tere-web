@@ -98,7 +98,7 @@ Proyecto: repositorio actual, **rama `DB`**. Vercel detecta Express y usa `api/i
 | `APP_TIMEZONE` | `America/Lima` |
 | `BASE_URL` | URL pública de Vercel (opcional) |
 | `CONTACT_EMAIL` | `Geissel.Espino@upsjb.edu.pe` (destino del formulario); no se usa API externa |
-| `WHATSAPP_NUMBER` | Número real, solo dígitos; vacío desactiva el número inventado |
+| `WHATSAPP_NUMBER` | `51932677948` (+51 932 677 948); el botón abre el chat con ese número |
 | `MAPS_EMBED_SRC` | iframe real; el valor por defecto muestra Ica sin dirección inventada |
 | `FACEBOOK_URL`, `INSTAGRAM_URL`, `TIKTOK_URL` | Enlaces reales; vacíos = no aparecen |
 

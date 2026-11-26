@@ -6,7 +6,7 @@ test('la portada pública carga completa y es responsive', async ({ page }) => {
   await expect(page).toHaveTitle(/DetallesTereTS/);
   await expect(page.getByRole('heading', { level: 1 })).toContainText('La fiesta ordenada');
   await expect(page.locator('iframe[title="Mapa de Ica, Perú"]')).toBeVisible();
-  await expect(page.locator('a.lp-whatsapp')).toHaveAttribute('href', /wa\.me/);
+  await expect(page.locator('a.lp-whatsapp')).toHaveAttribute('href', /wa\.me\/51932677948\?text=/);
   await expect(page.locator('.lp-card')).toHaveCount(6);
   await expect(page.locator('input[name="csrfToken"]')).toHaveCount(1);
   await expect(page.locator('img[alt*="Universidad Privada San Juan Bautista"]')).toHaveCount(1);

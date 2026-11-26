@@ -60,7 +60,7 @@ export const config = {
   },
   contacto: {
     destino: text('CONTACT_EMAIL', 'Geissel.Espino@upsjb.edu.pe'),
-    whatsapp: text('WHATSAPP_NUMBER'),
+    whatsapp: text('WHATSAPP_NUMBER', '51932677948'),
     mapa: text(
       'MAPS_EMBED_SRC',
       'https://www.google.com/maps?q=Ica%2C%20Peru&output=embed',
