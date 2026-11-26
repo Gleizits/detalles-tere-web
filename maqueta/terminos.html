@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Términos · DetallesTereTS (maqueta)</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="mq-barra">
+    <a class="mq-marca" href="index.html">Detalles<small>Tere</small> TS</a>
+    <nav class="mq-nav" aria-label="Módulos">
+      <a href="panel.html">Panel</a><a href="caja.html">Caja</a><a href="venta.html">Venta</a>
+      <a href="pedidos.html">Pedidos</a><a href="inventario.html">Inventario</a>
+      <a href="ingresos.html">Ingresos</a><a class="activo" href="terminos.html">Términos</a>
+      <a href="reportes.html">Reportes</a><a href="usuarios.html">Usuarios</a><a href="login.html">Salir</a>
+    </nav>
+    <span class="mq-usuario">admin</span>
+  </header>
+
+  <main class="mq-contenedor">
+    <div class="mq-cabecera">
+      <p class="mq-etiqueta">Solo administrador · TERMINOS</p>
+      <h1>Sinónimos de búsqueda</h1>
+      <p>Permiten encontrar un artículo por el nombre que usa la propietaria: «Colino» = «Pata Dental», por ejemplo.</p>
+    </div>
+
+    <section class="mq-panel">
+      <h2>Nuevo término <small>TERMINOS</small></h2>
+      <form class="mq-form" action="#" method="post">
+        <input type="hidden" name="csrfToken" value="token-de-ejemplo">
+        <div class="mq-campo"><label for="PALABRA">PALABRA</label><input id="PALABRA" name="PALABRA" type="text" value="Vela Volcán" required maxlength="75"><small>Única en la tabla</small></div>
+        <div class="mq-campo"><label for="ID_USUARIO">ID_USUARIO</label><input id="ID_USUARIO" name="ID_USUARIO" type="number" value="1"></div>
+        <div class="mq-acciones"><button class="mq-boton" type="submit">Guardar término</button></div>
+      </form>
+    </section>
+
+    <section class="mq-panel">
+      <h2>Asociar a inventario <small>DETALLE_TERMINO</small></h2>
+      <form class="mq-form" action="#" method="post">
+        <input type="hidden" name="csrfToken" value="token-de-ejemplo">
+        <div class="mq-campo"><label for="ID_TERMINO">ID_TERMINO</label><input id="ID_TERMINO" name="ID_TERMINO" type="number" value="1"></div>
+        <div class="mq-campo"><label for="ID_INVENTARIO">ID_INVENTARIO</label><input id="ID_INVENTARIO" name="ID_INVENTARIO" type="number" value="12"></div>
+        <div class="mq-acciones"><button class="mq-boton" type="submit">Asociar</button></div>
+      </form>
+      <table class="mq-tabla" style="margin-top:1.2rem">
+        <thead><tr><th>ID_DETALLE_TERMINO</th><th>ID_TERMINO</th><th>PALABRA</th><th>ID_INVENTARIO</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>1</td><td>Vela Volcán</td><td>12</td></tr>
+          <tr><td>2</td><td>2</td><td>Vela Chispa</td><td>12</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

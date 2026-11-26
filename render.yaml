@@ -1,0 +1,59 @@
+# ------------------------------------------------------------
+# Render Blueprint — DetallesTereTS (rama DB)
+#
+# Vercel es el destino principal. Este blueprint es una alternativa
+# para desplegar la misma app Node/TypeScript en Render.
+# La base de datos NO se crea aquí: es SQL Server DetallesTereDB
+# (por ejemplo, Azure SQL Database; ver HOSTING.md).
+#
+# Los valores con sync: false se rellenan en el panel de Render y
+# nunca se versionan.
+# ------------------------------------------------------------
+services:
+  - type: web
+    name: detailstere-web
+    runtime: node
+    branch: DB
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: DB_SERVER
+        sync: false
+      - key: DB_PORT
+        value: "1433"
+      - key: DB_NAME
+        value: DetallesTereDB
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_TRUST_CERT
+        value: "false"
+      - key: DB_ENCRYPT
+        value: "true"
+      - key: DB_TIMEOUT
+        value: "10"
+      - key: SESSION_SECRET
+        sync: false
+      - key: SESSION_MINUTES
+        value: "30"
+      - key: APP_TIMEZONE
+        value: America/Lima
+      - key: APP_PRODUCTION
+        value: "true"
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: CONTACT_EMAIL
+        value: "Geissel.Espino@upsjb.edu.pe"
+      - key: WHATSAPP_NUMBER
+        value: "51932677948"
+      - key: MAPS_EMBED_SRC
+        sync: false
+      - key: FACEBOOK_URL
+        sync: false
+      - key: INSTAGRAM_URL
+        sync: false
+      - key: TIKTOK_URL
+        sync: false

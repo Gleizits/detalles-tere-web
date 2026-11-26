@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inicio · DetallesTereTS (maqueta)</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="mq-barra">
+    <a class="mq-marca" href="index.html">Detalles<small>Tere</small> TS</a>
+    <nav class="mq-nav" aria-label="Módulos">
+      <a href="login.html">Ingresar</a>
+      <a href="panel.html">Panel</a>
+      <a href="caja.html">Caja</a>
+      <a href="venta.html">Venta</a>
+      <a href="pedidos.html">Pedidos</a>
+      <a href="inventario.html">Inventario</a>
+      <a href="ingresos.html">Ingresos</a>
+      <a href="terminos.html">Términos</a>
+      <a href="reportes.html">Reportes</a>
+      <a href="usuarios.html">Usuarios</a>
+    </nav>
+  </header>
+
+  <main class="mq-contenedor">
+    <section class="mq-hero">
+      <div>
+        <p class="mq-etiqueta">UPSJB · Modelamiento de Base de Datos · 2026</p>
+        <h1>La fiesta ordenada empieza en el <em>almacén</em>.</h1>
+        <p>Maqueta estática (solo HTML y CSS) del sistema de gestión de inventario y ventas de una piñatería en Ica. Cada pantalla usa los nombres reales de las columnas de <code>DetallesTereDB</code>.</p>
+        <div class="mq-acciones">
+          <a class="mq-boton" href="login.html">Ingresar al sistema</a>
+          <a class="mq-boton secundario" href="#modulos">Ver módulos</a>
+        </div>
+      </div>
+      <aside class="mq-sello">
+        <b>UPSJB</b>
+        <p>Facultad de Ingenierías · Escuela Profesional de Ingeniería de Sistemas</p>
+        <dl>
+          <dt>Curso</dt><dd>Modelamiento de Base de Datos</dd>
+          <dt>Docente</dt><dd>Ing. Luis Castillón Siguas</dd>
+          <dt>Ciclo</dt><dd>2026</dd>
+          <dt>Tablas modeladas</dt><dd>22</dd>
+        </dl>
+      </aside>
+    </section>
+
+    <section id="modulos">
+      <div class="mq-cabecera">
+        <p class="mq-etiqueta">Maqueta · 8 módulos</p>
+        <h1>Pantallas principales</h1>
+        <p>Corresponden a las tablas transaccionales y de catálogo del modelo físico.</p>
+      </div>
+      <div class="mq-rejilla-3">
+        <a class="mq-tarjeta" href="caja.html"><strong>Caja</strong><span>CAJA · apertura, cierre, monto real y diferencia</span></a>
+        <a class="mq-tarjeta" href="venta.html"><strong>Ventas</strong><span>VENTA · DETALLE_VENTA · cotización 24 h</span></a>
+        <a class="mq-tarjeta" href="inventario.html"><strong>Inventario</strong><span>INVENTARIO · producto, material o arreglo</span></a>
+        <a class="mq-tarjeta" href="pedidos.html"><strong>Pedidos</strong><span>PEDIDOS · DETALLE_PEDIDO · tres plazos</span></a>
+        <a class="mq-tarjeta" href="ingresos.html"><strong>Ingresos</strong><span>INGRESO · PROVEEDOR · DETALLE_INGRESO</span></a>
+        <a class="mq-tarjeta" href="reportes.html"><strong>Reportes</strong><span>Diario y mensual para Power BI</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mq-pie">© 2026 DetallesTereTS · UPSJB · Ica, Perú · Maqueta HTML/CSS</footer>
+</body>
+</html>

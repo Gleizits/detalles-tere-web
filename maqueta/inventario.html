@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventario · DetallesTereTS (maqueta)</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="mq-barra">
+    <a class="mq-marca" href="index.html">Detalles<small>Tere</small> TS</a>
+    <nav class="mq-nav" aria-label="Módulos">
+      <a href="panel.html">Panel</a><a href="caja.html">Caja</a><a href="venta.html">Venta</a>
+      <a href="pedidos.html">Pedidos</a><a class="activo" href="inventario.html">Inventario</a>
+      <a href="ingresos.html">Ingresos</a><a href="terminos.html">Términos</a>
+      <a href="reportes.html">Reportes</a><a href="usuarios.html">Usuarios</a><a href="login.html">Salir</a>
+    </nav>
+    <span class="mq-usuario">admin</span>
+  </header>
+
+  <main class="mq-contenedor">
+    <div class="mq-cabecera">
+      <p class="mq-etiqueta">Tablas INVENTARIO y DETALLE_ARREGLO</p>
+      <h1>Inventario por unidad real</h1>
+      <p>Exactamente una clave: <code>ID_PRODUCTO</code>, <code>ID_MATERIAL</code> o <code>ID_DETALLE</code> (arreglo).</p>
+    </div>
+
+    <section class="mq-panel">
+      <h2>Nuevo ítem <small>INVENTARIO</small></h2>
+      <form class="mq-form" action="#" method="post">
+        <input type="hidden" name="csrfToken" value="token-de-ejemplo">
+        <div class="mq-campo"><label for="ID_PRODUCTO">ID_PRODUCTO</label><input id="ID_PRODUCTO" name="ID_PRODUCTO" type="number" value="5"><small>Exactamente uno de los tres campos de clave</small></div>
+        <div class="mq-campo"><label for="ID_MATERIAL">ID_MATERIAL</label><input id="ID_MATERIAL" name="ID_MATERIAL" type="number"></div>
+        <div class="mq-campo"><label for="ID_DETALLE">ID_DETALLE (ARREGLO)</label><input id="ID_DETALLE" name="ID_DETALLE" type="number"></div>
+        <div class="mq-campo"><label for="STOCK_ACT">STOCK_ACT</label><input id="STOCK_ACT" name="STOCK_ACT" type="number" min="0" value="80"></div>
+        <div class="mq-campo"><label for="STOCK_MIN">STOCK_MIN</label><input id="STOCK_MIN" name="STOCK_MIN" type="number" min="0" value="20"></div>
+        <div class="mq-campo"><label for="TIPO_ALMACEN">TIPO_ALMACEN</label><select id="TIPO_ALMACEN" name="TIPO_ALMACEN"><option>Productos</option><option>Materiales</option><option>Arreglos</option></select></div>
+        <div class="mq-campo"><label for="UNIDAD_MEDIDA">UNIDAD_MEDIDA</label><select id="UNIDAD_MEDIDA" name="UNIDAD_MEDIDA"><option>Unidad</option><option>Paquete</option><option>Docena</option><option>Cajon</option><option>Costal</option></select></div>
+        <div class="mq-acciones"><button class="mq-boton" type="submit">Guardar ítem</button></div>
+      </form>
+    </section>
+
+    <section class="mq-panel">
+      <h2>Composición de arreglos <small>DETALLE_ARREGLO</small></h2>
+      <p class="mq-nota">Cada fila lleva producto <em>o</em> material, nunca ambos.</p>
+      <table class="mq-tabla">
+        <thead><tr><th>ID_DETALLE_ARREGLO</th><th>ID_DETALLE</th><th>ID_PRODUCTO</th><th>ID_MATERIAL</th><th>CANT_PRODUCTO</th><th>CANT_MATERIAL</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>3</td><td>8</td><td>—</td><td>2</td><td>—</td></tr>
+          <tr><td>2</td><td>3</td><td>—</td><td>11</td><td>—</td><td>12</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="mq-panel">
+      <h2>Stock actual</h2>
+      <table class="mq-tabla">
+        <thead><tr><th>ID_INVENTARIO</th><th>Artículo</th><th>TIPO_ALMACEN</th><th>UNIDAD_MEDIDA</th><th>STOCK_ACT</th><th>STOCK_MIN</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Producto demo 0001</td><td>Productos</td><td>Paquete</td><td>80</td><td>20</td></tr>
+          <tr><td>2</td><td>Material demo 0002</td><td>Materiales</td><td>Unidad</td><td>15</td><td>20</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

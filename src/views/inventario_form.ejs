@@ -1,0 +1,212 @@
+<%
+/** Alta y edición de artículos (producto, material o arreglo). */
+const extrasForm = extras ?? {};
+const esEdicion = item !== null && Number(item?.idInventario ?? 0) > 0;
+const claseActual = item?.clase ?? '';
+%>
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <h1 class="titulo-seccion mb-0">
+        <i class="bi bi-box-seam me-2" aria-hidden="true"></i><%= e(titulo) %>
+    </h1>
+    <a class="btn btn-outline-secondary" href="<%= e(url('/inventario')) %>">
+        <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>Volver
+    </a>
+</div>
+
+<% if (error) { %>
+    <div class="alerta-error mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i><%= e(error) %>
+    </div>
+<% } %>
+
+<div class="app-card p-4">
+    <form method="post" action="<%= e(url('/inventario')) %>" autocomplete="off" id="formArticulo">
+        <input type="hidden" name="csrfToken" value="<%= e(csrfToken) %>">
+        <input type="hidden" name="accion" value="<%= esEdicion ? 'editar' : 'crear' %>">
+        <% if (esEdicion) { %>
+            <input type="hidden" name="idInventario" value="<%= Number(item.idInventario) %>">
+        <% } %>
+
+        <!-- Tipo de artículo -->
+        <% if (esEdicion && claseActual !== '') { %>
+            <div class="mb-3">
+                <span class="form-label d-block">Tipo de artículo</span>
+                <span class="badge-clase"><%= e(claseActual) %></span>
+                <small class="text-muted d-block mt-1">El tipo de artículo no se puede cambiar.</small>
+            </div>
+        <% } else { %>
+            <div class="mb-3">
+                <span class="form-label d-block">¿Qué tipo de artículo es? *</span>
+                <div class="d-flex gap-4 flex-wrap mt-1">
+                    <% for (const [valor, etiqueta] of [
+                        ['PRODUCTO', 'Producto'],
+                        ['MATERIAL', 'Material'],
+                        ['ARREGLO', 'Arreglo'],
+                    ]) { %>
+                        <div class="form-check fs-5">
+                            <input class="form-check-input" type="radio" name="clase"
+                                   id="clase<%= e(valor) %>" value="<%= e(valor) %>"
+                                   <%= (claseActual === '' || claseActual === valor) ? 'checked' : '' %>>
+                            <label class="form-check-label" for="clase<%= e(valor) %>"><%= e(etiqueta) %></label>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Nombre y tipo -->
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+                <label class="form-label" for="nombre">Nombre del artículo *</label>
+                <input type="text" class="form-control" id="nombre" name="nombre"
+                       maxlength="100" required value="<%= e(item?.nombre ?? '') %>"
+                       placeholder="Ej: Marco de madera 20×30">
+            </div>
+            <div class="col-12 col-md-6" id="zonaTipo"
+                 <%- claseActual === 'ARREGLO' ? 'style="display:none"' : '' %>>
+                <label class="form-label" for="tipo">Tipo o material *</label>
+                <input type="text" class="form-control" id="tipo" name="tipo"
+                       maxlength="50" value="<%= e(item?.tipo ?? '') %>"
+                       placeholder="Ej: madera, acrílico, tela…">
+                <small class="text-muted">Los arreglos no llevan tipo.</small>
+            </div>
+        </div>
+
+        <!-- Categoría -->
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+                <label class="form-label" for="idCategoria">Categoría *</label>
+                <select class="form-select" id="idCategoria" name="idCategoria">
+                    <option value="" <%= Number(extrasForm.idCategoria ?? 0) === 0 ? 'selected' : '' %>>
+                        — Elige una categoría —
+                    </option>
+                    <% for (const c of categorias) { %>
+                        <option value="<%= Number(c.idCategoria) %>"
+                                <%= Number(extrasForm.idCategoria ?? 0) === Number(c.idCategoria) ? 'selected' : '' %>>
+                            <%= e(c.nombre) %>
+                        </option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="col-12 col-md-6">
+                <label class="form-label" for="categoriaNueva">…o escribe una categoría nueva</label>
+                <input type="text" class="form-control" id="categoriaNueva" name="categoriaNueva"
+                       maxlength="100" placeholder="Opcional si eliges una arriba">
+                <small class="text-muted">También puedes crearla desde Inventario → Categorías.</small>
+            </div>
+        </div>
+
+        <!-- Unidad, almacén y stock -->
+        <div class="row g-3 mb-3">
+            <div class="col-12 col-md-4">
+                <label class="form-label" for="unidadMedida">Unidad de medida o empaque *</label>
+                <input type="text" class="form-control" id="unidadMedida" name="unidadMedida"
+                       maxlength="50" required value="<%= e(item?.unidadMedida ?? '') %>"
+                       placeholder="Ej: paquete de 12, unidad">
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label" for="tipoAlmacen">Cómo se guarda *</label>
+                <input type="text" class="form-control" id="tipoAlmacen" name="tipoAlmacen"
+                       maxlength="35" required value="<%= e(item?.tipoAlmacen ?? '') %>"
+                       placeholder="Ej: costal, caja, estante">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label" for="stockMin">Stock mínimo *</label>
+                <input type="number" class="form-control" id="stockMin" name="stockMin"
+                       min="0" step="1" required inputmode="numeric"
+                       value="<%= e(item?.stockMin ?? '') %>">
+            </div>
+            <% if (!esEdicion) { %>
+                <div class="col-6 col-md-2">
+                    <label class="form-label" for="stockAct">Stock inicial *</label>
+                    <input type="number" class="form-control" id="stockAct" name="stockAct"
+                           min="0" step="1" required inputmode="numeric"
+                           value="<%= e(item?.stockAct ?? 0) %>">
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Precios -->
+        <% if (!esEdicion || esAdmin) { %>
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-4">
+                    <label class="form-label" for="precioVenta">
+                        Precio de venta (S/) <%= esEdicion ? '' : '*' %>
+                    </label>
+                    <input type="text" class="form-control" id="precioVenta" name="precioVenta"
+                           inputmode="decimal" maxlength="12"
+                           value="<%= e(numJs(item?.precioVenta ?? null)) %>"
+                           placeholder="Ej: 25.00">
+                    <small class="text-muted" id="notaVenta">
+                        <%= esEdicion ? 'Déjalo vacío para no cambiarlo.' : '' %>
+                    </small>
+                </div>
+                <% if (esAdmin) { %>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="precioCompra">Precio de compra / costo (S/)</label>
+                        <input type="text" class="form-control" id="precioCompra" name="precioCompra"
+                               inputmode="decimal" maxlength="12"
+                               value="<%= e(numJs(item?.precioCompra ?? null)) %>"
+                               placeholder="Ej: 15.00">
+                        <small class="text-muted" id="notaCompra">Solo lo ve el administrador.</small>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <span class="form-label d-block">Precio sugerido</span>
+                        <div class="alerta-info mb-0" id="sugerencia">
+                            Escribe el precio de compra y te calculo el precio de venta (costo × 1.50).
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+        <% if (esEdicion && !esAdmin) { %>
+            <div class="alerta-info mb-3">
+                <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
+                Los precios de este artículo solo los puede cambiar el administrador.
+            </div>
+        <% } %>
+
+        <!-- Material relacionado (solo productos) -->
+        <div class="mb-3" id="zonaMaterial"
+             <%- (claseActual !== '' && claseActual !== 'PRODUCTO') ? 'style="display:none"' : '' %>>
+            <label class="form-label" for="idMaterialVinc">Material del que está hecho (opcional)</label>
+            <select class="form-select" id="idMaterialVinc" name="idMaterialVinc">
+                <option value="0" <%= Number(extrasForm.idMaterialVinc ?? 0) === 0 ? 'selected' : '' %>>
+                    — Ninguno —
+                </option>
+                <% for (const m of materiales) { %>
+                    <option value="<%= Number(m.idCategoria) %>"
+                            <%= Number(extrasForm.idMaterialVinc ?? 0) === Number(m.idCategoria) ? 'selected' : '' %>>
+                        <%= e(m.nombre) %>
+                    </option>
+                <% } %>
+            </select>
+            <small class="text-muted">
+                Útil cuando el mismo artículo también se usa como material (ej.: limpiapipas).
+            </small>
+        </div>
+
+        <!-- Estado (solo admin, solo edición) -->
+        <% if (esAdmin && esEdicion) { %>
+            <div class="mb-3">
+                <div class="form-check form-switch fs-5">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                           id="estado" name="estado" <%= extrasForm.estado ? 'checked' : '' %>>
+                    <label class="form-check-label" for="estado">
+                        Artículo activo (desmárcalo para dar de baja sin borrarlo)
+                    </label>
+                </div>
+            </div>
+        <% } %>
+
+        <div class="d-flex gap-2 flex-wrap mt-4">
+            <button type="submit" class="btn btn-app btn-app-primary py-2 px-4">
+                <i class="bi bi-save me-1" aria-hidden="true"></i>
+                <%= esEdicion ? 'Guardar cambios' : 'Guardar artículo' %>
+            </button>
+            <a class="btn btn-outline-secondary py-2 px-4" href="<%= e(url('/inventario')) %>">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script src="<%= e(url('/assets/js/inventario-form.js')) %>"></script>

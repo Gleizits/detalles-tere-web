@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Venta · DetallesTereTS (maqueta)</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="mq-barra">
+    <a class="mq-marca" href="index.html">Detalles<small>Tere</small> TS</a>
+    <nav class="mq-nav" aria-label="Módulos">
+      <a href="panel.html">Panel</a><a href="caja.html">Caja</a>
+      <a class="activo" href="venta.html">Venta</a><a href="pedidos.html">Pedidos</a>
+      <a href="inventario.html">Inventario</a><a href="ingresos.html">Ingresos</a>
+      <a href="terminos.html">Términos</a><a href="reportes.html">Reportes</a>
+      <a href="usuarios.html">Usuarios</a><a href="login.html">Salir</a>
+    </nav>
+    <span class="mq-usuario">admin</span>
+  </header>
+
+  <main class="mq-contenedor">
+    <div class="mq-cabecera">
+      <p class="mq-etiqueta">Tablas VENTA y DETALLE_VENTA</p>
+      <h1>Venta y cotización</h1>
+      <p>Una cotización dura 24 horas (<code>FECHA_VENCIMIENTO</code>) y puede convertirse en venta.</p>
+    </div>
+
+    <section class="mq-panel">
+      <h2>Cabecera <small>VENTA</small></h2>
+      <form class="mq-form" action="#" method="post">
+        <input type="hidden" name="csrfToken" value="token-de-ejemplo">
+        <div class="mq-campo">
+          <label for="ID_CAJA">ID_CAJA</label>
+          <input id="ID_CAJA" name="ID_CAJA" type="number" value="1">
+        </div>
+        <div class="mq-campo">
+          <label for="ID_PEDIDO">ID_PEDIDO</label>
+          <input id="ID_PEDIDO" name="ID_PEDIDO" type="number" placeholder="Vacío si no es reserva">
+        </div>
+        <div class="mq-campo">
+          <label for="TIPO_PAGO">TIPO_PAGO</label>
+          <select id="TIPO_PAGO" name="TIPO_PAGO">
+            <option>YAPE</option><option>EFECTIVO</option><option>CREDITO</option>
+          </select>
+          <small>CREDITO = canje, no entra efectivo</small>
+        </div>
+        <div class="mq-campo">
+          <label for="ESTADO">ESTADO</label>
+          <select id="ESTADO" name="ESTADO">
+            <option value="COTIZACION">COTIZACION</option>
+            <option value="VENDIDO" selected>VENDIDO</option>
+            <option value="CANCELADO">CANCELADO</option>
+          </select>
+        </div>
+        <div class="mq-campo">
+          <label for="TOTAL">TOTAL</label>
+          <input id="TOTAL" name="TOTAL" type="number" step="0.01" value="96.00" required>
+        </div>
+        <div class="mq-campo">
+          <label for="FECHA_VENTA">FECHA_VENTA</label>
+          <input id="FECHA_VENTA" name="FECHA_VENTA" type="datetime-local" value="2026-11-25T10:30" required>
+        </div>
+      </form>
+    </section>
+
+    <section class="mq-panel">
+      <h2>Líneas <small>DETALLE_VENTA</small></h2>
+      <p class="mq-nota">El vuelto no se guarda. En caja entra el TOTAL de la venta.</p>
+      <table class="mq-tabla">
+        <thead><tr><th>ID_INVENTARIO</th><th>ID_CLIENTE</th><th>CANTIDAD</th><th>COSTO_UNITARIO</th><th>SUBTOTAL</th><th>FECHA_CREACION</th><th>FECHA_VENCIMIENTO</th><th>ESTADO</th></tr></thead>
+        <tbody>
+          <tr><td>7</td><td>3</td><td>2</td><td>18.00</td><td>36.00</td><td>2026-11-25 10:30</td><td>—</td><td>VENDIDO</td></tr>
+          <tr><td>12</td><td>3</td><td>3</td><td>20.00</td><td>60.00</td><td>2026-11-25 10:30</td><td>2026-11-26 10:30</td><td>COTIZACION</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="4">TOTAL</td><td class="num">96.00</td><td colspan="3"></td></tr></tfoot>
+      </table>
+      <div class="mq-acciones"><button class="mq-boton" type="button">Registrar venta</button><a class="mq-boton secundario" href="caja.html">Ir a caja</a></div>
+    </section>
+  </main>
+</body>
+</html>

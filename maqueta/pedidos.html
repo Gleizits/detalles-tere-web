@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pedidos · DetallesTereTS (maqueta)</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="mq-barra">
+    <a class="mq-marca" href="index.html">Detalles<small>Tere</small> TS</a>
+    <nav class="mq-nav" aria-label="Módulos">
+      <a href="panel.html">Panel</a><a href="caja.html">Caja</a><a href="venta.html">Venta</a>
+      <a class="activo" href="pedidos.html">Pedidos</a><a href="inventario.html">Inventario</a>
+      <a href="ingresos.html">Ingresos</a><a href="terminos.html">Términos</a>
+      <a href="reportes.html">Reportes</a><a href="usuarios.html">Usuarios</a><a href="login.html">Salir</a>
+    </nav>
+    <span class="mq-usuario">admin</span>
+  </header>
+
+  <main class="mq-contenedor">
+    <div class="mq-cabecera">
+      <p class="mq-etiqueta">Tablas PEDIDOS y DETALLE_PEDIDO</p>
+      <h1>Pedidos reservados</h1>
+      <p>Adelanto mínimo del 50 %. Tres plazos: pago (1 mes), recojo (2 meses) y canje (3 meses).</p>
+    </div>
+
+    <section class="mq-panel">
+      <h2>Datos del pedido <small>PEDIDOS</small></h2>
+      <form class="mq-form" action="#" method="post">
+        <input type="hidden" name="csrfToken" value="token-de-ejemplo">
+        <div class="mq-campo"><label for="ID_CLIENTE">ID_CLIENTE</label><input id="ID_CLIENTE" name="ID_CLIENTE" type="number" value="4"></div>
+        <div class="mq-campo"><label for="NOMBRE_PAGA">NOMBRE_PAGA</label><input id="NOMBRE_PAGA" name="NOMBRE_PAGA" type="text" value="María Pérez" required></div>
+        <div class="mq-campo"><label for="NOMBRE_RECOGE">NOMBRE_RECOGE</label><input id="NOMBRE_RECOGE" name="NOMBRE_RECOGE" type="text" placeholder="Opcional"><small>Puede quedar vacío</small></div>
+        <div class="mq-campo"><label for="CELULAR">CELULAR</label><input id="CELULAR" name="CELULAR" type="tel" value="987654321" required></div>
+        <div class="mq-campo"><label for="FECHA_RECOJO">FECHA_RECOJO</label><input id="FECHA_RECOJO" name="FECHA_RECOJO" type="date" value="2026-12-15" required></div>
+        <div class="mq-campo"><label for="HORA_RECOJO">HORA_RECOJO</label><input id="HORA_RECOJO" name="HORA_RECOJO" type="time" value="10:30"></div>
+        <div class="mq-campo"><label for="ADELANTO">ADELANTO</label><input id="ADELANTO" name="ADELANTO" type="number" step="0.01" value="150.00" required><small>Debe ser ≥ 50 % del TOTAL</small></div>
+        <div class="mq-campo"><label for="TOTAL">TOTAL</label><input id="TOTAL" name="TOTAL" type="number" step="0.01" value="250.00" required></div>
+        <div class="mq-campo"><label for="ESTADO">ESTADO</label><select id="ESTADO" name="ESTADO"><option>PENDIENTE</option><option>COMPLETO</option><option>RECOGIDO</option><option>CANCELADO</option></select></div>
+        <div class="mq-campo"><label for="ESTADO_PRODUCCION">ESTADO_PRODUCCION</label><select id="ESTADO_PRODUCCION" name="ESTADO_PRODUCCION"><option>PENDIENTE</option><option>HECHO</option><option>CANCELADO</option></select><small>HECHO = punto de no retorno</small></div>
+        <div class="mq-campo"><label for="ID_USUARIO">ID_USUARIO</label><input id="ID_USUARIO" name="ID_USUARIO" type="number" value="1"></div>
+        <div class="mq-campo"><label for="FECHA_CREACION">FECHA_CREACION</label><input id="FECHA_CREACION" name="FECHA_CREACION" type="datetime-local" value="2026-11-25T09:00"></div>
+        <div class="mq-campo"><label for="FECHA_LIMITE_PAGO">FECHA_LIMITE_PAGO</label><input id="FECHA_LIMITE_PAGO" name="FECHA_LIMITE_PAGO" type="datetime-local" value="2026-12-25T09:00"></div>
+        <div class="mq-campo"><label for="FECHA_LIMITE_RECOJO">FECHA_LIMITE_RECOJO</label><input id="FECHA_LIMITE_RECOJO" name="FECHA_LIMITE_RECOJO" type="datetime-local" value="2027-01-25T09:00"></div>
+        <div class="mq-campo"><label for="FECHA_LIMITE_CANJE">FECHA_LIMITE_CANJE</label><input id="FECHA_LIMITE_CANJE" name="FECHA_LIMITE_CANJE" type="datetime-local" value="2027-02-25T09:00"></div>
+        <div class="mq-campo"><label for="FECHA_PAGO_TOTAL">FECHA_PAGO_TOTAL</label><input id="FECHA_PAGO_TOTAL" name="FECHA_PAGO_TOTAL" type="datetime-local"></div>
+        <div class="mq-acciones"><button class="mq-boton" type="submit">Guardar pedido</button></div>
+      </form>
+    </section>
+
+    <section class="mq-panel">
+      <h2>Líneas <small>DETALLE_PEDIDO</small></h2>
+      <table class="mq-tabla">
+        <thead><tr><th>ID_PEDIDO</th><th>ID_INVENTARIO</th><th>CANTIDAD</th><th>COSTO_UNITARIO</th><th>SUBTOTAL</th></tr></thead>
+        <tbody><tr><td>1</td><td>9</td><td>5</td><td>50.00</td><td>250.00</td></tr></tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

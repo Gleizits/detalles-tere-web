@@ -1,0 +1,213 @@
+<div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="titulo-seccion mb-1">
+            <i class="bi bi-graph-up-arrow me-2" aria-hidden="true"></i>Reportes
+        </h1>
+        <p class="text-muted mb-0">Ventas, entradas y margen estimado para tomar decisiones.</p>
+    </div>
+    <form class="reporte-filtros" method="get" action="<%= e(url('/reportes')) %>">
+        <label class="visually-hidden" for="tipo">Periodo</label>
+        <select class="form-select" id="tipo" name="tipo">
+            <option value="dia" <%= tipoPeriodo === 'dia' ? 'selected' : '' %>>Un día</option>
+            <option value="mes" <%= tipoPeriodo === 'mes' ? 'selected' : '' %>>Un mes</option>
+        </select>
+        <label class="visually-hidden" for="periodo">Fecha</label>
+        <input class="form-control" id="periodo" name="periodo"
+               type="<%= tipoPeriodo === 'mes' ? 'month' : 'date' %>"
+               value="<%= e(valorPeriodo) %>" required>
+        <button class="btn btn-app btn-app-primary" type="submit">Ver reporte</button>
+        <% if (reporte !== null) { %>
+            <a class="btn btn-outline-secondary"
+               href="<%= e(url('/reportes?' + new URLSearchParams({
+                   tipo: tipoPeriodo,
+                   periodo: valorPeriodo,
+                   formato: 'csv',
+               }).toString())) %>">
+                <i class="bi bi-file-earmark-spreadsheet me-1" aria-hidden="true"></i>CSV
+            </a>
+        <% } %>
+    </form>
+</div>
+
+<% if (error) { %>
+    <div class="alerta-error mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i><%= e(error) %>
+    </div>
+<% } %>
+
+<% if (reporte !== null) { %>
+    <div class="reporte-periodo mb-4">
+        <span class="reporte-periodo-marca"></span>
+        <div>
+            <strong><%= e(reporte.etiquetaPeriodo ?? '') %></strong>
+            <span>Solo visible para administradores</span>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="reporte-metrica">
+                <span>Ventas</span>
+                <strong>S/ <%= e(num(reporte.ventasTotales ?? 0)) %></strong>
+                <small><%= Number(reporte.cantidadVentas ?? 0) %> operación(es) ·
+                    <%= Number(reporte.unidadesVendidas ?? 0) %> unidad(es)</small>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="reporte-metrica">
+                <span>Entradas al inventario</span>
+                <strong>S/ <%= e(num(reporte.ingresosTotales ?? 0)) %></strong>
+                <small><%= Number(reporte.unidadesIngresadas ?? 0) %> unidad(es) recibida(s)</small>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="reporte-metrica reporte-metrica-acento">
+                <span>Margen estimado</span>
+                <strong>S/ <%= e(num(reporte.margenEstimado ?? 0)) %></strong>
+                <small>Usa el costo vigente del artículo</small>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="reporte-metrica">
+                <span>Formas de pago</span>
+                <strong>S/ <%= e(num(reporte.efectivo ?? 0)) %></strong>
+                <small>Efectivo · Yape S/ <%= e(num(reporte.yape ?? 0)) %>
+                    · Crédito S/ <%= e(num(reporte.credito ?? 0)) %></small>
+            </div>
+        </div>
+        <% if ('cajasTotales' in reporte) { %>
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="reporte-metrica">
+                    <span>Cajas del periodo</span>
+                    <strong>S/ <%= e(num(reporte.cajasTotales)) %></strong>
+                    <small>Total registrado en caja</small>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-xl-7">
+            <div class="app-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-baseline mb-3">
+                    <h2 class="h4 mb-0">Ventas del periodo</h2>
+                    <span class="text-muted"><%= paginaVentas.total %> línea(s)</span>
+                </div>
+                <div class="tabla-envoltorio">
+                    <table class="tabla-app">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th><th>Artículo</th><th class="num">Cant.</th>
+                                <th class="num">Venta</th><th class="num">Costo</th><th class="num">Margen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (const linea of (reporte.ventas ?? [])) { %>
+                                <tr>
+                                    <td><%= e(typeof linea.fechaTexto === 'function'
+                                        ? linea.fechaTexto()
+                                        : (linea.fechaTexto || fecha(linea.fecha ?? null, 'd/m H:i'))) %></td>
+                                    <td class="nombre-item"><%= e(linea.articulo ?? '') %></td>
+                                    <td class="num"><%= Number(linea.cantidad ?? 0) %></td>
+                                    <td class="num">S/ <%= e(num(linea.subtotal ?? 0)) %></td>
+                                    <td class="num">S/ <%= e(num(linea.costoVigente ?? 0)) %></td>
+                                    <td class="num">S/ <%= e(num(linea.margen ?? 0)) %></td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                    <%- include('comunes/paginacion', {
+                        paginacion: paginaVentas,
+                        base: '/reportes',
+                        filtros: {
+                            tipo: tipoPeriodo,
+                            periodo: valorPeriodo,
+                            pageIngresos: paginaIngresos.pagina,
+                            pageSizeIngresos: paginaIngresos.porPagina
+                        },
+                        etiqueta: 'ventas'
+                    }) %>
+                    <% if ((reporte.ventas ?? []).length === 0) { %>
+                        <p class="text-muted mb-0 mt-3">No hubo ventas en este periodo.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-5">
+            <div class="app-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-baseline mb-3">
+                    <h2 class="h4 mb-0">Entradas registradas</h2>
+                    <span class="text-muted"><%= paginaIngresos.total %> línea(s)</span>
+                </div>
+                <div class="tabla-envoltorio">
+                    <table class="tabla-app">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th><th>Proveedor</th><th>Artículo</th>
+                                <th class="num">Cant.</th><th class="num">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (const linea of (reporte.ingresos ?? [])) { %>
+                                <tr>
+                                    <td><%= e(fecha(linea.fecha ?? null, 'd/m/Y')) %></td>
+                                    <td><%= e(linea.proveedor ?? '') %></td>
+                                    <td class="nombre-item"><%= e(linea.articulo ?? '') %></td>
+                                    <td class="num"><%= Number(linea.cantidad ?? 0) %></td>
+                                    <td class="num">S/ <%= e(num(linea.subtotal ?? 0)) %></td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                    <%- include('comunes/paginacion', {
+                        paginacion: paginaIngresos,
+                        base: '/reportes',
+                        filtros: {
+                            tipo: tipoPeriodo,
+                            periodo: valorPeriodo,
+                            pageVentas: paginaVentas.pagina,
+                            pageSizeVentas: paginaVentas.porPagina
+                        },
+                        etiqueta: 'entradas'
+                    }) %>
+                    <% if ((reporte.ingresos ?? []).length === 0) { %>
+                        <p class="text-muted mb-0 mt-3">No hubo entradas en este periodo.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <% if ((reporte.cajas ?? []).length > 0) { %>
+            <div class="col-12">
+                <div class="app-card p-4">
+                    <h2 class="h4 mb-3">Cajas del periodo</h2>
+                    <div class="tabla-envoltorio">
+                        <table class="tabla-app">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th><th>Apertura</th><th>Cierre</th>
+                                    <th class="num">Inicial</th><th class="num">Final</th>
+                                    <th class="num">Real</th><th class="num">Diferencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (const caja of (reporte.cajas ?? [])) { %>
+                                    <tr>
+                                        <td><%= e(caja.nombreUsuario ?? '') %></td>
+                                        <td><%= e(fecha(caja.fechaApertura ?? null, 'd/m H:i')) %></td>
+                                        <td><%= e(fecha(caja.fechaCierre ?? null, 'd/m H:i')) %></td>
+                                        <td class="num">S/ <%= e(num(caja.montoInicial ?? 0)) %></td>
+                                        <td class="num">S/ <%= e(num(caja.montoFinal ?? 0)) %></td>
+                                        <td class="num">S/ <%= e(num(caja.montoReal ?? 0)) %></td>
+                                        <td class="num">S/ <%= e(num(caja.diferencia ?? 0)) %></td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+<% } %>
+
+<script src="<%= e(url('/assets/js/reportes.js')) %>"></script>

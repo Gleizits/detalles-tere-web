@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresos · DetallesTereTS (maqueta)</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="mq-barra">
+    <a class="mq-marca" href="index.html">Detalles<small>Tere</small> TS</a>
+    <nav class="mq-nav" aria-label="Módulos">
+      <a href="panel.html">Panel</a><a href="caja.html">Caja</a><a href="venta.html">Venta</a>
+      <a href="pedidos.html">Pedidos</a><a href="inventario.html">Inventario</a>
+      <a class="activo" href="ingresos.html">Ingresos</a><a href="terminos.html">Términos</a>
+      <a href="reportes.html">Reportes</a><a href="usuarios.html">Usuarios</a><a href="login.html">Salir</a>
+    </nav>
+    <span class="mq-usuario">admin</span>
+  </header>
+
+  <main class="mq-contenedor">
+    <div class="mq-cabecera">
+      <p class="mq-etiqueta">Solo administrador · INGRESO</p>
+      <h1>Ingreso de mercadería</h1>
+      <p>El precio de compra es visible únicamente para el rol <code>admin</code>.</p>
+    </div>
+
+    <section class="mq-panel">
+      <h2>Cabecera <small>INGRESO</small></h2>
+      <form class="mq-form" action="#" method="post">
+        <input type="hidden" name="csrfToken" value="token-de-ejemplo">
+        <div class="mq-campo"><label for="ID_PROVEEDOR">ID_PROVEEDOR</label><input id="ID_PROVEEDOR" name="ID_PROVEEDOR" type="number" value="2" required></div>
+        <div class="mq-campo"><label for="ID_USUARIO">ID_USUARIO</label><input id="ID_USUARIO" name="ID_USUARIO" type="number" value="1" required></div>
+        <div class="mq-campo"><label for="FECHA_INGRESO">FECHA_INGRESO</label><input id="FECHA_INGRESO" name="FECHA_INGRESO" type="date" value="2026-11-25" required></div>
+      </form>
+    </section>
+
+    <section class="mq-panel">
+      <h2>Detalle <small>DETALLE_INGRESO</small></h2>
+      <table class="mq-tabla">
+        <thead><tr><th>ID_INGRESO</th><th>ID_INVENTARIO</th><th>CANTIDAD</th><th>PRECIO_COMPRA_UNITARIO</th><th>SUBTOTAL</th><th>OBSERVACIONES</th></tr></thead>
+        <tbody><tr><td>1</td><td>4</td><td>12</td><td>8.50</td><td>102.00</td><td>Lote demo 1</td></tr></tbody>
+      </table>
+      <div class="mq-acciones"><button class="mq-boton" type="button">Agregar línea</button><button class="mq-boton" type="button">Guardar ingreso</button></div>
+    </section>
+
+    <section class="mq-panel">
+      <h2>Proveedor <small>PROVEEDOR</small></h2>
+      <form class="mq-form" action="#" method="post">
+        <input type="hidden" name="csrfToken" value="token-de-ejemplo">
+        <div class="mq-campo"><label for="NOMBRE">NOMBRE</label><input id="NOMBRE" name="NOMBRE" type="text" value="Distribuidora Ica"></div>
+        <div class="mq-campo"><label for="NUMERO">NUMERO</label><input id="NUMERO" name="NUMERO" type="tel" value="999123456"></div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

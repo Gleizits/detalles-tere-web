@@ -1,0 +1,117 @@
+<% const editando = Number(usuarioEditar?.id ?? 0) > 0; %>
+<% const camposVista = campos ?? {}; %>
+<% const camposEditarVista = camposEditar ?? { correo: null, estado: true }; %>
+<div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+        <h1 class="titulo-seccion mb-1">
+            <i class="bi bi-people me-2" aria-hidden="true"></i>Usuarios
+        </h1>
+        <p class="text-muted mb-0">Controla quién puede entrar y qué puede administrar.</p>
+    </div>
+    <a class="btn btn-app btn-app-primary" href="<%= e(url('/usuarios?nuevo=1')) %>">
+        <i class="bi bi-person-plus me-1" aria-hidden="true"></i>Nuevo usuario
+    </a>
+</div>
+
+<% if (error) { %>
+    <div class="alerta-error mb-4" role="alert">
+        <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i><%= e(error) %>
+    </div>
+<% } %>
+
+<div class="usuarios-layout">
+    <div class="app-card tabla-envoltorio">
+        <table class="tabla-app">
+            <thead>
+                <tr><th>Persona</th><th>Usuario</th><th>Rol</th><th>Estado</th><th></th></tr>
+            </thead>
+            <tbody>
+                <% for (const u of usuarios) { %>
+                    <% const estado = camposVista[u.id]?.estado ?? u.estado ?? true; %>
+                    <tr>
+                        <td class="nombre-item"><%= e(u.nombreCompleto()) %></td>
+                        <td><%= e(u.username) %></td>
+                        <td><span class="badge-clase"><%= e(u.rol) %></span></td>
+                        <td>
+                            <span class="badge-estado <%= estado ? 'abierto' : 'cerrado' %>">
+                                <%= estado ? 'Activo' : 'Baja' %>
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               href="<%= e(url('/usuarios?editar=' + Number(u.id))) %>">
+                                <i class="bi bi-pencil-square me-1" aria-hidden="true"></i>Editar
+                            </a>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <%- include('comunes/paginacion', { paginacion, base: '/usuarios', filtros: {}, etiqueta: 'usuarios' }) %>
+    </div>
+
+    <% if (editando || nuevo) { %>
+        <div class="app-card p-4">
+            <h2 class="h4 mb-3"><%= editando ? 'Editar usuario' : 'Nuevo usuario' %></h2>
+            <form method="post" action="<%= e(url('/usuarios')) %>" autocomplete="off">
+                <input type="hidden" name="csrfToken" value="<%= e(csrfToken) %>">
+                <input type="hidden" name="accion" value="<%= editando ? 'editar' : 'crear' %>">
+                <% if (editando) { %>
+                    <input type="hidden" name="id" value="<%= Number(usuarioEditar?.id ?? 0) %>">
+                <% } %>
+                <div class="mb-3">
+                    <label class="form-label" for="username">Usuario *</label>
+                    <input class="form-control" id="username" name="username" maxlength="50"
+                           autocomplete="username" value="<%= e(usuarioEditar?.username ?? '') %>" required>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="nombre">Nombre *</label>
+                        <input class="form-control" id="nombre" name="nombre" maxlength="50"
+                               value="<%= e(usuarioEditar?.nombre ?? '') %>" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="apellido">Apellido *</label>
+                        <input class="form-control" id="apellido" name="apellido" maxlength="50"
+                               value="<%= e(usuarioEditar?.apellido ?? '') %>" required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="correo">Correo</label>
+                    <input class="form-control" id="correo" name="correo" type="email" maxlength="75"
+                           value="<%= e(camposEditarVista.correo ?? usuarioEditar?.correo ?? '') %>">
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="rol">Rol *</label>
+                        <select class="form-select" id="rol" name="rol" required>
+                            <option value="empleado"
+                                <%= (usuarioEditar?.rol ?? '') === 'empleado' ? 'selected' : '' %>>Empleado</option>
+                            <option value="admin"
+                                <%= (usuarioEditar?.rol ?? '') === 'admin' ? 'selected' : '' %>>Administrador</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="password">
+                            <%= editando ? 'Nueva contraseña' : 'Contraseña *' %>
+                        </label>
+                        <input class="form-control" id="password" name="password" type="password"
+                               minlength="6" maxlength="100" autocomplete="new-password"
+                               <%= editando ? '' : 'required' %>>
+                    </div>
+                </div>
+                <% if (editando) { %>
+                    <div class="form-check form-switch fs-5 mb-4">
+                        <input class="form-check-input" type="checkbox" id="estado" name="estado"
+                               <%= (camposEditarVista.estado ?? usuarioEditar?.estado ?? true) ? 'checked' : '' %>>
+                        <label class="form-check-label" for="estado">Usuario activo</label>
+                    </div>
+                <% } %>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-app btn-app-primary" type="submit">Guardar usuario</button>
+                    <a class="btn btn-outline-secondary" href="<%= e(url('/usuarios')) %>">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    <% } %>
+</div>

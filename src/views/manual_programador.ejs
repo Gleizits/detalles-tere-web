@@ -1,0 +1,77 @@
+<section class="mb-4">
+    <p class="text-muted mb-1">Manual del programador · DetallesTereTS</p>
+    <h1 class="h3 mb-2">Arquitectura y operación</h1>
+    <p class="text-muted mb-0">Referencia técnica para quien mantenga o despliegue el sistema.</p>
+</section>
+
+<div class="row g-3">
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Stack y estructura</h2>
+                <p>TypeScript + Express + EJS + <code>mssql</code> + <code>bcryptjs</code>. El handler serverless vive en <code>api/index.ts</code>.</p>
+                <ul class="mb-0">
+                    <li><code>src/routes.ts</code>: mapa de rutas.</li>
+                    <li><code>src/controllers/</code>: reglas de negocio.</li>
+                    <li><code>src/dao/</code>: consultas SQL parametrizadas con <code>?</code>.</li>
+                    <li><code>src/views/</code>: plantillas EJS.</li>
+                    <li><code>DetallesTerePHP/db/</code>: esquema, seed y scripts analíticos.</li>
+                </ul>
+            </div>
+        </article>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Base de datos</h2>
+                <p>SQL Server <code>DetallesTereDB</code>, 22 tablas en 3FN y collation <code>Modern_Spanish_CI_AI</code>.</p>
+                <p class="mb-0">El backup original es <code>D:\DetallesTereDB.bak</code>. Los scripts de reconstrucción están en <code>DetallesTerePHP/db/</code>.</p>
+            </div>
+        </article>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Seguridad</h2>
+                <ul class="mb-0">
+                    <li>Sesión firmada HMAC en cookie <code>dt_session</code>, apta para serverless.</li>
+                    <li>CSRF obligatorio en todos los POST mediante el campo <code>csrfToken</code>.</li>
+                    <li>Contraseñas BCrypt compatibles con los hashes <code>$2a$</code> de la versión PHP.</li>
+                    <li>Cabeceras de seguridad y CSP con excepción solo para el mapa incrustado.</li>
+                </ul>
+            </div>
+        </article>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Variables de entorno</h2>
+                <p>Copia <code>.env.example</code> a <code>.env</code> y configura <code>DB_*</code> y <code>SESSION_SECRET</code>. El formulario usa <code>CONTACT_EMAIL</code> con <code>mailto:</code>: no necesita API de correo.</p>
+                <p class="mb-0">En Vercel, carga las mismas variables en Project Settings → Environment Variables.</p>
+            </div>
+        </article>
+    </div>
+</div>
+
+<section class="mt-4">
+    <h2 class="h5">Orden de ejecución de scripts SQL</h2>
+    <ol>
+        <li><code>01_schema_DetallesTereDB.sql</code> — crea la base y las 22 tablas.</li>
+        <li><code>02_seed_DetallesTereDB.sql</code> — usuario <code>admin</code> y categoría base.</li>
+        <li><code>03_seed_500_registros.sql</code> — datos de prueba: 500 filas por tabla.</li>
+        <li><code>04_consultas_powerbi.sql</code> — seis vistas con cinco o más tablas cada una.</li>
+    </ol>
+    <p class="small text-muted mb-0">Si restore el <code>.bak</code> original, no ejecutes los scripts de datos masivos sobre la base real sin antes hacer una copia.</p>
+</section>
+
+<section class="mt-4">
+    <h2 class="h5">Comandos habituales</h2>
+    <pre class="bg-light p-3 rounded"><code>npm install
+npm run dev
+npm run typecheck
+npm run smoke</code></pre>
+    <p class="small text-muted mb-0">El smoke test cubre la portada, el login, los assets y la validación CSRF sin depender de la base de datos.</p>
+</section>

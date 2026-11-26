@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="DetallesTereTS: sistema para gestionar inventario, ventas, pedidos y reportes de una piñatería en Ica. Proyecto final de Modelamiento de Base de Datos, UPSJB 2026.">
+    <title><%= e(titulo) %> · DetallesTereTS</title>
+    <link rel="icon" type="image/png" href="<%= url('/assets/img/logo.png') %>">
+    <link rel="stylesheet" href="<%= url('/assets/css/bootstrap.min.css') %>">
+    <link rel="stylesheet" href="<%= url('/assets/css/bootstrap-icons.min.css') %>">
+    <link rel="stylesheet" href="<%= url('/assets/css/landing.css') %>">
+</head>
+<body>
+<a class="salto" href="#contenido">Ir al contenido</a>
+
+<header class="lp-topbar">
+    <div class="lp-contenedor lp-topbar-inner">
+        <a class="lp-marca" href="<%= url('/') %>">
+            <img src="<%= url('/assets/img/logo.png') %>" alt="DetallesTere" class="lp-marca-logo">
+            <span>Detalles<span>Tere</span><small>TS</small></span>
+        </a>
+        <nav class="lp-nav" aria-label="Navegación principal">
+            <a href="#servicios">Módulos</a>
+            <a href="#ingredientes">Ingredientes</a>
+            <a href="#equipo">Equipo</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+        <div class="lp-manuales-top" aria-label="Manuales del sistema">
+            <a href="<%= url('/manual-usuario') %>"><i class="bi bi-book" aria-hidden="true"></i> Manual usuario</a>
+            <a href="<%= url('/manual-programador') %>"><i class="bi bi-code-slash" aria-hidden="true"></i> Manual programador</a>
+        </div>
+        <a class="lp-ingresar" href="<%= url('/login') %>">
+            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Ingresar
+        </a>
+    </div>
+</header>
+
+<main id="contenido">
+    <section class="lp-hero" aria-labelledby="hero-titulo">
+        <div class="lp-contenedor lp-hero-inner">
+            <div class="lp-hero-copy">
+                <p class="lp-presentacion">UPSJB · Modelamiento de Base de Datos · 2026</p>
+                <h1 id="hero-titulo">La fiesta ordenada<br>empieza en el <em>almacén</em>.</h1>
+                <p class="lp-bajada">
+                    DetallesTereTS reúne en un solo lugar el inventario por paquete o unidad,
+                    las ventas, los pedidos reservados y el control diario de caja de una
+                    piñatería en Ica.
+                </p>
+                <div class="lp-acciones">
+                    <a class="lp-boton lp-boton-principal" href="<%= url('/login') %>">
+                        Entrar al sistema <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                    <a class="lp-boton lp-boton-secundario" href="#contacto">Hacer una consulta</a>
+                </div>
+                <p class="lp-visita">
+                    <i class="bi bi-eye" aria-hidden="true"></i>
+                    Eres la visitante <strong>#<%= e(visitas) %></strong> desde este navegador
+                </p>
+            </div>
+
+            <div class="lp-sello" aria-label="Datos académicos del proyecto">
+                <div class="lp-sello-escudo">
+                    <img src="<%= url('/assets/img/logo-upsjb.png') %>" alt="Logo de la Universidad Privada San Juan Bautista">
+                    <div>
+                        <span>UPSJB</span>
+                        <small>Facultad de Ingenierías</small>
+                    </div>
+                </div>
+                <dl>
+                    <div><dt>Curso</dt><dd>Modelamiento de Base de Datos</dd></div>
+                    <div><dt>Ciclo</dt><dd>2026</dd></div>
+                    <div><dt>Docente</dt><dd>Ing. Luis Castillón Siguas</dd></div>
+                    <div><dt>Ubicación</dt><dd>Ica, Perú</dd></div>
+                </dl>
+            </div>
+        </div>
+
+        <div class="lp-cinta" aria-label="Materiales que se controlan en el sistema">
+            <div class="lp-cinta-pista">
+                <span>Globos por paquete</span><span>◆</span>
+                <span>Velas por unidad</span><span>◆</span>
+                <span>Bases para ramos</span><span>◆</span>
+                <span>Platos y vasos</span><span>◆</span>
+                <span>Bandejas de cartón</span><span>◆</span>
+                <span>Arcos y cortinas</span><span>◆</span>
+                <span>Globos por paquete</span><span>◆</span>
+                <span>Velas por unidad</span><span>◆</span>
+                <span>Bases para ramos</span><span>◆</span>
+                <span>Platos y vasos</span><span>◆</span>
+                <span>Bandejas de cartón</span><span>◆</span>
+                <span>Arcos y cortinas</span><span>◆</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="lp-seccion" aria-labelledby="slider-titulo">
+        <div class="lp-contenedor">
+            <h2 id="slider-titulo" class="lp-titulo-seccion">Así se ve el día a día</h2>
+            <div class="lp-slider" id="lpSlider" aria-roledescription="carrusel" aria-label="Vistas del sistema">
+                <input class="lp-slider-radio" type="radio" name="lp-slide" id="lp-slide-1" checked>
+                <input class="lp-slider-radio" type="radio" name="lp-slide" id="lp-slide-2">
+                <input class="lp-slider-radio" type="radio" name="lp-slide" id="lp-slide-3">
+
+                <div class="lp-slider-marco">
+                    <article class="lp-slide lp-slide-1" aria-label="Paso 1 de 3">
+                        <span class="lp-slide-numero">01 / 03</span>
+                        <h3>Cuenta lo que entra</h3>
+                        <p>Registra el ingreso por proveedor y decide si el material se cuenta por unidad, paquete, docena o cajón.</p>
+                        <div class="lp-slide-muestra lp-muestra-ingreso">
+                            <span>Proveedor</span><span>Ítem</span><span>Cantidad</span><span>Costo</span>
+                        </div>
+                    </article>
+                    <article class="lp-slide lp-slide-2" aria-label="Paso 2 de 3">
+                        <span class="lp-slide-numero">02 / 03</span>
+                        <h3>Cotiza y reserva</h3>
+                        <p>Una cotización dura 24 horas. Los pedidos guardan el adelanto, el nombre de quien recoge y sus tres plazos.</p>
+                        <div class="lp-slide-muestra lp-muestra-pedido">
+                            <span>Adelanto 50%</span><span>Recojo</span><span>Canje</span><span>Pago</span>
+                        </div>
+                    </article>
+                    <article class="lp-slide lp-slide-3" aria-label="Paso 3 de 3">
+                        <span class="lp-slide-numero">03 / 03</span>
+                        <h3>Cierra la caja</h3>
+                        <p>El reporte diario separa efectivo, Yape y créditos, y compara el monto real contra el calculado.</p>
+                        <div class="lp-slide-muestra lp-muestra-caja">
+                            <span>Efectivo</span><span>Yape</span><span>Margen</span><span>Diferencia</span>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="lp-slider-controles" role="tablist" aria-label="Elegir vista">
+                    <label for="lp-slide-1" role="tab" aria-label="Ver ingreso de mercadería"></label>
+                    <label for="lp-slide-2" role="tab" aria-label="Ver cotizaciones y pedidos"></label>
+                    <label for="lp-slide-3" role="tab" aria-label="Ver cierre de caja"></label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="lp-seccion lp-seccion-clara" id="servicios" aria-labelledby="modulos-titulo">
+        <div class="lp-contenedor">
+            <p class="lp-etiqueta">8 módulos · 22 tablas</p>
+            <h2 id="modulos-titulo" class="lp-titulo-seccion">Todo lo que la tienda necesita, en su sitio</h2>
+            <div class="lp-cards">
+                <article class="lp-card">
+                    <span class="lp-card-icono"><i class="bi bi-cash-coin" aria-hidden="true"></i></span>
+                    <h3>Caja</h3>
+                    <p>Apertura, ventas del día, conteo final y diferencia. Un solo registro abierto por persona.</p>
+                </article>
+                <article class="lp-card">
+                    <span class="lp-card-icono"><i class="bi bi-cart-check" aria-hidden="true"></i></span>
+                    <h3>Ventas</h3>
+                    <p>Venta inmediata o cotización de 24 horas, con efectivo, Yape o canje de crédito.</p>
+                </article>
+                <article class="lp-card">
+                    <span class="lp-card-icono"><i class="bi bi-box-seam" aria-hidden="true"></i></span>
+                    <h3>Inventario</h3>
+                    <p>Stock actual y mínimo, unidad de medida y sinónimos para encontrar el producto por su nombre de siempre.</p>
+                </article>
+                <article class="lp-card">
+                    <span class="lp-card-icono"><i class="bi bi-calendar2-check" aria-hidden="true"></i></span>
+                    <h3>Pedidos</h3>
+                    <p>Reservas con adelanto mínimo del 50% y fechas límite de pago, recojo y canje.</p>
+                </article>
+                <article class="lp-card">
+                    <span class="lp-card-icono"><i class="bi bi-truck" aria-hidden="true"></i></span>
+                    <h3>Ingresos</h3>
+                    <p>Entrada de mercadería por proveedor, con precio de compra visible solo para administración.</p>
+                </article>
+                <article class="lp-card">
+                    <span class="lp-card-icono"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></span>
+                    <h3>Reportes</h3>
+                    <p>Resumen diario o mensual listo para exportar y llevar a Power BI.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="lp-seccion" id="ingredientes" aria-labelledby="ingredientes-titulo">
+        <div class="lp-contenedor lp-ingredientes-inner">
+            <div>
+                <p class="lp-etiqueta">Del mostrador al almacén</p>
+                <h2 id="ingredientes-titulo" class="lp-titulo-seccion">Cada cosa se cuenta como llega</h2>
+                <p class="lp-texto">
+                    Los globos de silueta se compran por paquete de 100 o 200; las velas se cuentan por unidad;
+                    las bandejas de cartón llegan de 8 en 8. El sistema respeta esa realidad en vez de forzar todo a “unidades”.
+                </p>
+            </div>
+            <ul class="lp-ingredientes">
+                <li><i class="bi bi-palette" aria-hidden="true"></i> Arreglos y bases</li>
+                <li><i class="bi bi-balloon" aria-hidden="true"></i> Globos y siluetas</li>
+                <li><i class="bi bi-candle" aria-hidden="true"></i> Velas y mechas</li>
+                <li><i class="bi bi-cup-straw" aria-hidden="true"></i> Platos, vasos y tenedores</li>
+                <li><i class="bi bi-box" aria-hidden="true"></i> Cajones y paquetes</li>
+                <li><i class="bi bi-grid" aria-hidden="true"></i> Bandejas y cintas</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="lp-seccion lp-seccion-equipo" id="equipo" aria-labelledby="equipo-titulo">
+        <div class="lp-contenedor">
+            <p class="lp-etiqueta">Trabajo final · UPSJB · Ica</p>
+            <h2 id="equipo-titulo" class="lp-titulo-seccion">Quiénes lo construyeron</h2>
+            <p class="lp-docente">
+                <strong>Ing. Luis Castillón Siguas</strong> · Docente del curso
+                · Escuela Profesional de Ingeniería de Sistemas
+            </p>
+            <ul class="lp-equipo">
+                <li>Geissel D'Alessandro Zidanne Espino Anicama</li>
+                <li>Brayan Alexander Cornejo Moyano</li>
+                <li>Wilfredo Antonio Quispe Huancahuari</li>
+                <li>Alexander Choccelahua Ichpas</li>
+                <li>Piero Aldahir Valencia Cojoma</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="lp-seccion lp-seccion-clara" id="contacto" aria-labelledby="contacto-titulo">
+        <div class="lp-contenedor lp-contacto-inner">
+            <div>
+                <p class="lp-etiqueta">Escríbenos</p>
+                <h2 id="contacto-titulo" class="lp-titulo-seccion">Cuéntanos qué necesitas</h2>
+                <p class="lp-texto">Respondemos por correo. Para una respuesta más rápida, usa el botón de WhatsApp.</p>
+                <div class="lp-mapa">
+                    <iframe title="Mapa de Ica, Perú" src="<%= e(mapaSrc) %>" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <p class="lp-mapa-enlace">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Ica%2C%20Peru" target="_blank" rel="noopener">
+                        Cómo llegar a Ica <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                    </a>
+                </p>
+            </div>
+
+            <form class="lp-formulario" method="post" action="<%= url('/contacto') %>">
+                <input type="hidden" name="csrfToken" value="<%= e(csrfToken) %>">
+                <div>
+                    <label for="lp-nombre">Nombre</label>
+                    <input id="lp-nombre" name="nombre" type="text" autocomplete="name" required maxlength="90" placeholder="Tu nombre">
+                </div>
+                <div>
+                    <label for="lp-correo">Correo</label>
+                    <input id="lp-correo" name="correo" type="email" autocomplete="email" required maxlength="120" placeholder="tu@correo.com">
+                </div>
+                <div>
+                    <label for="lp-mensaje">Mensaje</label>
+                    <textarea id="lp-mensaje" name="mensaje" rows="5" required minlength="10" maxlength="2000" placeholder="¿Qué arreglo, pedido o consulta tienes?"></textarea>
+                </div>
+                <button class="lp-boton lp-boton-principal" type="submit">
+                    Enviar mensaje <i class="bi bi-send" aria-hidden="true"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+</main>
+
+<footer class="lp-footer">
+    <div class="lp-contenedor lp-footer-inner">
+        <span>© 2026 DetallesTereTS · UPSJB · Ica, Perú<br>
+            <small>Logo UPSJB: Wikimedia Commons, CC BY-SA 3.0</small>
+        </span>
+        <% const enlacesRedes = [
+            { url: redes.facebook, nombre: 'Facebook', icono: 'bi-facebook' },
+            { url: redes.instagram, nombre: 'Instagram', icono: 'bi-instagram' },
+            { url: redes.tiktok, nombre: 'TikTok', icono: 'bi-music-note-beamed' },
+        ].filter((red) => red.url); %>
+        <% if (enlacesRedes.length > 0 || correo) { %>
+        <div class="lp-redes" aria-label="Redes sociales y correo">
+            <% for (const red of enlacesRedes) { %>
+                <a href="<%= e(red.url) %>" target="_blank" rel="noopener" aria-label="<%= e(red.nombre) %>"><i class="bi <%= e(red.icono) %>" aria-hidden="true"></i></a>
+            <% } %>
+            <% if (correo) { %>
+                <a href="mailto:<%= e(correo) %>" aria-label="Correo"><i class="bi bi-envelope" aria-hidden="true"></i></a>
+            <% } %>
+        </div>
+        <% } %>
+    </div>
+</footer>
+
+<a class="lp-whatsapp" href="<%= e(whatsapp) %>" target="_blank" rel="noopener"
+   aria-label="Escribir por WhatsApp a +51 932 677 948" title="Escríbenos: +51 932 677 948">
+    <i class="bi bi-whatsapp" aria-hidden="true"></i>
+</a>
+
+<script src="<%= url('/assets/js/landing.js') %>"></script>
+</body>
+</html>

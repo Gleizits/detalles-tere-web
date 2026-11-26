@@ -1,0 +1,53 @@
+<% if (paginacion.totalPaginas > 1) { %>
+<%
+const pag = paginacion.pagina;
+const totalPag = paginacion.totalPaginas;
+const idTamano = 'tamano-' + String(base).replace(/[^a-z0-9]/gi, '-');
+const filtrosVista = filtros ?? {};
+%>
+<nav class="paginacion" aria-label="Paginación de <%= e(etiqueta ?? 'resultados') %>">
+    <span class="paginacion-resumen">
+        <%= paginacion.desde %>&ndash;<%= paginacion.hasta %> de <%= paginacion.total %>
+    </span>
+
+    <div class="paginacion-paginas">
+        <a class="paginacion-paso<%= pag <= 1 ? ' is-disabled' : '' %>"
+           href="<%= e(paginaHref(base, Math.max(1, pag - 1), filtrosVista, paginacion)) %>"
+           aria-label="Página anterior"<% if (pag <= 1) { %> aria-disabled="true" tabindex="-1"<% } %>>
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+        </a>
+
+        <% for (let p = 1; p <= totalPag; p++) { %>
+            <% if (p === 1 || p === totalPag || Math.abs(p - pag) <= 1) { %>
+                <a class="paginacion-num<%= p === pag ? ' is-activa' : '' %>"
+                   href="<%= e(paginaHref(base, p, filtrosVista, paginacion)) %>"
+                   <%= p === pag ? 'aria-current="page"' : '' %>><%= p %></a>
+            <% } else if ((p === 2 && pag > 3) || (p === totalPag - 1 && pag < totalPag - 2)) { %>
+                <span class="paginacion-elipsis" aria-hidden="true">&hellip;</span>
+            <% } %>
+        <% } %>
+
+        <a class="paginacion-paso<%= pag >= totalPag ? ' is-disabled' : '' %>"
+           href="<%= e(paginaHref(base, Math.min(totalPag, pag + 1), filtrosVista, paginacion)) %>"
+           aria-label="Página siguiente"<% if (pag >= totalPag) { %> aria-disabled="true" tabindex="-1"<% } %>>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        </a>
+    </div>
+
+    <form class="paginacion-tamano" method="get" action="<%= e(url(base)) %>">
+        <% for (const [clave, valor] of Object.entries(filtrosVista)) { %>
+            <% if (valor !== undefined && valor !== null && valor !== '') { %>
+                <input type="hidden" name="<%= e(clave) %>" value="<%= e(String(valor)) %>">
+            <% } %>
+        <% } %>
+        <label for="<%= e(idTamano) %>">Por página</label>
+        <select class="form-select form-select-sm" id="<%= e(idTamano) %>"
+                name="<%= e(paginacion.claves.tamano) %>" data-paginacion>
+            <% for (const tam of [10, 25, 50, 100]) { %>
+                <option value="<%= tam %>" <%= tam === paginacion.porPagina ? 'selected' : '' %>><%= tam %></option>
+            <% } %>
+        </select>
+        <noscript><button type="submit" class="btn btn-sm btn-outline-secondary">Aplicar</button></noscript>
+    </form>
+</nav>
+<% } %>

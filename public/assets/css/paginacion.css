@@ -1,0 +1,83 @@
+/* Paginación compartida por los listados del sistema. */
+.paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem 1rem;
+  margin-top: 1rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--c-borde, #dee2e6);
+}
+
+.paginacion-resumen {
+  color: var(--c-suave, #6f5761);
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.paginacion-paginas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem;
+}
+
+.paginacion-paso,
+.paginacion-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.1rem;
+  height: 2.1rem;
+  padding: 0 .4rem;
+  border: 1px solid var(--c-borde, #dee2e6);
+  border-radius: .4rem;
+  background: var(--c-surface, #fff);
+  color: var(--c-tinta, #26131b);
+  font-size: .9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.paginacion-paso:hover:not(.is-disabled),
+.paginacion-num:hover:not(.is-activa) {
+  border-color: var(--c-primario, #801235);
+  color: var(--c-primario, #801235);
+}
+
+.paginacion-num.is-activa {
+  border-color: var(--c-primario, #801235);
+  background: var(--c-primario, #801235);
+  color: #fff;
+}
+
+.paginacion-paso.is-disabled {
+  opacity: .45;
+  pointer-events: none;
+}
+
+.paginacion-elipsis {
+  padding: 0 .3rem;
+  color: var(--c-suave, #6f5761);
+}
+
+.paginacion-tamano {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+}
+
+.paginacion-tamano label {
+  margin: 0;
+  color: var(--c-suave, #6f5761);
+  font-size: .85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.paginacion-tamano select {
+  width: auto;
+  min-width: 4.5rem;
+}

@@ -1,0 +1,653 @@
+/* ============================================================
+   DetallesTere ÔÇö hoja de estilos propia
+   Se carga DESPU├ëS de bootstrap.min.css y ajusta sus variables.
+   P├║blico objetivo: personal de tienda (incl. usuarios mayores).
+   Prioridad: legibilidad, contraste alto y objetivos t├íctiles grandes.
+   ============================================================ */
+
+:root {
+  /* Paleta oficial Detalles Tere: Crema, Guinda, Fucsia/Magenta y Rosita */
+  --c-fondo:      #fdf8f3;   /* Crema suave y c├ílido (papel/base de marca) */
+  --c-surface:    #ffffff;   /* Blanco puro para tarjetas y modales */
+  --c-tinta:      #26131b;   /* Tinta oscura c├ílida, contraste AAA */
+  --c-suave:      #6f5761;   /* Texto secundario, contraste AA */
+  --c-borde:      #eedcd5;   /* Borde sutil crema-ros├íceo */
+  --c-primario:   #801235;   /* Guinda elegante oficial */
+  --c-primario-h: #640a25;   /* Guinda profundo para hover */
+  --c-acento:     #d81b60;   /* Fucsia/Magenta vibrante (reemplaza al naranja) */
+  --c-acento-h:   #b8144f;
+  --c-rosa:       #e05286;   /* Rosita de marca */
+  --c-rosa-suave: #fdf0f4;   /* Rosita pastel suave para fondos y badges */
+  --c-rosa-borde: #f7cad8;   /* Borde rosita suave */
+  --c-rosa-luz:   #ffa4c4;   /* Rosita luminoso para textos sobre guinda */
+  --c-exito:      #247352;   /* Verde esmeralda natural */
+  --c-error:      #b3261e;
+
+  --radio:     0.75rem;
+  --radio-lg:  1.1rem;
+  --sombra:    0 1px 2px rgba(38, 19, 27, .05), 0 8px 24px rgba(38, 19, 27, .07);
+
+  /* Tipograf├¡a: sans humanista, tama├▒os generosos */
+  --font-ui: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* Sobreescribe variables de Bootstrap */
+  --bs-primary:          #801235;
+  --bs-primary-rgb:      128,18,53;
+  --bs-body-bg:          #fdf8f3;
+  --bs-body-color:       #26131b;
+  --bs-border-radius:    0.75rem;
+  --bs-border-radius-lg: 1.1rem;
+  --bs-link-color:       #801235;
+  --bs-link-hover-color: #640a25;
+  --bs-font-sans-serif:  "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+html, body {
+  font-size: 17px;                 /* base grande para legibilidad */
+}
+
+body {
+  background-color: var(--c-fondo);
+  color: var(--c-tinta);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Foco visible y grueso en todo elemento interactivo */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.form-control:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid var(--c-acento);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* ---------- Marca ---------- */
+.marca {
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--c-primario);
+  font-size: 1.5rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+}
+.marca .marca-punto { color: var(--c-acento); }
+.marca-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(128, 18, 53, .15);
+}
+
+/* ---------- Layout de panel: men├║ lateral + barra superior ---------- */
+.app-sidebar {
+  --sidebar-ancho: 256px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar-ancho);
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem .9rem;
+  background: var(--c-primario);
+  color: #fff;
+  overflow: visible;          /* el scroll lo lleva la lista, no toda la barra */
+  z-index: 1040;
+  transition: transform .2s ease;
+}
+.marca-lateral {
+  color: #fff;
+  font-size: 1.35rem;
+  justify-content: flex-start;
+  padding: .25rem 0;
+  gap: .55rem;
+}
+.marca-lateral .marca-punto { color: var(--c-rosa-luz); }
+
+/* Cabecera del men├║: la marca y el bot├│n de cerrar */
+.sidebar-marca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .35rem .5rem .85rem .75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, .28);
+}
+.sidebar-cerrar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radio-sm);
+  background: transparent;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background .15s ease, transform .15s ease;
+}
+.sidebar-cerrar:hover {
+  background: rgba(255, 255, 255, .18);
+}
+.sidebar-cerrar:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  margin-top: .9rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;           /* solo la lista scrollea en ventanas bajas */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .45) transparent;
+  padding-right: 2px;
+}
+.sidebar-nav::-webkit-scrollbar { width: 6px; }
+.sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, .4);
+  border-radius: 3px;
+}
+.sidebar-separador {
+  height: 1px;
+  margin: .45rem .3rem;
+  background: rgba(255, 255, 255, .35);
+}
+
+/* Contenido a la derecha del men├║: el caj├│n se superpone, as├¡ que el
+   contenido SIEMPRE ocupa el 100% del ancho (sin riel fijo). */
+.app-cuerpo {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin-left: 0;
+  width: 100%;
+}
+
+/* Barra superior con el bot├│n de men├║ y el usuario */
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem;
+  padding: .65rem 1rem;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-borde);
+}
+.app-topbar .salir {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--c-suave);
+}
+.app-topbar .salir:hover { color: var(--c-error); }
+
+/* Fondo al abrir el men├║ como caj├│n en pantallas peque├▒as */
+.app-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(36, 28, 31, .45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  z-index: 1035;
+}
+body.menu-abierto .app-overlay { opacity: 1; pointer-events: auto; }
+
+/* ---------- Bot├│n de men├║ (hamburguesa) ---------- */
+.nav-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .5rem .85rem;
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio);
+  background: var(--c-surface);
+  color: var(--c-tinta);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .12s ease, color .12s ease, border-color .12s ease;
+}
+.nav-menu-btn:hover { background: var(--c-fondo); }
+.nav-menu-btn[aria-expanded="true"] {
+  background: var(--c-primario);
+  border-color: var(--c-primario);
+  color: #fff;
+}
+.nav-menu-btn .bi-list { font-size: 1.35rem; line-height: 1; }
+
+/* ---------- Enlaces del men├║ lateral ---------- */
+.nav-app-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .5rem .9rem;
+  border-radius: var(--radio);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--c-suave);
+  text-decoration: none;
+  transition: background .12s ease, color .12s ease;
+}
+.app-sidebar .nav-app-link {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  width: 100%;
+  padding: .68rem .8rem;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, .92);
+}
+.app-sidebar .nav-app-link i {
+  font-size: 1.2rem;
+  width: 1.4rem;
+  min-width: 1.4rem;
+  text-align: center;
+}
+.app-sidebar .nav-app-link:hover { background: rgba(255, 255, 255, .15); color: #fff; }
+.app-sidebar .nav-app-link.activo { background: #fff; color: var(--c-primario); font-weight: 700; }
+.app-sidebar .nav-app-link.activo:hover { background: #fff; color: var(--c-primario-h); }
+
+.usuario-chip { font-size: .95rem; white-space: nowrap; }
+/* En pantallas muy angostas se conserva solo el icono del usuario */
+@media (max-width: 480px) {
+  .usuario-nombre { display: none; }
+}
+
+/* ---------- Men├║ lateral: caj├│n superpuesto en cualquier tama├▒o ----------
+   El caj├│n est├í cerrado por defecto (translateX(-100%)) tanto en celular
+   como en escritorio; body.menu-abierto lo desliza a la vista. El contenido
+   nunca se empuja: el men├║ se superpone con su fondo oscuro encima. */
+.app-sidebar { transform: translateX(-100%); }
+body.menu-abierto .app-sidebar { transform: translateX(0); }
+
+/* Respeta la preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .app-sidebar,
+  .app-overlay { transition: none; }
+}
+
+/* ---------- Superficie / tarjeta ---------- */
+.app-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra);
+}
+
+/* ---------- Botones grandes ---------- */
+/* Bootstrap pinta el texto de .btn con --bs-btn-color (casi negro),
+   ilegible sobre fondos oscuros. Se fuerza color blanco aqu├¡. */
+.btn-app {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: .8rem 1.4rem;
+  border-radius: var(--radio);
+  color: #fff;
+}
+.btn-app-primary { background: var(--c-primario); border-color: var(--c-primario); color: #fff; }
+.btn-app-primary:hover,
+.btn-app-primary:focus,
+.btn-app-primary:active { background: var(--c-primario-h); border-color: var(--c-primario-h); color: #fff; }
+
+/* ---------- Formularios grandes ---------- */
+.form-label { font-weight: 600; font-size: 1rem; color: var(--c-tinta); }
+.form-control, .form-select {
+  font-size: 1.1rem;
+  padding: .75rem .9rem;
+  border-radius: var(--radio);
+}
+
+/* ---------- Saludo del panel ---------- */
+.saludo {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.15;
+  color: var(--c-tinta);
+}
+.saludo-sub { color: var(--c-suave); font-size: 1.05rem; }
+
+/* ---------- Tarjetas de secci├│n ---------- */
+.seccion-tarjeta {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 1.4rem;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.seccion-tarjeta:hover {
+  transform: translateY(-2px);
+  border-color: var(--c-primario);
+  color: inherit;
+}
+.seccion-tarjeta .ico {
+  font-size: 2rem;
+  color: var(--c-primario);
+  line-height: 1;
+}
+.seccion-tarjeta h3 { font-size: 1.15rem; font-weight: 700; margin: .6rem 0 .25rem; }
+.seccion-tarjeta p  { color: var(--c-suave); font-size: .95rem; margin: 0; }
+
+/* ---------- Alertas ---------- */
+.alerta-error,
+.alerta-exito,
+.alerta-info {
+  padding: .85rem 1rem;
+  border-radius: var(--radio);
+  font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+.alerta-error {
+  background: #fdecea;
+  border: 1px solid #f4c7c3;
+  color: var(--c-error);
+}
+.alerta-exito {
+  background: #e6f4ee;
+  border: 1px solid #bfe3d3;
+  color: var(--c-exito);
+}
+.alerta-info {
+  background: #eaf2fb;
+  border: 1px solid #c5dcf6;
+  color: #1c5aa6;
+}
+
+/* ---------- Centro de login ---------- */
+.login-envoltorio {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.login-tarjeta {
+  width: 100%;
+  max-width: 420px;
+  padding: 2.25rem;
+}
+.login-logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: inline-block;
+  box-shadow: 0 4px 16px rgba(128, 18, 53, .16);
+}
+.login-tarjeta .marca { font-size: 1.9rem; justify-content: center; }
+
+/* ---------- T├¡tulos de secci├│n ---------- */
+.titulo-seccion {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+}
+
+/* ---------- Datos sueltos (tarjetas de caja) ---------- */
+.dato-etiqueta { font-size: .85rem; color: var(--c-suave); font-weight: 600; }
+.dato-valor    { font-size: 1.35rem; font-weight: 800; color: var(--c-tinta); }
+
+/* ---------- Diferencia de cierre ---------- */
+.badge-diferencia {
+  display: inline-block;
+  padding: .2rem .6rem;
+  border-radius: .5rem;
+  font-weight: 700;
+  font-size: .95rem;
+}
+.badge-diferencia.positivo { background: #e6f4ee; color: var(--c-exito); }
+.badge-diferencia.negativo { background: #fdecea; color: var(--c-error); }
+.badge-diferencia.exacto   { background: #eef0f2; color: var(--c-suave); }
+
+.badge-punto-abierto {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-weight: 700;
+  color: var(--c-exito);
+}
+.badge-punto-abierto::before {
+  content: "";
+  width: .6rem; height: .6rem;
+  border-radius: 50%;
+  background: var(--c-exito);
+}
+
+.badge-punto-cerrado {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-weight: 700;
+  color: var(--c-suave);
+}
+.badge-punto-cerrado::before {
+  content: "";
+  width: .6rem; height: .6rem;
+  border-radius: 50%;
+  background: var(--c-suave);
+}
+
+/* ---------- Tablas ---------- */
+.tabla-envoltorio { overflow-x: auto; }
+.tabla-app { width: 100%; border-collapse: collapse; font-size: .98rem; }
+.tabla-app th, .tabla-app td { padding: .8rem 1rem; text-align: left; }
+.tabla-app thead th {
+  font-size: .8rem; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--c-suave); border-bottom: 1px solid var(--c-borde); white-space: nowrap;
+}
+.tabla-app tbody tr { border-bottom: 1px solid var(--c-borde); }
+.tabla-app tbody tr:last-child { border-bottom: none; }
+.tabla-app .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.texto-negativo { color: var(--c-error); font-weight: 700; }
+
+/* ---------- Estados ---------- */
+.badge-estado {
+  display: inline-block; padding: .15rem .6rem; border-radius: 999px;
+  font-size: .82rem; font-weight: 700;
+}
+.badge-estado.abierto { background: #e6f4ee; color: var(--c-exito); }
+.badge-estado.cerrado { background: #eef0f2; color: var(--c-suave); }
+.badge-estado.bajo    { background: #fdecea; color: var(--c-error); }
+
+/* ---------- ├ìtems de inventario ---------- */
+.nombre-item { font-weight: 600; }
+.tipo-item   { font-size: .85rem; margin-left: .35rem; }
+.badge-clase {
+  display: inline-block; padding: .1rem .5rem; border-radius: .4rem;
+  font-size: .75rem; font-weight: 700; letter-spacing: .02em;
+  background: #f3eef0; color: var(--c-primario);
+}
+
+/* ---------- Punto de venta (Venta) ---------- */
+.venta-grid {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .venta-grid { grid-template-columns: 1fr; }
+}
+.catalogo-form { display: flex; gap: .5rem; align-items: center; }
+.cant-input { width: 4.5rem; text-align: center; padding: .45rem .3rem; }
+
+.carrito-total {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: .9rem 0; border-top: 2px solid var(--c-borde);
+  margin-top: .5rem;
+}
+.carrito-total .etq { font-size: 1.1rem; font-weight: 700; color: var(--c-suave); }
+.carrito-total .val { font-size: 2rem; font-weight: 800; color: var(--c-primario); }
+
+.pago-zona {
+  background: var(--c-fondo);
+  border: 1px dashed var(--c-borde);
+  border-radius: var(--radio);
+  padding: 1rem;
+}
+.vuelto-linea {
+  display: flex; justify-content: space-between; font-weight: 700;
+  font-size: 1.05rem; color: var(--c-exito);
+}
+
+.cotiz-tarjeta {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; padding: .9rem 1rem; border-bottom: 1px solid var(--c-borde);
+  flex-wrap: wrap;
+}
+.cotiz-tarjeta:last-child { border-bottom: none; }
+.cotiz-resumen { color: var(--c-suave); font-size: .95rem; }
+
+/* ---------- Pedidos reservados ---------- */
+.badge-pedido {
+  display: inline-block; padding: .2rem .7rem; border-radius: 999px;
+  font-size: .85rem; font-weight: 700; margin-right: .35rem;
+}
+.badge-pedido.pendiente { background: var(--c-rosa-suave); color: var(--c-primario); border: 1px solid var(--c-rosa-borde); }
+.badge-pedido.completo  { background: #e6f4ee; color: var(--c-exito); }
+.badge-pedido.recogido  { background: #eaf2fb; color: #1c5aa6; }
+.badge-pedido.cancelado { background: #fdecea; color: var(--c-error); }
+.badge-pedido.hecho     { background: #fce7ef; color: var(--c-primario); }
+
+/* Lista t├®rmino/valor en tarjetas de detalle */
+.detalle-lista dt {
+  font-size: .82rem; text-transform: uppercase; letter-spacing: .03em;
+  color: var(--c-suave); font-weight: 700; margin-top: .75rem;
+}
+.detalle-lista dt:first-child { margin-top: 0; }
+.detalle-lista dd {
+  margin: 0; font-size: 1.08rem; font-weight: 600; color: var(--c-tinta);
+}
+
+/* ---------- Reportes y administraci├│n ---------- */
+.reporte-filtros {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  flex-wrap: wrap;
+}
+.reporte-filtros .form-select { width: auto; min-width: 8rem; }
+.reporte-filtros .form-control { width: auto; min-width: 9.5rem; }
+.reporte-periodo {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .8rem 1rem;
+  background: var(--c-rosa-suave);
+  border: 1px solid var(--c-rosa-borde);
+  border-radius: var(--radio);
+  color: var(--c-primario);
+}
+.reporte-periodo span:last-child {
+  display: block;
+  color: var(--c-suave);
+  font-size: .9rem;
+}
+.reporte-periodo-marca {
+  width: .75rem;
+  height: 2.2rem;
+  border-radius: .25rem;
+  background: var(--c-acento);
+}
+.reporte-metrica {
+  min-height: 9.5rem;
+  padding: 1.1rem 1.2rem;
+  background: var(--c-surface);
+  border: 1px solid var(--c-borde);
+  border-top: 4px solid var(--c-primario);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+}
+.reporte-metrica-acento { border-top-color: var(--c-acento); }
+.reporte-metrica span,
+.reporte-metrica small { display: block; color: var(--c-suave); }
+.reporte-metrica span { font-weight: 700; }
+.reporte-metrica strong {
+  display: block;
+  margin: .55rem 0 .25rem;
+  font-size: 1.65rem;
+  line-height: 1.1;
+}
+.reporte-metrica small { font-size: .88rem; }
+.usuarios-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  .usuarios-layout { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   FIX: Botones con texto blanco sobre fondos oscuros
+   Bootstrap pinta el texto de .btn con --bs-btn-color (casi negro),
+   ilegible sobre fondos oscuros (menú lateral guinda, etc.).
+   Se fuerza color blanco en todos los botones .btn.
+   ============================================================ */
+.btn {
+  color: #fff !important;
+}
+
+/* Botón de salida (Salir) del topbar: sobre fondo blanco usa color suave */
+.app-topbar .salir {
+  color: var(--c-suave) !important;
+}
+.app-topbar .salir:hover {
+  color: var(--c-error) !important;
+}
+
+/* Asegura que los botones dentro del menú lateral (sidebar) mantengan
+   texto blanco sobre fondo guinda. */
+.app-sidebar .btn,
+.app-sidebar .btn-primary,
+.app-sidebar .btn-success,
+.app-sidebar .btn-danger,
+.app-sidebar .btn-warning,
+.app-sidebar .btn-info,
+.app-sidebar .btn-secondary {
+  color: #fff !important;
+}
+
+/* Botones específicos de acción sobre fondos oscuros */
+.btn-app {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: .8rem 1.4rem;
+  border-radius: var(--radio);
+  color: #fff !important;
+}
+.btn-app-primary {
+  background: var(--c-primario);
+  border-color: var(--c-primario);
+  color: #fff !important;
+}
+.btn-app-primary:hover,
+.btn-app-primary:focus,
+.btn-app-primary:active {
+  background: var(--c-primario-h);
+  border-color: var(--c-primario-h);
+  color: #fff !important;
+}
+
+/* Respeta a quienes prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

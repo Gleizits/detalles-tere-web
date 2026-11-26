@@ -1,0 +1,113 @@
+<section class="mb-4">
+    <p class="text-muted mb-1">Manual del usuario · DetallesTereTS</p>
+    <h1 class="h3 mb-2">Cómo trabajar en la tienda</h1>
+    <p class="text-muted mb-0">Guía rápida para el personal de caja, ventas y almacén.</p>
+</section>
+
+<div class="row g-3">
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-person-badge me-2" aria-hidden="true"></i>Acceso y roles</h2>
+                <p>Ingresa con tu usuario y contraseña. Hay dos roles:</p>
+                <ul>
+                    <li><strong>Empleado:</strong> caja, ventas, cotizaciones, pedidos e inventario.</li>
+                    <li><strong>Administrador:</strong> además ve ingresos, términos, reportes y usuarios.</li>
+                </ul>
+                <p class="small text-muted mb-0">La sesión dura <%= e(String(minutosSesion)) %> minutos. Si se cierra, vuelve a iniciar sesión; no pierdes los datos guardados.</p>
+            </div>
+        </article>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-cash-coin me-2" aria-hidden="true"></i>Caja</h2>
+                <ol>
+                    <li>Abre la caja con el monto inicial. Solo puede haber una caja abierta por persona.</li>
+                    <li>Registra las ventas en efectivo o Yape durante el día.</li>
+                    <li>Al cerrar, escribe el monto real contado. El sistema calcula la diferencia.</li>
+                </ol>
+                <p class="small text-muted mb-0">Los pagos de reservas también ingresan a caja, pero se separan de las ventas de productos.</p>
+            </div>
+        </article>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-cart-check me-2" aria-hidden="true"></i>Ventas y cotizaciones</h2>
+                <ul>
+                    <li>Busca el artículo por su nombre o por un sinónimo registrado.</li>
+                    <li>Elige la cantidad. El sistema valida el stock disponible.</li>
+                    <li>Una cotización queda vigente 24 horas; después de ese tiempo vence.</li>
+                    <li>Para convertirla en venta, abre la cotización y confírmala.</li>
+                </ul>
+            </div>
+        </article>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-box-seam me-2" aria-hidden="true"></i>Inventario</h2>
+                <ul>
+                    <li>Indica si el artículo es producto, material o arreglo.</li>
+                    <li>Registra la unidad real: unidad, paquete, docena, cajón, etc.</li>
+                    <li>Configura el stock mínimo para saber cuándo reponer.</li>
+                    <li>El administrador puede registrar términos alternativos para buscar más fácil.</li>
+                </ul>
+            </div>
+        </article>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-calendar2-check me-2" aria-hidden="true"></i>Pedidos reservados</h2>
+                <ul>
+                    <li>El adelanto debe ser al menos el 50% del total.</li>
+                    <li>El nombre de quien recoge es opcional.</li>
+                    <li>Hay tres fechas límite: pago (1 mes), recojo (2 meses) y canje (3 meses).</li>
+                    <li>Marca el pedido como <strong>HECHO</strong> cuando empiece su elaboración; desde ahí ya no se cancela.</li>
+                </ul>
+            </div>
+        </article>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <article class="card h-100">
+            <div class="card-body">
+                <h2 class="h5"><i class="bi bi-graph-up-arrow me-2" aria-hidden="true"></i>Reportes</h2>
+                <p>Solo administradores. Puedes ver el resumen del día o de un mes completo.</p>
+                <p class="mb-0">El reporte separa efectivo, Yape y créditos, muestra el costo y margen estimado, y se puede descargar en CSV para Power BI.</p>
+            </div>
+        </article>
+    </div>
+</div>
+
+<section class="mt-4">
+    <h2 class="h5">Preguntas frecuentes</h2>
+    <div class="accordion" id="faqUsuario">
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="false" aria-controls="faq1">
+                    ¿Por qué no encuentro un artículo por su nombre de siempre?
+                </button>
+            </h3>
+            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqUsuario">
+                <div class="accordion-body">Pide al administrador que registre ese nombre como término o sinónimo en Términos.</div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h3 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                    ¿El vuelto se registra en caja?
+                </button>
+            </h3>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqUsuario">
+                <div class="accordion-body">No. En caja entra el total de la venta; el vuelto se devuelve al cliente y no se contabiliza como ingreso.</div>
+            </div>
+        </div>
+    </div>
+</section>
