@@ -16,8 +16,6 @@ const RUTAS_PERMITIDAS = [
   '/usuarios',
   '/ingresos',
   '/terminos',
-  '/manual-usuario',
-  '/manual-programador',
 ];
 
 function destinoValido(destino: string): boolean {

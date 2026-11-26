@@ -59,9 +59,7 @@ export const config = {
     cookieSecure: bool('COOKIE_SECURE'),
   },
   contacto: {
-    destino: text('CONTACT_EMAIL', 'contacto@detallestere.local'),
-    remitente: text('CONTACT_EMAIL_FROM', 'DetallesTereTS <onboarding@resend.dev>'),
-    resendKey: text('RESEND_API_KEY'),
+    destino: text('CONTACT_EMAIL', 'Geissel.Espino@upsjb.edu.pe'),
     whatsapp: text('WHATSAPP_NUMBER'),
     mapa: text(
       'MAPS_EMBED_SRC',

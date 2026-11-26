@@ -44,36 +44,7 @@ function mailtoUrl(nombre: string, correo: string, mensaje: string): string {
   return `mailto:${config.contacto.destino}?subject=${asunto}&body=${cuerpo}`;
 }
 
-async function enviarConResend(
-  nombre: string,
-  correo: string,
-  mensaje: string,
-): Promise<boolean> {
-  const { resendKey, destino, remitente } = config.contacto;
-  if (resendKey === '') return false;
-
-  const respuesta = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: remitente,
-      to: [destino],
-      reply_to: correo,
-      subject: `Consulta desde la web — ${nombre}`,
-      text: `${mensaje}\n\nDe: ${nombre}\nCorreo: ${correo}`,
-    }),
-  });
-
-  if (!respuesta.ok) {
-    throw new Error(`Resend respondió ${respuesta.status}`);
-  }
-  return true;
-}
-
-/** POST /contacto — valida CSRF global y envía por Resend si está configurado. */
+/** POST /contacto — valida CSRF y abre el cliente de correo del visitante. */
 export async function contacto(req: Request, res: Response): Promise<void> {
   const nombre = param(req, 'nombre');
   const correo = param(req, 'correo');
@@ -89,21 +60,11 @@ export async function contacto(req: Request, res: Response): Promise<void> {
     throw new BusinessError('Escribe un mensaje de al menos 10 caracteres.');
   }
 
-  let enviado = false;
-  let nota = 'Tu cliente de correo se abrirá para enviar el mensaje.';
-  try {
-    enviado = await enviarConResend(nombre, correo, mensaje);
-    if (enviado) nota = 'Recibimos tu mensaje. Te responderemos al correo indicado.';
-  } catch (error) {
-    console.error('[detallesterets] No se pudo enviar el correo', error);
-    nota = 'No pudimos enviarlo desde el servidor. Puedes usar tu cliente de correo.';
-  }
-
-  await renderStandalone(req, res, 'contacto', 'Mensaje enviado', {
+  await renderStandalone(req, res, 'contacto', 'Mensaje listo para enviar', {
     nombre,
     correo,
-    nota,
-    enviado,
+    nota: 'Tu cliente de correo se abrirá con el mensaje listo para enviar.',
     mailto: mailtoUrl(nombre, correo, mensaje),
+    destino: config.contacto.destino,
   });
 }

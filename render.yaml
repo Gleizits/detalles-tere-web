@@ -46,11 +46,7 @@ services:
       - key: COOKIE_SECURE
         value: "true"
       - key: CONTACT_EMAIL
-        sync: false
-      - key: CONTACT_EMAIL_FROM
-        sync: false
-      - key: RESEND_API_KEY
-        sync: false
+        value: "Geissel.Espino@upsjb.edu.pe"
       - key: WHATSAPP_NUMBER
         sync: false
       - key: MAPS_EMBED_SRC

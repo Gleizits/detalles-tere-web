@@ -10,6 +10,9 @@ test('la portada pública carga completa y es responsive', async ({ page }) => {
   await expect(page.locator('.lp-card')).toHaveCount(6);
   await expect(page.locator('input[name="csrfToken"]')).toHaveCount(1);
   await expect(page.locator('img[alt*="Universidad Privada San Juan Bautista"]')).toHaveCount(1);
+  await expect(page.locator('.lp-manuales-top a[href="/manual-usuario"]')).toBeVisible();
+  await expect(page.locator('.lp-manuales-top a[href="/manual-programador"]')).toBeVisible();
+  await expect(page.getByText('Correo de destino')).toHaveCount(0);
 
   for (const width of [360, 768, 1366]) {
     await page.setViewportSize({ width, height: 900 });
@@ -56,12 +59,36 @@ test('los POST sin token CSRF son rechazados', async ({ page }) => {
   }
 });
 
-test('los manuales están protegidos y una ruta inexistente da 404', async ({ page }) => {
+test('los manuales son públicos y una ruta inexistente da 404', async ({ page, request }) => {
   const respuesta = await page.goto('/manual-usuario');
-  await expect(page).toHaveURL(/\/login\?destino=/);
   expect(respuesta?.status()).toBe(200);
+  await expect(page).toHaveURL(/\/manual-usuario$/);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Cómo trabajar');
+
+  const programador = await request.get('/manual-programador');
+  expect(programador.status()).toBe(200);
+  expect(await programador.text()).toContain('Arquitectura y operación');
 
   const inexistente = await page.request.get('/no-existe');
   expect(inexistente.status()).toBe(404);
   expect(await inexistente.text()).toContain('Página no encontrada');
+});
+
+test('el formulario prepara un correo a Geissel.Espino@upsjb.edu.pe sin API externa', async ({ page }) => {
+  await page.goto('/');
+  const csrfToken = await page.locator('input[name="csrfToken"]').inputValue();
+
+  const respuesta = await page.request.post('/contacto', {
+    form: {
+      csrfToken,
+      nombre: 'Geissel Prueba',
+      correo: 'prueba@example.com',
+      mensaje: 'Mensaje de prueba para verificar el formulario.',
+    },
+  });
+
+  expect(respuesta.status()).toBe(200);
+  const html = await respuesta.text();
+  expect(html).toContain('mailto:Geissel.Espino@upsjb.edu.pe');
+  expect(html).not.toContain('Correo de destino');
 });

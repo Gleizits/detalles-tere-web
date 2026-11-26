@@ -25,6 +25,10 @@
             <a href="#equipo">Equipo</a>
             <a href="#contacto">Contacto</a>
         </nav>
+        <div class="lp-manuales-top" aria-label="Manuales del sistema">
+            <a href="<%= url('/manual-usuario') %>"><i class="bi bi-book" aria-hidden="true"></i> Manual usuario</a>
+            <a href="<%= url('/manual-programador') %>"><i class="bi bi-code-slash" aria-hidden="true"></i> Manual programador</a>
+        </div>
         <a class="lp-ingresar" href="<%= url('/login') %>">
             <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> Ingresar
         </a>
@@ -244,7 +248,6 @@
                 <button class="lp-boton lp-boton-principal" type="submit">
                     Enviar mensaje <i class="bi bi-send" aria-hidden="true"></i>
                 </button>
-                <p class="lp-form-nota">Correo de destino: <%= e(correo) %></p>
             </form>
         </div>
     </section>

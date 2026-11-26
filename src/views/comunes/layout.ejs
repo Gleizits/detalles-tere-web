@@ -35,11 +35,14 @@
             ['/terminos', 'Términos', 'bi-tags', true],
             ['/reportes', 'Reportes', 'bi-graph-up-arrow', true],
             ['/usuarios', 'Usuarios', 'bi-people', true],
-            ['/manual-programador', 'Manual programador', 'bi-code-slash', true],
+            ['/manual-programador', 'Manual programador', 'bi-code-slash', false],
         ]; %>
+        <% const enlacesVisibles = usuario === null
+            ? enlaces.filter(([ruta]) => ruta.startsWith('/manual-'))
+            : enlaces; %>
         <% let seccionAnterior = null; %>
-        <% for (const [ruta, texto, icono, esAdmin] of enlaces) { %>
-            <% if (esAdmin && !usuario.esAdmin()) continue; %>
+        <% for (const [ruta, texto, icono, esAdmin] of enlacesVisibles) { %>
+            <% if (esAdmin && (!usuario || !usuario.esAdmin())) continue; %>
             <% if (esAdmin && seccionAnterior === false) { %>
                 <div class="sidebar-separador" role="separator"></div>
             <% } %>
@@ -71,6 +74,16 @@
             </a>
         </div>
 
+        <% if (usuario === null) { %>
+        <div class="d-flex align-items-center gap-2">
+            <a class="btn btn-sm btn-outline-secondary" href="<%= url('/') %>">
+                <i class="bi bi-house-door me-1" aria-hidden="true"></i> Portada
+            </a>
+            <a class="btn btn-sm btn-app btn-app-primary" href="<%= url('/login') %>">
+                <i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i> Ingresar
+            </a>
+        </div>
+        <% } else { %>
         <div class="d-flex align-items-center gap-3">
             <span class="text-muted usuario-chip">
                 <i class="bi bi-person-circle me-1" aria-hidden="true"></i>
@@ -83,6 +96,7 @@
                 </button>
             </form>
         </div>
+        <% } %>
     </header>
 
     <main class="container py-4">

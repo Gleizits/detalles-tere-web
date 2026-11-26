@@ -18,8 +18,8 @@ export function registerRoutes(app: Express): void {
   app.get('/', asyncRoute(landing.index));
   app.post('/contacto', asyncRoute(landing.contacto));
 
-  app.get('/manual-usuario', requireAuth, asyncRoute(manual.usuario));
-  app.get('/manual-programador', requireAuth, requireAdmin, asyncRoute(manual.programador));
+  app.get('/manual-usuario', asyncRoute(manual.usuario));
+  app.get('/manual-programador', asyncRoute(manual.programador));
 
   app.get('/login', asyncRoute(mostrarLogin));
   app.post('/login', asyncRoute(procesarLogin));

@@ -24,16 +24,14 @@
 
 <main class="lp-contenedor lp-resultado">
     <span class="lp-resultado-icono" aria-hidden="true">
-        <i class="bi <%= enviado ? 'bi-check2-circle' : 'bi-envelope-arrow-up' %>"></i>
+        <i class="bi bi-envelope-arrow-up"></i>
     </span>
-    <h1><%= enviado ? 'Mensaje recibido' : 'Listo para enviar' %></h1>
+    <h1>Listo para enviar</h1>
     <p><%= e(nota) %></p>
-    <% if (!enviado) { %>
-        <a class="lp-boton lp-boton-principal" href="<%= e(mailto) %>">
-            Abrir mi correo <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
-        </a>
-    <% } %>
-    <p class="lp-resultado-detalle">Gracias, <%= e(nombre) %>. Te responderemos a <%= e(correo) %>.</p>
+    <a class="lp-boton lp-boton-principal" href="<%= e(mailto) %>">
+        Abrir mi correo <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+    </a>
+    <p class="lp-resultado-detalle">Gracias, <%= e(nombre) %>. El destinatario es <%= e(destino) %>.</p>
     <a class="lp-volver" href="<%= url('/') %>">Volver al inicio</a>
 </main>
 </body>

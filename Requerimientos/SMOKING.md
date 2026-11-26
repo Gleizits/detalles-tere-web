@@ -10,7 +10,7 @@ npx playwright install chromium   # solo la primera vez
 npm run smoke
 ```
 
-Cubre: portada pública, contador de visitas, mapa, WhatsApp, 6 cards, assets, login, rechazo CSRF en `POST /contacto` y `POST /login`, protección de manuales y página 404.
+Cubre: portada pública, contador de visitas, mapa, WhatsApp, 6 cards, manuales públicos, assets, login, rechazo CSRF en `POST /contacto` y `POST /login`, correo `mailto:` y página 404.
 
 ## 2. Smoke manual (con `DetallesTereDB` restaurada)
 

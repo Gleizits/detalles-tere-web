@@ -9,7 +9,7 @@ export async function usuario(req: Request, res: Response): Promise<void> {
   });
 }
 
-/** Manual técnico, restringido a administradores. */
+/** Manual técnico, disponible para todos desde la portada pública. */
 export async function programador(req: Request, res: Response): Promise<void> {
   await renderPage(req, res, 'manual_programador', 'Manual del programador', '/panel');
 }

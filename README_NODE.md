@@ -77,7 +77,7 @@ npm run smoke       # portada, CSRF, login, assets y responsive sin BD
    | `SESSION_MINUTES` | `30` |
    | `APP_TIMEZONE` | `America/Lima` |
 
-4. Para correo, WhatsApp, mapa y redes, completa **solo datos reales** según `.env.example`. Las variables vacías no muestran enlaces inventados.
+4. Para correo, WhatsApp, mapa y redes, completa **solo datos reales** según `.env.example`. Las variables vacías no muestran enlaces inventados. El formulario abre el cliente de correo con `mailto:` a `Geissel.Espino@upsjb.edu.pe`: no usa ninguna API externa.
 5. La base de datos **no** se crea en Vercel. La guía completa `.bak → .bacpac → Azure SQL` está en [`HOSTING.md`](HOSTING.md).
 6. Si la base es nueva, ejecuta `01_schema_DetallesTereDB.sql` y `02_seed_DetallesTereDB.sql`; después `03_seed_500_registros.sql` y `04_consultas_powerbi.sql`.
 
@@ -99,7 +99,7 @@ npm run smoke       # portada, CSRF, login, assets y responsive sin BD
 | PPT concisa | `Presentacion_DetallesTere.pptx` |
 | 6 consultas con ≥ 5 tablas para Power BI | `DetallesTerePHP/db/04_consultas_powerbi.sql`, `Requerimientos/powerbi/README.md` |
 | Maqueta HTML/CSS acorde a la BD | `maqueta/` |
-| Manuales dentro del sistema | `/manual-usuario` y `/manual-programador` |
+| Manuales dentro del sistema, públicos y accesibles desde la barra superior de la portada | `/manual-usuario` y `/manual-programador` |
 | Hosting | Vercel + Azure SQL; procedimiento y evidencia pendiente en `HOSTING.md` |
 
 **Power BI no se inicia en esta entrega.** Solo quedan preparadas las seis vistas SQL y su mapa a visuales.

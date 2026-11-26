@@ -97,7 +97,7 @@ Proyecto: repositorio actual, **rama `DB`**. Vercel detecta Express y usa `api/i
 | `APP_PRODUCTION` | `true` |
 | `APP_TIMEZONE` | `America/Lima` |
 | `BASE_URL` | URL pública de Vercel (opcional) |
-| `CONTACT_EMAIL`, `CONTACT_EMAIL_FROM`, `RESEND_API_KEY` | Solo datos reales verificados |
+| `CONTACT_EMAIL` | `Geissel.Espino@upsjb.edu.pe` (destino del formulario); no se usa API externa |
 | `WHATSAPP_NUMBER` | Número real, solo dígitos; vacío desactiva el número inventado |
 | `MAPS_EMBED_SRC` | iframe real; el valor por defecto muestra Ica sin dirección inventada |
 | `FACEBOOK_URL`, `INSTAGRAM_URL`, `TIKTOK_URL` | Enlaces reales; vacíos = no aparecen |
@@ -115,7 +115,7 @@ En la URL pública comprobar:
 - `/` carga la portada y el contador `dt_visitas` aumenta al recargar.
 - `/login` permite entrar con `admin` / `Admin123!`.
 - Los POST sin `csrfToken` devuelven 403.
-- `/manual-usuario` y `/manual-programador` respetan los permisos.
+- `/manual-usuario` y `/manual-programador` son públicos y se abren desde la parte superior de `/`.
 - `/assets/css/landing.css`, `/assets/js/landing.js` y `/assets/img/logo-upsjb.png` responden 200.
 
 ## 5. Evidencia pendiente de deploy
