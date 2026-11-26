@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Smoke tests de DetallesTereTS. No necesitan SQL Server: cubren portada,
+ * Smoke tests de DetallesTereTS. No necesitan base de datos: cubren portada,
  * login, CSRF, assets y manuales. Las pruebas que sí requieren BD están en
  * Requerimientos/SMOKING.md como checklist manual.
  */

@@ -1,4 +1,4 @@
-import { insertId, query, queryOne, withTransaction, type DbClient } from '../db';
+import { execute, insertId, query, queryOne, withTransaction, type DbClient } from '../db';
 import { BusinessError } from '../http';
 import { decimal, flag, integer, str, type Row } from './util';
 
@@ -271,7 +271,7 @@ export class InventarioDAO {
 
     await this.enTransaccion(async (cn) => {
       const idAjuste = await insertId(
-        'INSERT INTO dbo.AJUSTE_INVENTARIO (ID_USUARIO, FECHA) VALUES (?, SYSUTCDATETIME())',
+        'INSERT INTO dbo.AJUSTE_INVENTARIO (ID_USUARIO, FECHA) VALUES (?, dbo.utcnow())',
         [idUsuario],
         cn,
       );
@@ -283,23 +283,20 @@ export class InventarioDAO {
         cn,
       );
 
-      // El helper `query` no expone rowsAffected: se lee @@ROWCOUNT en el
-      // mismo lote para conservar la comprobación de rowCount() de PHP.
-      const actualizados = await query<Row>(
+      const actualizados = await execute(
         'UPDATE dbo.INVENTARIO SET STOCK_ACT = STOCK_ACT + ? '
-        + 'WHERE ID_INVENTARIO = ? AND STOCK_ACT + ? >= 0; '
-        + 'SELECT CAST(@@ROWCOUNT AS INT) AS FILAS',
+        + 'WHERE ID_INVENTARIO = ? AND STOCK_ACT + ? >= 0',
         [delta, idInventario, delta],
         cn,
       );
-      if (actualizados.length === 0 || integer(actualizados[0], 'FILAS') === 0) {
+      if (actualizados === 0) {
         throw new BusinessError('No hay stock suficiente para esa salida');
       }
 
       await query(
         'INSERT INTO dbo.MOVIMIENTO_INVENTARIO '
         + '(ID_USUARIO, ID_INVENTARIO, FECHA_MOVIMIENTO, TIPO_MOVIMIENTO, CANTIDAD) '
-        + 'VALUES (?, ?, SYSUTCDATETIME(), ?, ?)',
+        + 'VALUES (?, ?, dbo.utcnow(), ?, ?)',
         [idUsuario, idInventario, tipoMov, cantidad],
         cn,
       );

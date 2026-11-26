@@ -1,16 +1,16 @@
 # Hosting y despliegue — DetallesTereTS
 
-**Decisión final (2026-11-25):** `Vercel Hobby` para la app + `Azure SQL Database free tier` para la BD + `Power BI Web` del universitario.
+**Decisión final (2026-11-25):** `Vercel Hobby` para la app + `Neon Free (PostgreSQL)` para la BD + `Power BI Web` pendiente de configurar.
 
-> La PC ya no queda encendida: la app se ejecuta en Vercel y la BD en Azure. Power BI Web conecta directo a Azure SQL, sin gateway local.
+> La PC ya no queda encendida: la app se ejecuta en Vercel y la BD en Neon. Neon escala a cero y se despierta solo cuando hay conexiones.
 >
-> **Estado real:** no existe todavía cuenta Azure/Vercel ni URL pública. Esta guía está escrita **desde cero**, suponiendo que no tienes ninguna cuenta. Yo no puedo crearlas por ti; sí dejé los scripts y la configuración listos.
+> La cuenta **Azure for Students** que se creó durante la guía anterior **queda sin uso** para este proyecto.
+>
+> **Estado real:** el proyecto Neon ya existe; la URL pública de Vercel y el refresh de Power BI Web están pendientes. No compartas contraseñas ni la connection string completa en el chat: solo deben ir en variables de entorno.
 
 ---
 
-## 0. Antes de empezar
-
-Datos reales que ya están en el código (no inventar otros):
+## 0. Datos reales que ya están en el código
 
 | Dato | Valor |
 |---|---|
@@ -18,175 +18,178 @@ Datos reales que ya están en el código (no inventar otros):
 | WhatsApp | `+51 932 677 948` → `https://wa.me/51932677948?text=...` |
 | Usuario demo | `admin` / `Admin123!` |
 | Zona horaria | `America/Lima` |
+| Base lógica | `DetallesTereDB` |
+| Esquema lógico | `dbo` (se conserva también en PostgreSQL) |
 
 Reglas:
 
-- No usar `sa` ni el administrador del servidor desde la app.
-- No subir contraseñas al repositorio: los scripts de usuarios traen marcadores `<...>`.
-- Vercel Hobby es gratuito pero **solo para uso personal/académico**, no comercial.
-- El tier gratuito de Azure SQL **no permite restaurar un `.bak`**: recreamos la base con scripts o importamos un `.bacpac`.
-- El backup local `D:\DetallesTereDB.bak` (1 019 904 bytes, 23/11/2026) queda como respaldo; no se usa en Azure free tier.
+- No usar el rol owner de Neon desde la app; usar `dt_app`.
+- No subir contraseñas al repositorio: el script de roles trae marcadores `<...>`.
+- Vercel Hobby es gratuito para uso personal/académico, no comercial.
+- Neon Free es `$0/mes`; no cambiar a plan pago.
+- El backup local `D:\DetallesTereDB.bak` **no es portable** a PostgreSQL. La migración se hace con los scripts de `DetallesTerePHP/db/pg/`.
 
 ---
 
-## 1. Crear la cuenta Azure (si no tienes)
+## 1. Proyecto Neon ya creado
 
-1. Entra a <https://azure.microsoft.com/free/> y elige **Crear cuenta gratuita / Start free**.
-2. Usa una cuenta Microsoft (hotmail/outlook/live) o crea una nueva.
-3. Azure pedirá verificación por teléfono y, normalmente, una tarjeta para identidad. **No cambies a pago**: revisa siempre que el *Estimated cost/month* sea `$0`.
-4. Al terminar, abre <https://portal.azure.com> → **Suscripciones** y confirma que aparece una suscripción tipo **Azure Free Trial** o **Pay-As-You-Go**.
-   - **Ojo:** si tu suscripción es **Azure for Students Starter**, el free tier de Azure SQL no aplica. Usa una cuenta Azure Free normal.
-
-No necesitas comprar nada ni instalar nada global para crear la BD; se hace desde el portal.
-
----
-
-## 2. Crear la base de datos gratuita
-
-1. Portal → **Crear un recurso → SQL Database / SQL Database → Create**.
-2. En el recuadro de precios elige **Start free / Apply free offer**. Verifica que el resumen de coste diga **$0/mes**.
-3. Configura:
-
-| Campo | Valor |
+| Dato | Valor |
 |---|---|
-| Resource group | `rg-detallestere` (nuevo) |
-| Database name | `DetallesTereDB` |
-| Server | nuevo, p. ej. `dt-tere-sql.database.windows.net` |
-| Server admin login | el que tú elijas (guárdalo; no lo usa la app) |
-| Server admin password | contraseña fuerte (guárdala) |
-| Region | la más cercana disponible (p. ej. Brazil South / East US) |
+| Proyecto | `detalles-tere` |
+| Project ID | `gentle-flower-15646036` |
+| Rama | `production` (`br-dark-poetry-b64n7x0t`), default |
+| Región | AWS South America East 1 (São Paulo) |
+| Plan | Free |
+| PostgreSQL | 18 |
+| Bases | 1 |
+| Computes | 0 |
+| Expira | Never |
 
-4. En **Networking** del servidor:
+> **0 computes es normal**: Neon Free usa scale-to-zero. El compute se inicia automáticamente al conectar y se apaga tras ~5 minutos de inactividad.
 
-- **Allow Azure services and resources to access this server** = **Yes**.
-- Firewall rule: nombre `AllowDemoPublic`, IP inicial `0.0.0.0`, IP final `255.255.255.255`.
+Si la base inicial se llama `neondb` y aún no existe `DetallesTereDB`:
 
-> Esa regla abierta es necesaria porque Vercel Hobby no da IP de salida fija y Power BI Web sale de rangos administrados por Microsoft. Para producción se restringiría o se pagarían Static IPs de Vercel.
+1. Abre el branch `production` → **SQL Editor**.
+2. Conéctate a la base inicial `neondb`.
+3. Pega y ejecuta `DetallesTerePHP/db/pg/00_create_database.sql`.
+4. En el selector de base del SQL Editor cambia a `DetallesTereDB`.
+5. Ejecuta ahí el resto de scripts.
 
-5. En **Compute + storage** confirma:
+Para migraciones externas (`psql`) usa la **URL directa** (sin `-pooler`). Para la app en Vercel usa la **URL pooled** (hostname con `-pooler`). Ambas se copian desde la sección **Connection Details** de Neon; no escribas la contraseña en el repo ni en el chat.
 
-- General Purpose **serverless**, nivel gratuito.
-- **Behavior when free limit reached** = **Auto-pause the database until next month** (NO “Continue using for additional charges”).
-- Hasta 4 vCores / 32 GB.
-
----
-
-## 3. Cargar esquema, datos y vistas
-
-### Opción A — desde el Query Editor del portal (recomendada, sin instalar nada)
-
-1. Abre la BD `DetallesTereDB` → **Query editor (preview)** → entra con el administrador del servidor.
-2. Si pide firewall, la regla `AllowDemoPublic` del paso 2 ya lo permite.
-3. Ejecuta **en este orden**, pegando el contenido de cada archivo:
-
-```text
-DetallesTerePHP/db/01_schema_DetallesTereDB.sql
-DetallesTerePHP/db/02_seed_DetallesTereDB.sql
-DetallesTerePHP/db/03_seed_500_registros.sql
-DetallesTerePHP/db/04_consultas_powerbi.sql
-```
-
-`01` comprueba `DB_ID('DetallesTereDB')`; como ya creaste la base desde el portal, no intentará crearla otra vez.
-
-### Opción B — importar un `.bacpac` desde tu SQL Server local
-
-Útil si quieres conservar exactamente los datos que ya tienes en tu PC. Requiere `dotnet` instalado; **no es `npm -g`**:
+Si prefieres `psql` en lugar del SQL Editor:
 
 ```powershell
-# Instalación local del tool, sin -g
-dotnet tool install --tool-path .tools microsoft.sqlpackage
-
-# Exportar desde SQL Server local (ajusta la contraseña de tu sa local)
-.\.tools\SqlPackage.exe /a:Export `
-  /ssn:localhost /sdn:DetallesTereDB /su:sa /sp:"<clave-local>" `
-  /tf:DetallesTereDB.bacpac
-
-# Importar a Azure SQL
-.\.tools\SqlPackage.exe /a:Import `
-  /tsn:dt-tere-sql.database.windows.net /tdn:DetallesTereDB `
-  /tu:<admin-del-servidor> /tp:"<clave-admin>" `
-  /sf:DetallesTereDB.bacpac
+$env:PGDATABASE_URL = 'postgresql://<owner>:<password>@<host-directo>/DetallesTereDB?sslmode=require'
+psql $env:PGDATABASE_URL -f DetallesTerePHP/db/pg/01_schema_DetallesTereDB.sql
+psql $env:PGDATABASE_URL -f DetallesTerePHP/db/pg/02_seed_DetallesTereDB.sql
+psql $env:PGDATABASE_URL -f DetallesTerePHP/db/pg/03_seed_500_registros.sql
+psql $env:PGDATABASE_URL -f DetallesTerePHP/db/pg/04_consultas_powerbi.sql
+# Editar 05 con contraseñas reales antes de ejecutarlo:
+psql $env:PGDATABASE_URL -f DetallesTerePHP/db/pg/05_roles_y_permisos.sql
 ```
 
-Si el `.bacpac` ya incluye las seis vistas, **no** vuelvas a ejecutar `04`. Si no las incluye, ejecútalo después.
+---
+
+## 2. Cargar esquema, datos y vistas
+
+En el SQL Editor de Neon, conectado a `DetallesTereDB`, ejecuta **en este orden**:
+
+```text
+DetallesTerePHP/db/pg/01_schema_DetallesTereDB.sql
+DetallesTerePHP/db/pg/02_seed_DetallesTereDB.sql
+DetallesTerePHP/db/pg/03_seed_500_registros.sql
+DetallesTerePHP/db/pg/04_consultas_powerbi.sql
+DetallesTerePHP/db/pg/05_roles_y_permisos.sql   ← editar contraseñas antes
+```
+
+- `01` crea la extensión `citext`, el esquema `dbo`, la función `dbo.utcnow()` y las 22 tablas con `IDENTITY`.
+- `02` crea el admin y una categoría inicial.
+- `03` completa hasta **500 filas por tabla** de forma transaccional e idempotente.
+- `04` crea las seis vistas `dbo.vw_PBI_*`.
+- `05` crea los roles `dt_app` y `pbi_reader` con permisos mínimos.
 
 ### Verificación de datos
 
 ```sql
 SELECT 'USUARIO' AS tabla, COUNT(*) AS filas FROM dbo.USUARIO
 UNION ALL SELECT 'INVENTARIO', COUNT(*) FROM dbo.INVENTARIO
-UNION ALL SELECT 'CATEGORIA', COUNT(*) FROM dbo.CATEGORIA;
+UNION ALL SELECT 'CATEGORIA', COUNT(*) FROM dbo.CATEGORIA
+ORDER BY tabla;
 
-SELECT name FROM sys.views WHERE name LIKE 'vw_PBI_%' ORDER BY name;
+SELECT table_name
+FROM information_schema.views
+WHERE table_schema = 'dbo' AND table_name LIKE 'vw_PBI_%'
+ORDER BY table_name;
 ```
 
-Esperado: ~1000 / ~3000 / ~1001 y 6 vistas.
+Esperado: **500 / 500 / 500** y **6 vistas**.
+
+Para comprobar las seis vistas con sus nombres exactos (están citados):
+
+```sql
+SELECT 'vw_PBI_Ventas_Detalle' AS vista,
+       (SELECT COUNT(*) FROM dbo."vw_PBI_Ventas_Detalle") AS filas
+UNION ALL SELECT 'vw_PBI_Ingresos_Detalle',
+       (SELECT COUNT(*) FROM dbo."vw_PBI_Ingresos_Detalle")
+UNION ALL SELECT 'vw_PBI_Pedidos_Saldo',
+       (SELECT COUNT(*) FROM dbo."vw_PBI_Pedidos_Saldo")
+UNION ALL SELECT 'vw_PBI_Cotizaciones_24h',
+       (SELECT COUNT(*) FROM dbo."vw_PBI_Cotizaciones_24h")
+UNION ALL SELECT 'vw_PBI_Movimientos_Inventario',
+       (SELECT COUNT(*) FROM dbo."vw_PBI_Movimientos_Inventario")
+UNION ALL SELECT 'vw_PBI_Sinonimos_Ventas',
+       (SELECT COUNT(*) FROM dbo."vw_PBI_Sinonimos_Ventas")
+ORDER BY vista;
+```
 
 ---
 
-## 4. Crear usuarios SQL para la app y Power BI
+## 3. Roles y cadenas de conexión
 
-1. Abre los dos archivos nuevos y reemplaza los marcadores:
+| Rol | Uso | Permisos | Cadena |
+|---|---|---|---|
+| owner del proyecto | migraciones / SQL Editor | propietario de `dbo` | URL directa, sin `-pooler` |
+| `dt_app` | Vercel / app | SELECT, INSERT, UPDATE, DELETE + USAGE en secuencias + EXECUTE en `dbo.utcnow()` | URL pooled, con `-pooler` |
+| `pbi_reader` | Power BI Web | solo SELECT | URL directa, sin `-pooler` |
 
-- `DetallesTerePHP/db/05_usuarios_cloud_master.sql` → `<PASSWORD_DT_APP>`
-- `DetallesTerePHP/db/06_usuarios_cloud_detallestere.sql` → `<PASSWORD_PBI_READER>`
-
-> Usa contraseñas distintas, largas y aleatorias. No las subas al repo.
-
-2. Ejecuta `05_usuarios_cloud_master.sql` conectado a la base **`master`**.
-3. Ejecuta `06_usuarios_cloud_detallestere.sql` conectado a **`DetallesTereDB`**.
-
-Permisos resultantes:
-
-| Usuario | Uso | Permisos |
-|---|---|---|
-| `dt_app` | Vercel / app | `db_datareader` + `db_datawriter` |
-| `pbi_reader` | Power BI Web | `db_datareader` |
+La app usa `pg` con un pool pequeño por instancia serverless. La URL pooled de Neon es la que debe configurarse en Vercel; la directa se reserva para cargar scripts y para Power BI.
 
 ---
 
-## 5. Publicar la app en Vercel (cuando ya tengas cuenta)
+## 4. Publicar la app en Vercel
 
 1. <https://vercel.com/signup> → conectar cuenta GitHub.
 2. **Add New → Project** → importar este repositorio, rama `DB`.
-3. Framework: **Express**. Build: `npm run build`. Node: 20.
+3. Framework: **Express**. Build: `npm run build`. Node: **20**.
 4. Environment variables:
 
-```text
-DB_SERVER=dt-tere-sql.database.windows.net
-DB_PORT=1433
-DB_NAME=DetallesTereDB
-DB_USER=dt_app
-DB_PASSWORD=<PASSWORD_DT_APP>
-DB_ENCRYPT=true
-DB_TRUST_CERT=false
-DB_TIMEOUT=10
-SESSION_SECRET=<cadena-larga-aleatoria>
-SESSION_MINUTES=30
-COOKIE_SECURE=true
-APP_PRODUCTION=true
-APP_TIMEZONE=America/Lima
-BASE_URL=https://<proyecto>.vercel.app
-CONTACT_EMAIL=Geissel.Espino@upsjb.edu.pe
-WHATSAPP_NUMBER=51932677948
-```
+| Variable | Valor |
+|---|---|
+| `DATABASE_URL` | URL **pooled** de Neon para `dt_app` (con `-pooler`, `sslmode=require`) |
+| `DB_TIMEOUT` | `10` |
+| `SESSION_SECRET` | cadena larga y aleatoria |
+| `SESSION_MINUTES` | `30` |
+| `COOKIE_SECURE` | `true` |
+| `APP_PRODUCTION` | `true` |
+| `APP_TIMEZONE` | `America/Lima` |
+| `BASE_URL` | `https://<proyecto>.vercel.app` |
+| `CONTACT_EMAIL` | `Geissel.Espino@upsjb.edu.pe` |
+| `WHATSAPP_NUMBER` | `51932677948` |
+| `MAPS_EMBED_SRC` | `https://www.google.com/maps?q=Ica%2C%20Peru&output=embed` |
+| `FACEBOOK_URL` | vacío si no hay enlace real |
+| `INSTAGRAM_URL` | vacío si no hay enlace real |
+| `TIKTOK_URL` | vacío si no hay enlace real |
 
-`FACEBOOK_URL`, `INSTAGRAM_URL` y `TIKTOK_URL` se dejan vacíos si no hay enlaces reales (así no aparecen links inventados).
+> Con `APP_PRODUCTION=true`, la app exige `DATABASE_URL` y `SESSION_SECRET`; si falta alguna, el arranque falla a propósito.
 
----
-
-## 6. Power BI Web universitario
-
-1. **Obtener datos → SQL Server / Azure SQL Database**.
-2. Servidor: `dt-tere-sql.database.windows.net`; base: `DetallesTereDB`.
-3. Autenticación: **SQL Server**, usuario `pbi_reader`.
-4. Seleccionar únicamente las seis vistas `dbo.vw_PBI_*` de `Requerimientos/powerbi/README.md`.
-5. Publicar al workspace, guardar credenciales y configurar **refresh programado**.
-6. No instalar gateway: si el portal pide uno, significa que la conexión apunta a `localhost` en vez del FQDN de Azure.
+5. Deploy. Vercel sirve `public/assets/**` por CDN y usa `api/index.ts` como función serverless.
 
 ---
 
-## 7. Verificación final
+## 5. Power BI Web
+
+**Estado: pendiente.** El tenant universitario puede o no permitir el conector PostgreSQL directo; eso se valida cuando se inicie Power BI Web.
+
+Si el tenant permite **Obtener datos → PostgreSQL database**:
+
+1. Servidor: host de la URL directa de Neon (sin `-pooler`).
+2. Base: `DetallesTereDB`.
+3. Autenticación: usuario `pbi_reader` y su contraseña.
+4. Seleccionar solo las seis vistas `dbo."vw_PBI_*"` listadas en `Requerimientos/powerbi/README.md`.
+5. Publicar al workspace y configurar refresh programado.
+6. No se necesita gateway local ni PC encendida si el conector es nativo/Nube.
+
+Si el bloquea el conector o el refresh directo, las alternativas sin PC encendida son:
+
+- exponer un endpoint autenticado en Vercel que devuelva las seis vistas (no implementado todavía), o
+- publicar el `.pbix` con datos importados como evidencia estática.
+
+No inventes credenciales ni datos de contacto para completar esta sección.
+
+---
+
+## 6. Verificación final
 
 En local, antes de publicar:
 
@@ -203,27 +206,26 @@ En la URL pública comprobar:
 - `/manual-usuario` y `/manual-programador` son públicos y están en la barra superior.
 - Paginación, WhatsApp y correo reales funcionan.
 
-Vigilar en Azure: **Metrics → Free amount remaining**. Cerrar Query Editor/SSMS cuando termines; las conexiones abiertas impiden el auto-pause.
+En Neon vigilar **Monitoring → Compute hours** del mes. Cerrar el SQL Editor cuando termines; dejar conexiones abiertas retrasa el scale-to-zero.
 
 ---
 
-## 8. Evidencia pendiente de deploy
+## 7. Evidencia pendiente de deploy
 
 | Dato | Valor |
 |---|---|
 | Proveedor app | Vercel Hobby |
 | Rama desplegada | `DB` |
 | URL pública | **Pendiente** |
-| Servidor Azure SQL | **Pendiente** |
-| Base cargada | **Pendiente** |
+| Proyecto Neon | `detalles-tere` / `gentle-flower-15646036` |
+| Base cargada | **Pendiente de verificar en Neon** |
+| Roles creados | **Pendiente de verificar en Neon** |
 | Fecha de deploy | **Pendiente** |
 | Capturas de portada/login | **Pendiente** |
 | Refresh de Power BI Web | **Pendiente** |
 
 ---
 
-## 9. Nota sobre el `.bak` local
+## 8. Nota sobre el `.bak` local
 
-El backup local sigue en `D:\DetallesTereDB.bak`. Sirve para recuperar la BD en SQL Server local, pero **no** para el free tier de Azure SQL. Para llevarlo a la nube, usa la Opción B (`.bacpac`) o los scripts `01`→`04`.
-
-Si en el futuro se contrata un **Azure SQL Managed Instance**, ahí sí se podría restaurar el `.bak` desde Blob Storage; pero esa oferta gratuita dura 12 meses y no permite acceso 24/7 por su cupo de vCore-horas.
+El backup `D:\DetallesTereDB.bak` sirve para recuperar SQL Server en la PC, pero **no** se puede restaurar en PostgreSQL/Neon. Para llevar los datos a la nube se usan los scripts `DetallesTerePHP/db/pg/01` → `05`.

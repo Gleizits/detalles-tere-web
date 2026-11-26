@@ -10,7 +10,7 @@ dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 
 // Compatibilidad con el .env de la versión PHP durante el desarrollo local.
 const legacyEnv = path.join(PROJECT_ROOT, 'DetallesTerePHP', '.env');
-if (!process.env.DB_PASSWORD && fs.existsSync(legacyEnv)) {
+if (!process.env.DATABASE_URL && fs.existsSync(legacyEnv)) {
   for (const line of fs.readFileSync(legacyEnv, 'utf8').split(/\r?\n/)) {
     const clean = line.trim();
     if (!clean || clean.startsWith('#')) continue;
@@ -42,15 +42,7 @@ const baseUrl = text('BASE_URL').replace(/\/+$/, '');
 
 export const config = {
   db: {
-    server: text('DB_SERVER', 'localhost'),
-    port: int('DB_PORT', 1433),
-    database: text('DB_NAME', 'DetallesTereDB'),
-    user: text('DB_USER', 'sa'),
-    password: text('DB_PASSWORD'),
-    windowsAuth: bool('DB_WINDOWS_AUTH'),
-    domain: text('DB_DOMAIN'),
-    trustCertificate: bool('DB_TRUST_CERT', true),
-    encrypt: bool('DB_ENCRYPT', false),
+    url: text('DATABASE_URL'),
     timeoutSeconds: int('DB_TIMEOUT', 10),
   },
   session: {
@@ -78,4 +70,7 @@ export const config = {
 
 if (config.production && (process.env.SESSION_SECRET ?? '') === '') {
   throw new Error('SESSION_SECRET es obligatorio cuando APP_PRODUCTION=true');
+}
+if (config.production && !config.db.url) {
+  throw new Error('DATABASE_URL es obligatoria cuando APP_PRODUCTION=true');
 }

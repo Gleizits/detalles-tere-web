@@ -2,7 +2,7 @@
 
 **Smoke testing = pruebas de humo.** Se ejecuta después de cada despliegue o cambio importante. Hay una parte automática (sin BD) y una parte manual (con BD).
 
-## 1. Smoke automático (sin SQL Server)
+## 1. Smoke automático (sin base de datos)
 
 ```powershell
 npm install

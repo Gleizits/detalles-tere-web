@@ -6,33 +6,26 @@ export type { CreditoCliente } from './creditoDao';
 const SQL_CREAR =
   'INSERT INTO dbo.CREDITO_CLIENTE ' +
   '(ID_CLIENTE, MONTO, ESTADO, FECHA, FECHA_VENCIMIENTO, ID_USUARIO) ' +
-  "VALUES (?, ?, 'ACTIVO', SYSUTCDATETIME(), " +
-  'DATEADD(MONTH, 3, SYSUTCDATETIME()), ?)';
+  "VALUES (?, ?, 'ACTIVO', dbo.utcnow(), " +
+  "dbo.utcnow() + INTERVAL '3 months', ?)";
 
 const SQL_SALDO =
-  'SELECT COALESCE(SUM(MONTO), 0) FROM dbo.CREDITO_CLIENTE WITH (UPDLOCK, ROWLOCK) ' +
+  'WITH bloqueados AS (SELECT MONTO FROM dbo.CREDITO_CLIENTE ' +
   "WHERE ID_CLIENTE = ? AND ESTADO = 'ACTIVO' " +
-  'AND (FECHA_VENCIMIENTO IS NULL OR FECHA_VENCIMIENTO >= SYSUTCDATETIME())';
+  'AND (FECHA_VENCIMIENTO IS NULL OR FECHA_VENCIMIENTO >= dbo.utcnow()) FOR UPDATE) ' +
+  'SELECT COALESCE(SUM(MONTO), 0) FROM bloqueados';
 
 const SQL_APLICAR =
   "UPDATE dbo.CREDITO_CLIENTE SET ESTADO = 'CANJEADO', ID_VENTA = ? " +
   "WHERE ID_CLIENTE = ? AND ESTADO = 'ACTIVO' " +
-  'AND (FECHA_VENCIMIENTO IS NULL OR FECHA_VENCIMIENTO >= SYSUTCDATETIME())';
-
-// El esquema PHP aún no trae la migración que agrega ID_VENTA; si falta,
-// se omite esa columna pero se conserva la regla de canje.
-const SQL_APLICAR_SIN_VENTA =
-  "UPDATE dbo.CREDITO_CLIENTE SET ESTADO = 'CANJEADO' " +
-  "WHERE ID_CLIENTE = ? AND ESTADO = 'ACTIVO' " +
-  'AND (FECHA_VENCIMIENTO IS NULL OR FECHA_VENCIMIENTO >= SYSUTCDATETIME())';
-
-let tieneIdVentaCache: boolean | null = null;
+  'AND (FECHA_VENCIMIENTO IS NULL OR FECHA_VENCIMIENTO >= dbo.utcnow())';
 
 function isDbClient(value: unknown): value is DbClient {
   return (
     typeof value === 'object' &&
     value !== null &&
-    typeof (value as { request?: unknown }).request === 'function'
+    typeof (value as { query?: unknown }).query === 'function' &&
+    typeof (value as { release?: unknown }).release === 'function'
   );
 }
 
@@ -152,22 +145,6 @@ export class CreditoClienteDAO {
       );
     }
 
-    if (await this.tieneIdVenta(client)) {
-      await query(SQL_APLICAR, [idVenta, idCliente], client);
-      return;
-    }
-    await query(SQL_APLICAR_SIN_VENTA, [idCliente], client);
-  }
-
-  private async tieneIdVenta(client?: DbClient): Promise<boolean> {
-    if (tieneIdVentaCache === null) {
-      const valor = await scalar<number | null>(
-        "SELECT COL_LENGTH('dbo.CREDITO_CLIENTE', 'ID_VENTA')",
-        [],
-        client,
-      );
-      tieneIdVentaCache = valor !== null && valor !== undefined;
-    }
-    return tieneIdVentaCache;
+    await query(SQL_APLICAR, [idVenta, idCliente], client);
   }
 }

@@ -1,5 +1,7 @@
 # DetallesTere — versión PHP (rama `tpw`)
 
+> Esta carpeta se conserva como referencia de la versión local con SQL Server. La versión desplegable de la rama `DB` es `DetallesTereTS` (TypeScript + Vercel + Neon); consulta `../HOSTING.md`.
+
 Migración del sistema Java Servlet/JSP a **PHP puro MVC sin frameworks**.
 Misma base de datos: **SQL Server 2019 Developer Edition · `DetallesTereDB`**.
 

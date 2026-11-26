@@ -1,4 +1,4 @@
-import { insertId, query, queryOne, withTransaction, type DbClient } from '../db';
+import { execute, insertId, query, queryOne, withTransaction, type DbClient } from '../db';
 import { BusinessError } from '../http';
 import { ClienteDAO } from './clienteDao';
 import { CreditoClienteDAO } from './creditoClienteDao';
@@ -14,9 +14,9 @@ const SQL_SELECT =
 
 const SQL_LISTAR =
   SQL_SELECT +
-  'WHERE (? IS NULL OR pd.NOMBRE_PAGA LIKE ? OR pd.CELULAR LIKE ? ' +
-  "       OR ISNULL(pd.NOMBRE_RECOGE, '') LIKE ?) " +
-  'AND (? IS NULL OR pd.ID_USUARIO = ?) ' +
+  'WHERE (?::text IS NULL OR pd.NOMBRE_PAGA LIKE ? OR pd.CELULAR LIKE ? ' +
+  "       OR COALESCE(pd.NOMBRE_RECOGE, '') LIKE ?) " +
+  'AND (?::int IS NULL OR pd.ID_USUARIO = ?::int) ' +
   'ORDER BY pd.FECHA_CREACION DESC';
 
 const SQL_BUSCAR = SQL_SELECT + 'WHERE pd.ID_PEDIDO = ?';
@@ -35,11 +35,10 @@ const SQL_INSERTAR =
   'INSERT INTO dbo.PEDIDOS (ID_CLIENTE, NOMBRE_PAGA, NOMBRE_RECOGE, CELULAR, ' +
   'FECHA_RECOJO, HORA_RECOJO, ADELANTO, TOTAL, ESTADO, ESTADO_PRODUCCION, ID_USUARIO, ' +
   'FECHA_CREACION, FECHA_LIMITE_CANJE, FECHA_LIMITE_RECOJO, FECHA_LIMITE_PAGO, FECHA_PAGO_TOTAL) ' +
-  'OUTPUT INSERTED.ID_PEDIDO ' +
   'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ' +
-  'SYSUTCDATETIME(), DATEADD(MONTH, 3, SYSUTCDATETIME()), DATEADD(MONTH, 2, ?), ' +
-  'DATEADD(MONTH, 1, SYSUTCDATETIME()), ' +
-  "CASE WHEN ? = 'COMPLETO' THEN SYSUTCDATETIME() ELSE NULL END)";
+  "dbo.utcnow(), dbo.utcnow() + INTERVAL '3 months', ?::timestamp + INTERVAL '2 months', " +
+  "dbo.utcnow() + INTERVAL '1 month', " +
+  "CASE WHEN ? = 'COMPLETO' THEN dbo.utcnow() ELSE NULL END)";
 
 const SQL_INSERTAR_DETALLE =
   'INSERT INTO dbo.DETALLE_PEDIDO (ID_PEDIDO, ID_INVENTARIO, CANTIDAD, COSTO_UNITARIO, SUBTOTAL) ' +
@@ -51,15 +50,15 @@ const SQL_DESCONTAR_STOCK =
 
 const SQL_MOVIMIENTO =
   'INSERT INTO dbo.MOVIMIENTO_INVENTARIO (ID_USUARIO, ID_INVENTARIO, TIPO_MOVIMIENTO, ' +
-  'CANTIDAD, FECHA_MOVIMIENTO) VALUES (?, ?, ?, ?, SYSUTCDATETIME())';
+  'CANTIDAD, FECHA_MOVIMIENTO) VALUES (?, ?, ?, ?, dbo.utcnow())';
 
 const SQL_PAGO =
   "INSERT INTO dbo.VENTA (ID_CAJA, ID_PEDIDO, TOTAL, TIPO_PAGO, ESTADO, FECHA_VENTA) " +
-  "VALUES (?, ?, ?, ?, 'VENDIDO', SYSUTCDATETIME())";
+  "VALUES (?, ?, ?, ?, 'VENDIDO', dbo.utcnow())";
 
 const SQL_LEER_CANCELAR =
   'SELECT ID_PEDIDO, ID_CLIENTE, ADELANTO, ESTADO, ESTADO_PRODUCCION ' +
-  'FROM dbo.PEDIDOS WITH (UPDLOCK, ROWLOCK) WHERE ID_PEDIDO = ?';
+  'FROM dbo.PEDIDOS WHERE ID_PEDIDO = ? FOR UPDATE';
 
 const SQL_DEVOLVER_STOCK =
   'UPDATE dbo.INVENTARIO SET STOCK_ACT = STOCK_ACT + ? WHERE ID_INVENTARIO = ?';
@@ -70,7 +69,7 @@ const SQL_ACTUALIZAR_ABONO =
   'UPDATE dbo.PEDIDOS SET ADELANTO = ADELANTO + ?, ' +
   "ESTADO = CASE WHEN ADELANTO + ? >= TOTAL THEN 'COMPLETO' ELSE ESTADO END, " +
   'FECHA_PAGO_TOTAL = CASE WHEN ADELANTO + ? >= TOTAL ' +
-  'THEN SYSUTCDATETIME() ELSE FECHA_PAGO_TOTAL END ' +
+  'THEN dbo.utcnow() ELSE FECHA_PAGO_TOTAL END ' +
   "WHERE ID_PEDIDO = ? AND ESTADO IN ('PENDIENTE', 'COMPLETO')";
 
 const SQL_ACTUALIZAR_CANCELAR =
@@ -103,16 +102,6 @@ function fechaSoloDia(row: Row, key: string): string | null {
 function nullableDecimal(row: Row, key: string): number | null {
   const value = row[key];
   return value === null || value === undefined ? null : decimal(row, key);
-}
-
-/** Igual que `query`, pero devuelve @@ROWCOUNT para comprobar actualizaciones. */
-async function executeCount(
-  sqlText: string,
-  values: readonly unknown[] = [],
-  client?: DbClient,
-): Promise<number> {
-  const row = await queryOne<Row>(`${sqlText}; SELECT @@ROWCOUNT AS AFECTADOS`, values, client);
-  return row ? Number(decimal(row, 'AFECTADOS')) : 0;
 }
 
 /** Datos de un pedido reservado (equivalente a las columnas de dbo.PEDIDOS). */
@@ -287,7 +276,7 @@ export class PedidoDAO {
         throw new BusinessError('El abono supera el saldo pendiente del pedido');
       }
 
-      const afectadas = await executeCount(
+      const afectadas = await execute(
         SQL_ACTUALIZAR_ABONO,
         [monto, monto, monto, idPedido],
         client,
@@ -335,7 +324,7 @@ export class PedidoDAO {
         await this.insertarMovimiento(client, idUsuario, linea.idInventario, linea.cantidad, 'ENTRADA');
       }
 
-      const afectadas = await executeCount(SQL_ACTUALIZAR_CANCELAR, [idPedido], client);
+      const afectadas = await execute(SQL_ACTUALIZAR_CANCELAR, [idPedido], client);
       if (afectadas === 0) {
         throw new BusinessError('El pedido cambió de estado y ya no puede cancelarse.');
       }
@@ -405,7 +394,7 @@ export class PedidoDAO {
   }
 
   private async descontarStock(client: DbClient, idInventario: number, cantidad: number): Promise<void> {
-    const afectadas = await executeCount(SQL_DESCONTAR_STOCK, [cantidad, idInventario, cantidad], client);
+    const afectadas = await execute(SQL_DESCONTAR_STOCK, [cantidad, idInventario, cantidad], client);
     if (afectadas === 0) {
       throw new BusinessError('Stock insuficiente para apartar el ítem');
     }
@@ -457,7 +446,7 @@ export class PedidoDAO {
   }
 
   private async devolverStock(client: DbClient, idInventario: number, cantidad: number): Promise<void> {
-    const afectadas = await executeCount(SQL_DEVOLVER_STOCK, [cantidad, idInventario], client);
+    const afectadas = await execute(SQL_DEVOLVER_STOCK, [cantidad, idInventario], client);
     if (afectadas === 0) {
       throw new BusinessError('No se encontró el artículo reservado.');
     }

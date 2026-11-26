@@ -1,5 +1,7 @@
 # EXPORTAR — llevar el proyecto a otra PC en un .zip
 
+> **Nota:** esta guía describe la versión local PHP/Java con SQL Server. El despliegue actual de la rama `DB` usa **TypeScript + Express en Vercel y PostgreSQL en Neon**; consulta [`HOSTING.md`](HOSTING.md).
+
 Guía para copiar **DetallesTereWeb** a otra computadora **sin containers ni
 Docker**: solo ZIP + SQL Server 2019 + XAMPP (Tomcat 8.5) + JDK, con los
 **mismos puertos** (8080 web, 8443 HTTPS, 1433 SQL Server) que se usan en la

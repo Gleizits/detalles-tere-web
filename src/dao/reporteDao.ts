@@ -12,8 +12,8 @@ const SQL_TOTALES_VENTA =
   "COALESCE(SUM(CASE WHEN v.TIPO_PAGO = 'CREDITO' " +
   'THEN v.TOTAL ELSE 0 END), 0) AS CREDITO ' +
   'FROM dbo.VENTA v ' +
-  "WHERE ESTADO = 'VENDIDO' AND FECHA_VENTA >= ? " +
-  'AND FECHA_VENTA < DATEADD(DAY, 1, ?)';
+  "WHERE ESTADO = 'VENDIDO' AND FECHA_VENTA >= ?::timestamp " +
+  "AND FECHA_VENTA < (?::timestamp + INTERVAL '1 day')";
 
 const SQL_TOTALES_LINEAS =
   'SELECT COALESCE(SUM(d.CANTIDAD), 0) AS UNIDADES, ' +
@@ -26,15 +26,15 @@ const SQL_TOTALES_LINEAS =
   'LEFT JOIN dbo.PRODUCTO pr ON pr.ID_PRODUCTO = inv.ID_PRODUCTO ' +
   'LEFT JOIN dbo.MATERIAL m ON m.ID_MATERIAL = inv.ID_MATERIAL ' +
   'LEFT JOIN dbo.ARREGLO a ON a.ID_DETALLE = inv.ID_DETALLE ' +
-  "WHERE v.ESTADO = 'VENDIDO' AND v.FECHA_VENTA >= ? " +
-  'AND v.FECHA_VENTA < DATEADD(DAY, 1, ?)';
+  "WHERE v.ESTADO = 'VENDIDO' AND v.FECHA_VENTA >= ?::timestamp " +
+  "AND v.FECHA_VENTA < (?::timestamp + INTERVAL '1 day')";
 
 const SQL_TOTALES_INGRESO =
   'SELECT COALESCE(SUM(d.CANTIDAD), 0) AS UNIDADES, ' +
   'COALESCE(SUM(d.SUBTOTAL), 0) AS TOTAL ' +
   'FROM dbo.INGRESO i ' +
   'JOIN dbo.DETALLE_INGRESO d ON d.ID_INGRESO = i.ID_INGRESO ' +
-  'WHERE i.FECHA_INGRESO >= ? AND i.FECHA_INGRESO <= ?';
+  'WHERE i.FECHA_INGRESO >= ?::date AND i.FECHA_INGRESO <= ?::date';
 
 const SQL_DETALLE_VENTAS =
   'SELECT v.FECHA_VENTA, ' +
@@ -48,8 +48,8 @@ const SQL_DETALLE_VENTAS =
   'LEFT JOIN dbo.PRODUCTO pr ON pr.ID_PRODUCTO = inv.ID_PRODUCTO ' +
   'LEFT JOIN dbo.MATERIAL m ON m.ID_MATERIAL = inv.ID_MATERIAL ' +
   'LEFT JOIN dbo.ARREGLO a ON a.ID_DETALLE = inv.ID_DETALLE ' +
-  "WHERE v.ESTADO = 'VENDIDO' AND v.FECHA_VENTA >= ? " +
-  'AND v.FECHA_VENTA < DATEADD(DAY, 1, ?) ' +
+  "WHERE v.ESTADO = 'VENDIDO' AND v.FECHA_VENTA >= ?::timestamp " +
+  "AND v.FECHA_VENTA < (?::timestamp + INTERVAL '1 day') " +
   'ORDER BY v.FECHA_VENTA DESC';
 
 const SQL_DETALLE_INGRESOS =
@@ -63,7 +63,7 @@ const SQL_DETALLE_INGRESOS =
   'LEFT JOIN dbo.PRODUCTO pr ON pr.ID_PRODUCTO = inv.ID_PRODUCTO ' +
   'LEFT JOIN dbo.MATERIAL m ON m.ID_MATERIAL = inv.ID_MATERIAL ' +
   'LEFT JOIN dbo.ARREGLO a ON a.ID_DETALLE = inv.ID_DETALLE ' +
-  'WHERE i.FECHA_INGRESO >= ? AND i.FECHA_INGRESO <= ? ' +
+  'WHERE i.FECHA_INGRESO >= ?::date AND i.FECHA_INGRESO <= ?::date ' +
   'ORDER BY i.FECHA_INGRESO DESC, d.ID_DETALLE_INGRESO DESC';
 
 export interface ReporteVentaLinea {
@@ -118,7 +118,7 @@ function esFecha(valor: string): boolean {
   );
 }
 
-/** mssql devuelve Date; el PHP recibía cadenas 'Y-m-d H:i:s'. */
+/** `pg` devuelve Date; el PHP recibía cadenas 'Y-m-d H:i:s'. */
 function fechaComoTexto(valor: unknown): string | null {
   if (valor === null || valor === undefined) return null;
   if (valor instanceof Date && !Number.isNaN(valor.getTime())) {

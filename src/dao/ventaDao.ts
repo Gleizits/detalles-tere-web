@@ -1,24 +1,24 @@
-import { insertId, query, queryOne, withTransaction, type DbClient } from '../db';
+import { execute, insertId, query, withTransaction, type DbClient } from '../db';
 import { BusinessError } from '../http';
 import { CreditoClienteDAO } from './creditoClienteDao';
 import { decimal, integer, str, type Row } from './util';
 
 const SQL_INSERTAR_VENTA =
   'INSERT INTO dbo.VENTA (ID_CAJA, TOTAL, TIPO_PAGO, ESTADO, FECHA_VENTA) ' +
-  'OUTPUT INSERTED.ID_VENTA VALUES (?, ?, ?, ?, SYSUTCDATETIME())';
+  'VALUES (?, ?, ?, ?, dbo.utcnow())';
 
 const SQL_INSERTAR_DETALLE =
   'INSERT INTO dbo.DETALLE_VENTA ' +
   '(ID_INVENTARIO, CANTIDAD, COSTO_UNITARIO, SUBTOTAL, ID_CAJA, ID_VENTA, ' +
   ' FECHA_CREACION, ESTADO) ' +
-  "VALUES (?, ?, ?, ?, ?, ?, SYSUTCDATETIME(), 'VENDIDO')";
+  "VALUES (?, ?, ?, ?, ?, ?, dbo.utcnow(), 'VENDIDO')";
 
 const SQL_INSERTAR_DETALLE_COTIZACION =
   'INSERT INTO dbo.DETALLE_VENTA ' +
   '(ID_INVENTARIO, CANTIDAD, COSTO_UNITARIO, SUBTOTAL, ID_CAJA, ID_VENTA, ' +
   ' FECHA_CREACION, FECHA_VENCIMIENTO, ESTADO) ' +
-  'VALUES (?, ?, ?, ?, NULL, ?, SYSUTCDATETIME(), ' +
-  "        DATEADD(HOUR, 24, SYSUTCDATETIME()), 'COTIZACION')";
+  'VALUES (?, ?, ?, ?, NULL, ?, dbo.utcnow(), ' +
+  "        dbo.utcnow() + INTERVAL '24 hours', 'COTIZACION')";
 
 const SQL_DESCONTAR_STOCK =
   'UPDATE dbo.INVENTARIO SET STOCK_ACT = STOCK_ACT - ? ' +
@@ -27,14 +27,14 @@ const SQL_DESCONTAR_STOCK =
 const SQL_MOVIMIENTO =
   'INSERT INTO dbo.MOVIMIENTO_INVENTARIO ' +
   '(ID_USUARIO, ID_INVENTARIO, FECHA_MOVIMIENTO, TIPO_MOVIMIENTO, CANTIDAD) ' +
-  "VALUES (?, ?, SYSUTCDATETIME(), 'SALIDA', ?)";
+  "VALUES (?, ?, dbo.utcnow(), 'SALIDA', ?)";
 
 const SQL_COTIZACIONES =
   'SELECT v.ID_VENTA, v.TOTAL, v.FECHA_VENTA, ' +
   'COUNT(d.ID_DETALLE_VENTA) AS NUM_LINEAS, ' +
-  "STRING_AGG(CAST(COALESCE(p.NOMBRE, m.NOMBRE, a.NOMBRE) AS NVARCHAR(200)) " +
-  "          + ' x' + CAST(d.CANTIDAD AS VARCHAR(10)), ', ') " +
-  '    WITHIN GROUP (ORDER BY d.ID_DETALLE_VENTA) AS RESUMEN ' +
+  "STRING_AGG(COALESCE(p.NOMBRE, m.NOMBRE, a.NOMBRE)::varchar(200) " +
+  "          || ' x' || d.CANTIDAD::text, ', ' " +
+  '          ORDER BY d.ID_DETALLE_VENTA) AS RESUMEN ' +
   'FROM dbo.VENTA v ' +
   'JOIN dbo.DETALLE_VENTA d ON d.ID_VENTA = v.ID_VENTA ' +
   'JOIN dbo.INVENTARIO i ON d.ID_INVENTARIO = i.ID_INVENTARIO ' +
@@ -42,7 +42,7 @@ const SQL_COTIZACIONES =
   'LEFT JOIN dbo.MATERIAL m ON i.ID_MATERIAL = m.ID_MATERIAL ' +
   'LEFT JOIN dbo.ARREGLO a ON i.ID_DETALLE = a.ID_DETALLE ' +
   "WHERE v.ESTADO = 'COTIZACION' " +
-  '  AND v.FECHA_VENTA >= DATEADD(HOUR, -24, SYSUTCDATETIME()) ' +
+  "  AND v.FECHA_VENTA >= dbo.utcnow() - INTERVAL '24 hours' " +
   'GROUP BY v.ID_VENTA, v.TOTAL, v.FECHA_VENTA ' +
   'ORDER BY v.FECHA_VENTA DESC';
 
@@ -61,7 +61,7 @@ const SQL_LINEAS_COTIZACION =
 const SQL_BORRAR_LINEAS_EXPIRADAS =
   'DELETE FROM dbo.DETALLE_VENTA ' +
   "WHERE ESTADO = 'COTIZACION' AND FECHA_VENCIMIENTO IS NOT NULL " +
-  '  AND FECHA_VENCIMIENTO < SYSUTCDATETIME()';
+  '  AND FECHA_VENCIMIENTO < dbo.utcnow()';
 
 const SQL_BORRAR_CABECERAS_EXPIRADAS =
   "DELETE FROM dbo.VENTA WHERE ESTADO = 'COTIZACION' AND NOT EXISTS (" +
@@ -92,19 +92,6 @@ function fechaTexto(row: Row, key: string): string | null {
 function nullableDecimal(row: Row, key: string): number | null {
   const value = row[key];
   return value === null || value === undefined ? null : decimal(row, key);
-}
-
-/**
- * Ejecuta una sentencia DML y devuelve @@ROWCOUNT. `query` no expone
- * rowsAffected, por eso se añade una consulta al mismo lote.
- */
-async function executeCount(
-  sqlText: string,
-  values: readonly unknown[] = [],
-  client?: DbClient,
-): Promise<number> {
-  const row = await queryOne<Row>(`${sqlText}; SELECT @@ROWCOUNT AS AFECTADOS`, values, client);
-  return row ? Number(decimal(row, 'AFECTADOS')) : 0;
 }
 
 /** Cabecera de VENTA (venta confirmada o cotización). */
@@ -322,7 +309,7 @@ export class VentaDAO {
         const lineas = await this.obtenerLineasCn(client, idVenta);
 
         // 1) Marcar cabecera como vendida (solo si aún es cotización).
-        const afectadas = await executeCount(SQL_MARCAR_VENTA, [idCaja, tipoPago, idVenta], client);
+        const afectadas = await execute(SQL_MARCAR_VENTA, [idCaja, tipoPago, idVenta], client);
         if (afectadas === 0) {
           throw new BusinessError('La cotización ya fue cobrada o ya no existe.');
         }
@@ -346,7 +333,7 @@ export class VentaDAO {
   async eliminarExpiradas(): Promise<number> {
     try {
       return await withTransaction(async (client) => {
-        const borradas = await executeCount(SQL_BORRAR_LINEAS_EXPIRADAS, [], client);
+        const borradas = await execute(SQL_BORRAR_LINEAS_EXPIRADAS, [], client);
         await query(SQL_BORRAR_CABECERAS_EXPIRADAS, [], client);
         return borradas;
       });
@@ -404,7 +391,7 @@ export class VentaDAO {
   }
 
   private async descontarStock(client: DbClient, idInventario: number, cantidad: number): Promise<void> {
-    const afectadas = await executeCount(SQL_DESCONTAR_STOCK, [cantidad, idInventario, cantidad], client);
+    const afectadas = await execute(SQL_DESCONTAR_STOCK, [cantidad, idInventario, cantidad], client);
     if (afectadas === 0) {
       throw new BusinessError('Stock insuficiente para uno de los productos. Revisa el carrito.');
     }

@@ -31,7 +31,7 @@ export class CategoriaDAO {
   /** Compara sin espacios periféricos; la BD no declara UNIQUE en NOMBRE. */
   async existeNombre(nombre: string): Promise<boolean> {
     const rows = await query<Row>(
-      'SELECT 1 AS existe FROM dbo.CATEGORIA WHERE LTRIM(RTRIM(NOMBRE)) = ?',
+      'SELECT 1 AS existe FROM dbo.CATEGORIA WHERE BTRIM(NOMBRE) = ?',
       [nombre.trim()],
       this.client,
     );

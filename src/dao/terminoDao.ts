@@ -4,8 +4,8 @@ import { decimal, integer, nullableStr, str, type Row } from './util';
 
 const SQL_LISTAR =
   'SELECT t.ID_TERMINO, t.PALABRA, ' +
-  "COALESCE(STRING_AGG(CAST(COALESCE(pr.NOMBRE, m.NOMBRE, a.NOMBRE) " +
-  "AS VARCHAR(MAX)), ', '), 'Sin artículos') AS ASOCIACIONES, " +
+  "COALESCE(STRING_AGG(COALESCE(pr.NOMBRE, m.NOMBRE, a.NOMBRE)::text, ', ' " +
+  "ORDER BY dt.ID_DETALLE_TERMINO), 'Sin artículos') AS ASOCIACIONES, " +
   'COUNT(dt.ID_INVENTARIO) AS NUM_PRODUCTOS ' +
   'FROM dbo.TERMINOS t ' +
   'LEFT JOIN dbo.DETALLE_TERMINO dt ON dt.ID_TERMINO = t.ID_TERMINO ' +

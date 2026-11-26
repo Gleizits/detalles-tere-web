@@ -1,13 +1,12 @@
-import { query, queryOne, withTransaction, type DbClient } from '../db';
+import { insertId, query, queryOne, withTransaction, type DbClient } from '../db';
 import { BusinessError } from '../http';
 import { decimal, integer, str, type Row } from './util';
 
 const SQL_INSERTAR =
   'INSERT INTO dbo.INGRESO (ID_PROVEEDOR, ID_USUARIO, FECHA_INGRESO) ' +
-  'OUTPUT INSERTED.ID_INGRESO VALUES (?, ?, ?)';
+  'VALUES (?, ?, ?)';
 
-// TOP con parámetro no se puede preparar en SQL Server: el límite se inyecta
-// como entero validado en listarRecientes(), como en CajaDAO.
+// LIMIT se inyecta como entero validado en listarRecientes(), como en CajaDAO.
 const SQL_LISTAR_RECIENTES =
   'SELECT i.FECHA_INGRESO, p.NOMBRE AS PROVEEDOR, ' +
   'COALESCE(pr.NOMBRE, m.NOMBRE, a.NOMBRE) AS ARTICULO, ' +
@@ -39,15 +38,14 @@ const SQL_ACTUALIZAR_STOCK =
 
 // %1$s = tabla entidad, %2$s = clave (valores fijos del propio DAO).
 const SQL_ACTUALIZAR_COSTO =
-  'UPDATE entidad SET PRECIO_COMPRA = ? ' +
-  'FROM dbo.%1$s entidad ' +
-  'JOIN dbo.INVENTARIO inv ON inv.%2$s = entidad.%2$s ' +
-  'WHERE inv.ID_INVENTARIO = ?';
+  'UPDATE dbo.%1$s AS entidad SET PRECIO_COMPRA = ? ' +
+  'FROM dbo.INVENTARIO inv ' +
+  'WHERE inv.%2$s = entidad.%2$s AND inv.ID_INVENTARIO = ?';
 
 const SQL_MOVIMIENTO =
   "INSERT INTO dbo.MOVIMIENTO_INVENTARIO " +
   "(ID_USUARIO, ID_INVENTARIO, FECHA_MOVIMIENTO, TIPO_MOVIMIENTO, CANTIDAD) " +
-  "VALUES (?, ?, SYSUTCDATETIME(), 'ENTRADA', ?)";
+  "VALUES (?, ?, dbo.utcnow(), 'ENTRADA', ?)";
 
 /** Línea de captura de un ingreso (IngresoLinea / DetalleIngreso del PHP). */
 export interface IngresoLinea {
@@ -107,10 +105,7 @@ export class IngresoDAO {
 
   async listarRecientes(limite: number): Promise<IngresoReciente[]> {
     const tope = Math.max(1, Math.min(100, limite));
-    const sql = SQL_LISTAR_RECIENTES.replace(
-      'SELECT i.FECHA_INGRESO',
-      `SELECT TOP ${tope} i.FECHA_INGRESO`,
-    );
+    const sql = `${SQL_LISTAR_RECIENTES} LIMIT ${tope}`;
 
     const rows = await query<Row>(sql, [], this.client);
     return rows.map((row) => ({
@@ -137,12 +132,7 @@ export class IngresoDAO {
     idUsuario: number,
     fecha: string,
   ): Promise<number> {
-    const row = await queryOne<Row>(SQL_INSERTAR, [idProveedor, idUsuario, fecha], cn);
-    const id = row ? Number(row.ID_INGRESO) : Number.NaN;
-    if (!Number.isFinite(id)) {
-      throw new Error('No se pudo crear la cabecera del ingreso.');
-    }
-    return id;
+    return insertId(SQL_INSERTAR, [idProveedor, idUsuario, fecha], cn);
   }
 
   private async validarLinea(cn: DbClient, linea: IngresoLinea): Promise<void> {

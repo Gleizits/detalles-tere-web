@@ -26,32 +26,31 @@ const SQL_ABIERTA =
 
 const SQL_ABRIR =
   'INSERT INTO dbo.CAJA (ID_USUARIO, MONTO_INICIAL, FECHA_APERTURA) '
-  + 'VALUES (?, ?, SYSUTCDATETIME())';
+  + 'VALUES (?, ?, dbo.utcnow())';
 
 const SQL_VENTAS_EFECTIVO =
-  "SELECT ISNULL(SUM(TOTAL), 0) FROM dbo.VENTA "
+  "SELECT COALESCE(SUM(TOTAL), 0) FROM dbo.VENTA "
   + "WHERE ID_CAJA = ? AND TIPO_PAGO = 'EFECTIVO' AND ESTADO = 'VENDIDO'";
 
 // Ventas de productos (sin pagos de reserva): ID_PEDIDO IS NULL
 const SQL_VENTAS_PROD_EFECTIVO =
-  "SELECT ISNULL(SUM(TOTAL), 0) FROM dbo.VENTA "
+  "SELECT COALESCE(SUM(TOTAL), 0) FROM dbo.VENTA "
   + "WHERE ID_CAJA = ? AND TIPO_PAGO = 'EFECTIVO' AND ESTADO = 'VENDIDO' "
   + 'AND ID_PEDIDO IS NULL';
 
 // Pagos de reservas (adelantos/abonos) en efectivo: ID_PEDIDO IS NOT NULL
 const SQL_PAGOS_RESERVA_EFECTIVO =
-  "SELECT ISNULL(SUM(TOTAL), 0) FROM dbo.VENTA "
+  "SELECT COALESCE(SUM(TOTAL), 0) FROM dbo.VENTA "
   + "WHERE ID_CAJA = ? AND TIPO_PAGO = 'EFECTIVO' AND ESTADO = 'VENDIDO' "
   + 'AND ID_PEDIDO IS NOT NULL';
 
 const SQL_CERRAR =
   'UPDATE dbo.CAJA SET MONTO_FINAL = ?, MONTO_REAL = ?, DIFERENCIA = ?, '
-  + 'FECHA_CIERRE = SYSUTCDATETIME() WHERE ID_CAJA = ?';
+  + 'FECHA_CIERRE = dbo.utcnow() WHERE ID_CAJA = ?';
 
-// TOP con parámetro no se puede preparar en SQL Server: el límite
-// se inyecta como entero validado en historial(), igual que en PHP.
+// LIMIT se inyecta como entero validado en historial(), igual que en PHP.
 const SQL_HISTORIAL =
-  "SELECT c.ID_CAJA, c.ID_USUARIO, u.NOMBRE + ' ' + u.APELLIDO AS NOMBRE_USUARIO, "
+  "SELECT c.ID_CAJA, c.ID_USUARIO, u.NOMBRE || ' ' || u.APELLIDO AS NOMBRE_USUARIO, "
   + 'c.MONTO_INICIAL, c.MONTO_FINAL, c.MONTO_REAL, c.DIFERENCIA, '
   + 'c.FECHA_APERTURA, c.FECHA_CIERRE '
   + 'FROM dbo.CAJA c JOIN dbo.USUARIO u ON c.ID_USUARIO = u.ID_USUARIO '
@@ -63,7 +62,7 @@ function optionalDecimal(row: Row, key: string): number | null {
   return value === null || value === undefined ? null : decimal(row, key);
 }
 
-/** mssql entrega fechas como Date; PHP entregaba 'Y-m-d H:i:s'. */
+/** `pg` entrega fechas como Date; PHP entregaba 'Y-m-d H:i:s'. */
 function fechaTexto(row: Row, key: string): string | null {
   const value = row[key];
   if (value === null || value === undefined) return null;
@@ -161,7 +160,7 @@ export class CajaDAO {
   /** Historial reciente de cajas del usuario. */
   async historial(idUsuario: number, limite: number, client?: DbClient): Promise<Caja[]> {
     const tope = Math.max(1, Math.min(100, Math.trunc(limite) || 1));
-    const sql = SQL_HISTORIAL.replace('SELECT c.ID_CAJA', `SELECT TOP ${tope} c.ID_CAJA`);
+    const sql = `${SQL_HISTORIAL} LIMIT ${tope}`;
     const rows = await query<Row>(sql, [idUsuario], client ?? this.client);
     return rows.map(mapCaja);
   }

@@ -20,7 +20,8 @@ function isDbClient(value: unknown): value is DbClient {
   return (
     typeof value === 'object' &&
     value !== null &&
-    typeof (value as { request?: unknown }).request === 'function'
+    typeof (value as { query?: unknown }).query === 'function' &&
+    typeof (value as { release?: unknown }).release === 'function'
   );
 }
 
